@@ -1,0 +1,15 @@
+
+# Ignore master key for decrypting credentials and more.
+/config/master.key
+
+/.bundle
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+/storage/*
+!/storage/.keep
+/coverage/
+/vendor/bundle
+/.DS_Store
