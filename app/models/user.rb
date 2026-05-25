@@ -8,6 +8,8 @@ class User < ApplicationRecord
 	has_many :settled_markets, class_name: "Market", foreign_key: :settled_by_id, dependent: :nullify, inverse_of: :settled_by
 	has_many :faucet_requests, dependent: :destroy
 	has_many :ledger_entries, dependent: :restrict_with_exception
+	has_many :user_grants, dependent: :destroy
+	has_many :granted_user_grants, class_name: "UserGrant", foreign_key: :granted_by_id, dependent: :nullify
 
 	validates :email, presence: true, uniqueness: true
 	validates :role, presence: true

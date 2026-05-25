@@ -1,0 +1,31 @@
+<h1>Market Templates</h1>
+
+<div class="panel">
+  <h3>Create Template</h3>
+  <%= form_with url: backoffice_templates_path, method: :post do |f| %>
+    <p><label>Key</label><br><%= text_field_tag :key, nil, required: true %></p>
+    <p><label>Name</label><br><%= text_field_tag :name, nil, required: true %></p>
+    <p><label>Description</label><br><%= text_area_tag :description %></p>
+    <p><label>Default Legs (comma separated)</label><br><%= text_field_tag :default_legs, "YES,NO" %></p>
+    <p><label>Default Duration (hours)</label><br><%= number_field_tag :default_duration_hours, 24, min: 1 %></p>
+    <p><label>Active</label> <%= check_box_tag :active, true, true %></p>
+    <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true %></p>
+    <p><%= f.submit "Create template" %></p>
+  <% end %>
+</div>
+
+<div class="panel">
+  <h3>Available Templates</h3>
+  <% @templates.each do |template| %>
+    <article style="padding:12px;border:1px solid #33434c;border-radius:10px;margin-bottom:10px;">
+      <strong><%= template.name %></strong> (<%= template.key %>)
+      <p><%= template.description %></p>
+      <p>Legs: <%= template.legs.join(", ") %></p>
+      <%= form_with url: create_market_backoffice_template_path(template), method: :post do |f| %>
+        <p><label>Question</label><br><%= text_field_tag :question, nil, required: true %></p>
+        <p><label>Description</label><br><%= text_area_tag :description, nil, required: true %></p>
+        <p><%= f.submit "Create market from template" %></p>
+      <% end %>
+    </article>
+  <% end %>
+</div>

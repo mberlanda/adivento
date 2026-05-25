@@ -1,0 +1,43 @@
+<h1>User Ad Hoc Grants</h1>
+<div class="panel">
+  <h3>Create Grant</h3>
+  <%= form_with url: backoffice_grants_path, method: :post do |f| %>
+    <p>
+      <label>User</label><br>
+      <%= select_tag :user_id, options_from_collection_for_select(@users, :id, :email) %>
+    </p>
+    <p>
+      <label>Permission</label><br>
+      <%= select_tag :permission_id, options_from_collection_for_select(@permissions, :id, :key) %>
+    </p>
+    <p>
+      <label>Effect</label><br>
+      <%= select_tag :allow, options_for_select([["Allow", true], ["Deny", false]]) %>
+    </p>
+    <p>
+      <label>Reason</label><br>
+      <%= text_field_tag :reason, nil, required: true %>
+    </p>
+    <p><%= f.submit "Create grant" %></p>
+  <% end %>
+</div>
+
+<div class="panel">
+  <h3>Recent Grants</h3>
+  <table>
+    <thead>
+      <tr><th>User</th><th>Permission</th><th>Effect</th><th>Reason</th><th>By</th></tr>
+    </thead>
+    <tbody>
+      <% @grants.each do |grant| %>
+        <tr>
+          <td><%= grant.user.email %></td>
+          <td><%= grant.permission.key %></td>
+          <td><%= grant.allow ? "ALLOW" : "DENY" %></td>
+          <td><%= grant.reason %></td>
+          <td><%= grant.granted_by.email %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

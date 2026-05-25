@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_25_093260) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
   create_table "audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -63,6 +63,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_093260) do
     t.index ["market_id"], name: "index_market_legs_on_market_id"
   end
 
+  create_table "market_templates", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "default_duration_hours", default: 24, null: false
+    t.text "default_legs"
+    t.text "description"
+    t.string "key", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_market_templates_on_key", unique: true
+  end
+
   create_table "markets", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "created_by_id", null: false
@@ -76,6 +88,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_093260) do
     t.index ["created_by_id"], name: "index_markets_on_created_by_id"
     t.index ["settled_by_id"], name: "index_markets_on_settled_by_id"
     t.index ["status"], name: "index_markets_on_status"
+  end
+
+  create_table "permissions", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_permissions_on_key", unique: true
+  end
+
+  create_table "role_permissions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "permission_id", null: false
+    t.string "role_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
+    t.index ["role_name", "permission_id"], name: "index_role_permissions_on_role_name_and_permission_id", unique: true
+  end
+
+  create_table "user_grants", force: :cascade do |t|
+    t.boolean "allow", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.integer "granted_by_id", null: false
+    t.integer "permission_id", null: false
+    t.text "reason"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["granted_by_id"], name: "index_user_grants_on_granted_by_id"
+    t.index ["permission_id"], name: "index_user_grants_on_permission_id"
+    t.index ["user_id", "permission_id", "created_at"], name: "index_user_grants_on_user_id_and_permission_id_and_created_at"
+    t.index ["user_id"], name: "index_user_grants_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -106,5 +151,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_093260) do
   add_foreign_key "market_legs", "markets"
   add_foreign_key "markets", "users", column: "created_by_id"
   add_foreign_key "markets", "users", column: "settled_by_id"
+  add_foreign_key "role_permissions", "permissions"
+  add_foreign_key "user_grants", "permissions"
+  add_foreign_key "user_grants", "users"
+  add_foreign_key "user_grants", "users", column: "granted_by_id"
   add_foreign_key "wallets", "users"
 end

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Adivento Markets</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      :root { --bg: #f6f4ec; --panel: #ffffff; --ink: #18252f; --accent: #0e7c66; --muted: #5f6f79; }
+      body { margin: 0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 20% -20%, #d8efe6 0%, var(--bg) 45%); color: var(--ink); }
+      header { display:flex; justify-content:space-between; align-items:center; padding: 16px 24px; background: rgba(255,255,255,.85); border-bottom: 1px solid #d9e2df; position: sticky; top: 0; backdrop-filter: blur(4px); }
+      a { color: var(--accent); text-decoration: none; }
+      .shell { max-width: 1080px; margin: 0 auto; padding: 24px; }
+      .cards { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+      .card { background: var(--panel); border: 1px solid #d9e2df; border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(0,0,0,.04); }
+      .muted { color: var(--muted); font-size: 0.92rem; }
+      .badge { display:inline-block; padding:4px 10px; border-radius:999px; background:#ecf7f3; color:#0a5e4e; font-size:.8rem; margin-right:6px; }
+      .flash { margin: 12px 0; padding: 10px 12px; border-radius: 10px; }
+      .notice { background: #e6f7f1; }
+      .alert { background: #fdecec; }
+      input, select, textarea, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #b8c8c3; }
+      button { background: #0e7c66; color: white; border: 0; cursor: pointer; }
+      form.inline { display: inline; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong><a href="/">Adivento</a></strong>
+      <nav>
+        <a href="/web/markets">Markets</a>
+        <% if session[:user_id].present? %>
+          &nbsp;|&nbsp;<a href="/backoffice">Backoffice</a>
+          &nbsp;|&nbsp;
+          <%= button_to "Sign out", "/signout", method: :delete, form_class: "inline", style: "background:transparent;color:#0e7c66;" %>
+        <% else %>
+          &nbsp;|&nbsp;<a href="/signin">Sign in</a>
+        <% end %>
+      </nav>
+    </header>
+    <main class="shell">
+      <% if notice.present? %><div class="flash notice"><%= notice %></div><% end %>
+      <% if alert.present? %><div class="flash alert"><%= alert %></div><% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

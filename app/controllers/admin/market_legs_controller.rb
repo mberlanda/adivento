@@ -1,6 +1,6 @@
 module Admin
   class MarketLegsController < BaseController
-    before_action -> { require_any_role!(:admin, :moderator) }
+    before_action -> { require_permission!("market.leg.create") }
 
     def create
       market = Market.find(params[:market_id])

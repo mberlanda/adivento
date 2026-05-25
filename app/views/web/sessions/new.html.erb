@@ -1,0 +1,14 @@
+<h1>Sign in</h1>
+<p class="muted">Use one of the seeded users or any registered account.</p>
+
+<%= form_with url: "/signin", method: :post do |f| %>
+  <p>
+    <label>Email</label><br>
+    <%= f.email_field :email, required: true %>
+  </p>
+  <p>
+    <label>Password</label><br>
+    <%= f.password_field :password, required: true %>
+  </p>
+  <p><%= f.submit "Sign in" %></p>
+<% end %>

@@ -1,0 +1,29 @@
+<h1>Role Permission Matrix</h1>
+<div class="panel">
+  <table>
+    <thead>
+      <tr>
+        <th>Permission</th>
+        <% @roles.each do |role| %><th><%= role %></th><% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @permissions.each do |permission| %>
+        <tr>
+          <td><strong><%= permission.key %></strong><br><small><%= permission.description %></small></td>
+          <% @roles.each do |role| %>
+            <% enabled = @role_permissions.fetch(role, []).any? { |rp| rp.permission_id == permission.id } %>
+            <td>
+              <%= form_with url: backoffice_permission_path(permission), method: :patch do |f| %>
+                <%= hidden_field_tag :role_name, role %>
+                <%= hidden_field_tag :enabled, (!enabled).to_s %>
+                <%= text_field_tag :reason, nil, placeholder: "reason", required: true %>
+                <%= f.submit(enabled ? "Disable" : "Enable") %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

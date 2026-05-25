@@ -1,0 +1,20 @@
+<h1>Explore Markets</h1>
+<p class="muted">Trending and active prediction markets. Guests see open/settled markets only.</p>
+
+<div class="cards">
+  <% @markets.each do |market| %>
+    <article class="card">
+      <div>
+        <span class="badge"><%= market.status %></span>
+        <% if market.settled_outcome.present? %><span class="badge">Settled: <%= market.settled_outcome %></span><% end %>
+      </div>
+      <h3><a href="<%= web_market_path(market) %>"><%= market.question %></a></h3>
+      <p class="muted"><%= truncate(market.description, length: 120) %></p>
+      <p>
+        <% market.market_legs.each do |leg| %>
+          <span class="badge"><%= leg.label %> <%= (leg.odds_minor / 100.0).round(1) %>%</span>
+        <% end %>
+      </p>
+    </article>
+  <% end %>
+</div>

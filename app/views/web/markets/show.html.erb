@@ -1,0 +1,25 @@
+<h1><%= @market.question %></h1>
+<p class="muted"><%= @market.description %></p>
+
+<section class="card" style="margin-bottom: 16px;">
+  <h3>Trust Panel</h3>
+  <p>Status: <strong><%= @market.status %></strong></p>
+  <p>Creator: <%= @market.created_by.email %></p>
+  <% if @market.settled_outcome.present? %>
+    <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
+  <% end %>
+</section>
+
+<section class="card" style="margin-bottom: 16px;">
+  <h3>Legs</h3>
+  <ul>
+    <% @market.market_legs.each do |leg| %>
+      <li><strong><%= leg.label %></strong> - <%= (leg.odds_minor / 100.0).round(1) %>%</li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="card">
+  <h3>Live Events (SSE endpoint)</h3>
+  <p><a href="/sse/markets/<%= @market.id %>">/sse/markets/<%= @market.id %></a></p>
+</section>

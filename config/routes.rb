@@ -1,4 +1,32 @@
 Rails.application.routes.draw do
+  root "web/markets#index"
+
+  get "/signin", to: "web/sessions#new"
+  post "/signin", to: "web/sessions#create"
+  delete "/signout", to: "web/sessions#destroy"
+
+  namespace :web do
+    resources :markets, only: [:index, :show]
+  end
+
+  namespace :backoffice do
+    root to: "dashboard#index"
+    resources :permissions, only: [:index, :update]
+    resources :grants, only: [:index, :create]
+    resources :templates, only: [:index, :create] do
+      post :create_market, on: :member
+    end
+  end
+
+  namespace :sse do
+    resources :markets, only: [] do
+      get :show, on: :member
+    end
+    resources :settlements, only: [] do
+      get :show, on: :member
+    end
+  end
+
   namespace :auth do
     post :register, to: "sessions#register"
     post :login, to: "sessions#login"

@@ -1,9 +1,9 @@
 module Admin
   class MarketsController < BaseController
-    before_action -> { require_any_role!(:admin, :moderator) }
+    before_action -> { require_permission!("market.read") }
 
     def create
-      require_any_role!(:admin)
+      require_permission!("market.create")
       return if performed?
 
       market = Market.new(market_params.merge(created_by: current_user))
@@ -16,7 +16,7 @@ module Admin
     end
 
     def update
-      require_any_role!(:admin)
+      require_permission!("market.update")
       return if performed?
 
       market = Market.find(params[:id])
@@ -35,6 +35,9 @@ module Admin
     end
 
     def settle
+      require_permission!("market.settle")
+      return if performed?
+
       market = Market.find(params[:id])
       outcome = params[:outcome].to_s.upcase
       unless market.market_legs.where(label: outcome).exists?

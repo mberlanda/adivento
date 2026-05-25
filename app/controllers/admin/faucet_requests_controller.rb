@@ -1,6 +1,6 @@
 module Admin
   class FaucetRequestsController < BaseController
-    before_action -> { require_any_role!(:admin, :moderator) }
+    before_action -> { require_permission!("wallet.faucet.review") }
 
     def index
       render json: FaucetRequest.order(created_at: :desc).map { |request| serialize_request(request) }
