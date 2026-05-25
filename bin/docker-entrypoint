@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+rm -f /app/tmp/pids/server.pid
+bundle exec rails db:prepare
+
+exec "$@"

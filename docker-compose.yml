@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: adivento_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: bundle exec rails server -b 0.0.0.0 -p 3000
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: adivento_development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      JWT_SECRET: local-dev-secret
+
+volumes:
+  postgres_data:
