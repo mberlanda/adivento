@@ -1,0 +1,15 @@
+binary:
+  key: binary_yes_no
+  name: Binary Yes/No
+  description: Classic yes-no setup
+  default_legs: "[\"YES\",\"NO\"]"
+  default_duration_hours: 24
+  active: true
+
+macro:
+  key: macro_direction
+  name: Macro Direction
+  description: Up/down setup
+  default_legs: "[\"UP\",\"DOWN\"]"
+  default_duration_hours: 48
+  active: true

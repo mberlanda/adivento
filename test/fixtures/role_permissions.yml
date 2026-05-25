@@ -1,0 +1,63 @@
+admin_backoffice_access:
+  role_name: admin
+  permission: backoffice_access
+
+admin_permission_manage:
+  role_name: admin
+  permission: permission_manage
+
+admin_grant_manage:
+  role_name: admin
+  permission: grant_manage
+
+admin_market_read:
+  role_name: admin
+  permission: market_read
+
+admin_market_create:
+  role_name: admin
+  permission: market_create
+
+admin_market_update:
+  role_name: admin
+  permission: market_update
+
+admin_market_leg_create:
+  role_name: admin
+  permission: market_leg_create
+
+admin_market_settle:
+  role_name: admin
+  permission: market_settle
+
+admin_wallet_faucet_review:
+  role_name: admin
+  permission: wallet_faucet_review
+
+admin_template_manage:
+  role_name: admin
+  permission: template_manage
+
+moderator_backoffice_access:
+  role_name: moderator
+  permission: backoffice_access
+
+moderator_market_read:
+  role_name: moderator
+  permission: market_read
+
+moderator_market_leg_create:
+  role_name: moderator
+  permission: market_leg_create
+
+moderator_market_settle:
+  role_name: moderator
+  permission: market_settle
+
+moderator_wallet_faucet_review:
+  role_name: moderator
+  permission: wallet_faucet_review
+
+moderator_template_manage:
+  role_name: moderator
+  permission: template_manage

@@ -1,12 +1,16 @@
-# Adivento Backend (Iteration 001)
+# Adivento Platform (Iterations 001-002)
 
 Rails 8 monolithic backend for a private prediction market platform.
 
-This iteration ships:
+Current implementation ships:
 - role-based auth (`admin`, `moderator`, `player`) plus guest visibility
 - prediction market CRUD subset with moderator settlement and leg management
 - fantasy wallet (`ADIV`) faucet request + approval/rejection workflow
 - append-only ledger + audit records for wallet grants
+- customer-facing web pages for market exploration
+- backoffice web pages with permission matrix and user ad hoc grants
+- reusable market templates with create-market-from-template flow
+- SSE endpoints for market and settlement updates
 - test coverage gate above 90%
 - Docker + Docker Compose local runtime
 
@@ -50,8 +54,8 @@ RAILS_ENV=test bin/rails test
 ```
 
 Current suite status:
-- 32 tests passing
-- 96.33% line coverage (SimpleCov)
+- 53 tests passing
+- 94.59% line coverage (SimpleCov)
 
 ## Seed Users
 `db/seeds.rb` creates:
@@ -85,6 +89,28 @@ Current suite status:
 - `POST /admin/markets/:id/legs`
 - `POST /admin/markets/:id/settle`
 
+## Web Overview
+
+### Customer Surface
+- `GET /`
+- `GET /web/markets`
+- `GET /web/markets/:id`
+- `GET /signin`
+
+### Backoffice Surface
+- `GET /backoffice`
+- `GET /backoffice/permissions`
+- `PATCH /backoffice/permissions/:id`
+- `GET /backoffice/grants`
+- `POST /backoffice/grants`
+- `GET /backoffice/templates`
+- `POST /backoffice/templates`
+- `POST /backoffice/templates/:id/create_market`
+
+### SSE
+- `GET /sse/markets/:id`
+- `GET /sse/settlements/:id`
+
 ## Architecture Notes
 - Controller boundaries enforce role checks.
 - Service object `WalletGrantService` encapsulates wallet approval side effects.
@@ -92,9 +118,21 @@ Current suite status:
 - Chosen boundaries are intentionally mobile-friendly for a future `/api/v1` evolution.
 
 ## Supporting Documents
-- Plan: `docs/plans/ITERATION_001_PLAN.md`
-- Spec: `docs/specs/MVP_BACKEND_SPEC.md`
+- Iteration 001 plan: `docs/plans/ITERATION_001_PLAN.md`
+- Iteration 001 spec: `docs/specs/MVP_BACKEND_SPEC.md`
+- Iteration 002 plans (v1, review, v2):
+	- `docs/plans/ITERATION_002_PROGRAM_PLAN_V1.md`
+	- `docs/plans/ITERATION_002_PROGRAM_PLAN_REVIEW.md`
+	- `docs/plans/ITERATION_002_PROGRAM_PLAN_V2.md`
+- Iteration 002 specs:
+	- `docs/specs/ITERATION_002_WEB_SURFACES_SPEC.md`
+	- `docs/specs/ITERATION_002_ARCHITECTURE_SEAMS_SPEC.md`
 - ADRs:
 	- `docs/adr/ADR-0001-rails8-modular-monolith.md`
 	- `docs/adr/ADR-0002-jwt-and-role-rbac.md`
 	- `docs/adr/ADR-0003-fantasy-wallet-ledger-first.md`
+	- `docs/adr/ADR-0004-dual-web-surfaces.md`
+	- `docs/adr/ADR-0005-rbac-with-ad-hoc-grants.md`
+	- `docs/adr/ADR-0006-market-templates.md`
+	- `docs/adr/ADR-0007-sse-for-live-market-updates.md`
+	- `docs/adr/ADR-0008-modular-seams-for-microservices.md`

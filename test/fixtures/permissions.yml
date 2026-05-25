@@ -1,0 +1,49 @@
+backoffice_access:
+  key: backoffice.access
+  description: Access backoffice
+  active: true
+
+permission_manage:
+  key: permission.manage
+  description: Manage role permissions
+  active: true
+
+grant_manage:
+  key: grant.manage
+  description: Manage ad hoc grants
+  active: true
+
+market_read:
+  key: market.read
+  description: Read market admin data
+  active: true
+
+market_create:
+  key: market.create
+  description: Create markets
+  active: true
+
+market_update:
+  key: market.update
+  description: Update markets
+  active: true
+
+market_leg_create:
+  key: market.leg.create
+  description: Create market legs
+  active: true
+
+market_settle:
+  key: market.settle
+  description: Settle markets
+  active: true
+
+wallet_faucet_review:
+  key: wallet.faucet.review
+  description: Review faucet requests
+  active: true
+
+template_manage:
+  key: template.manage
+  description: Manage templates
+  active: true

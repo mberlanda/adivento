@@ -1,0 +1,13 @@
+moderator_denied_market_update:
+  user: moderator
+  permission: market_update
+  allow: false
+  reason: temporary restriction
+  granted_by: admin
+
+player_allowed_backoffice:
+  user: player
+  permission: backoffice_access
+  allow: true
+  reason: emergency support shift
+  granted_by: admin
