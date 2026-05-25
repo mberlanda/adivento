@@ -1,0 +1,11 @@
+pending_request:
+  user: player
+  amount_minor: 2500
+  status: 0
+
+approved_request:
+  user: player
+  amount_minor: 1000
+  status: 1
+  reviewed_by: admin
+  note: seeded approval

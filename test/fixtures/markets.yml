@@ -1,0 +1,13 @@
+open_market:
+  question: Will it rain tomorrow?
+  description: Weather market
+  status: 1
+  structure_locked: false
+  created_by: admin
+
+draft_market:
+  question: Will Team A win?
+  description: Sports market
+  status: 0
+  structure_locked: false
+  created_by: admin

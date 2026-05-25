@@ -1,0 +1,17 @@
+admin_wallet:
+  user: admin
+  asset_code: ADIV
+  available_minor: 100000
+  reserved_minor: 0
+
+moderator_wallet:
+  user: moderator
+  asset_code: ADIV
+  available_minor: 50000
+  reserved_minor: 0
+
+player_wallet:
+  user: player
+  asset_code: ADIV
+  available_minor: 1000
+  reserved_minor: 0

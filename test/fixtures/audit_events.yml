@@ -1,0 +1,7 @@
+market_update:
+  actor: admin
+  action: market.update
+  target_type: Market
+  target_id: 1
+  reason: edited typo
+  metadata: {}

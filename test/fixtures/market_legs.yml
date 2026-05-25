@@ -1,0 +1,11 @@
+yes_leg:
+  market: open_market
+  label: "YES"
+  odds_minor: 5000
+  active: true
+
+no_leg:
+  market: open_market
+  label: "NO"
+  odds_minor: 5000
+  active: true

@@ -1,0 +1,7 @@
+grant_entry:
+  user: player
+  actor: admin
+  entry_type: FAUCET_GRANT
+  amount_minor: 1000
+  direction: credit
+  metadata: {}
