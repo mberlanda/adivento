@@ -6,6 +6,12 @@ module HotStorage
 
       market = Market.includes(:market_legs, :bets).find(market_id)
       MarketSnapshotProjector.project!(market: market, reason: "cache_miss", store: store)
+    rescue StandardError => e
+      Rails.logger.warn("HotStorage::MarketSnapshotReader: Redis error for market #{market_id}: #{e.class}: #{e.message}")
+      market = Market.includes(:market_legs, :bets).find(market_id)
+      MarketSnapshotProjector.build_snapshot(market).merge(
+        version: MarketSnapshotProjector.market_version(market)
+      )
     end
   end
 end

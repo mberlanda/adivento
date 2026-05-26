@@ -1,5 +1,11 @@
 require "test_helper"
 
+class ErrorRedis
+  def set(*) = raise(RuntimeError, "Redis connection lost")
+  def get(*) = raise(RuntimeError, "Redis connection lost")
+  def xadd(*) = raise(RuntimeError, "Redis connection lost")
+end
+
 class HotStorage::MarketSnapshotReaderTest < ActiveSupport::TestCase
   setup do
     @fake_redis = HotStorage::FakeRedis.new
@@ -36,5 +42,19 @@ class HotStorage::MarketSnapshotReaderTest < ActiveSupport::TestCase
     assert_equal "open", snapshot.fetch(:status)
     assert_equal 2, snapshot.fetch(:legs).length
     assert_operator snapshot.fetch(:version), :>, 0
+  end
+
+  test "returns cold-derived snapshot and does not raise when Redis errors" do
+    error_store = HotStorage::Store.new(redis: ErrorRedis.new)
+    market = markets(:open_market)
+
+    result = nil
+    assert_nothing_raised do
+      result = HotStorage::MarketSnapshotReader.call(market_id: market.id, store: error_store)
+    end
+
+    assert_equal market.id, result.fetch(:market_id)
+    assert_equal "open", result.fetch(:status)
+    assert_operator result.fetch(:version), :>, 0
   end
 end
