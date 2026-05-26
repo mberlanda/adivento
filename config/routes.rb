@@ -7,6 +7,21 @@ Rails.application.routes.draw do
 
   namespace :web do
     resources :markets, only: [:index, :show]
+
+    resources :betslips, only: [] do
+      collection do
+        post :quotes
+        post :execute
+      end
+    end
+    resources :betslip_executions, only: [:show], path: "betslips/executions"
+
+    resources :positions, only: [:index] do
+      collection do
+        post :cashout_quotes
+        post :cashout_execute
+      end
+    end
   end
 
   namespace :backoffice do
