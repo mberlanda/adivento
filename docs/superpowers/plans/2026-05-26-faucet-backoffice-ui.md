@@ -1,16 +1,12 @@
 # Faucet Request Backoffice UI Implementation Plan
 
 <!-- File location: docs/superpowers/plans/2026-05-26-faucet-backoffice-ui.md -->
-<!-- Written AFTER the spec is approved. Describes HOW. -->
 
-> **For agentic workers:** Use superpowers:subagent-driven-development or superpowers:executing-plans to implement task-by-task. Steps use `- [ ]` for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a backoffice HTML interface for operators to view, approve, and reject faucet requests.
-
 **Architecture:** Single `Backoffice::FaucetRequestsController` inheriting from `Backoffice::BaseController`, delegating approve/reject to the existing `WalletGrantService`. No new models, services, or migrations needed. Pattern is identical to `Backoffice::MarketsController`.
-
-**Tech Stack:** Rails 8, Minitest, existing patterns (see `docs/INDEX.md`)
-
+**Tech Stack:** Rails 8, Minitest, ERB views, existing Backoffice::BaseController
 **Spec:** [docs/specs/2026-05-26-faucet-backoffice-ui.md](../../specs/2026-05-26-faucet-backoffice-ui.md)
 
 ---
@@ -24,61 +20,20 @@
 
 **Modify:**
 - `config/routes.rb` — add backoffice faucet_requests routes
-- `app/views/layouts/backoffice.html.erb` — add sidebar link
 
 ---
 
-## Task 1: Routes
-
-**Files:**
-- Modify: `config/routes.rb`
-
-- [ ] **Step 1.1: Add routes**
-
-In `config/routes.rb`, inside `namespace :backoffice`, add:
-
-```ruby
-resources :faucet_requests, only: [:index] do
-  post :approve, on: :member
-  post :reject,  on: :member
-end
-```
-
-- [ ] **Step 1.2: Verify routes exist**
-
-```bash
-bin/rails routes | grep backoffice_faucet
-```
-Expected output includes:
-```
-approve_backoffice_faucet_request POST /backoffice/faucet_requests/:id/approve
-reject_backoffice_faucet_request  POST /backoffice/faucet_requests/:id/reject
-backoffice_faucet_requests        GET  /backoffice/faucet_requests
-```
-
-- [ ] **Step 1.3: Commit**
-
-```bash
-git add config/routes.rb
-git commit -m "$(cat <<'EOF'
-feat(faucet-ui): add backoffice faucet_requests routes
-
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
-EOF
-)"
-```
-
----
-
-## Task 2: Controller
+## Task 1: Controller + Routes
 
 **Files:**
 - Create: `app/controllers/backoffice/faucet_requests_controller.rb`
+- Modify: `config/routes.rb`
 
-- [ ] **Step 2.1: Write the failing integration test first**
+- [ ] **Step 1 — Write the failing test**
+
+Create `test/integration/backoffice_faucet_requests_test.rb`:
 
 ```ruby
-# test/integration/backoffice_faucet_requests_test.rb
 require "test_helper"
 
 class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
@@ -86,11 +41,7 @@ class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
     @admin = users(:admin)
     @moderator = users(:moderator)
     @player = users(:player)
-
-    @pending_request = FaucetRequest.create!(
-      user: @player,
-      amount_minor: 5_000
-    )
+    @pending_request = FaucetRequest.create!(user: @player, amount_minor: 5_000)
   end
 
   def sign_in(user)
@@ -117,25 +68,19 @@ class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
   test "moderator can approve a pending request" do
     sign_in @moderator
     initial_balance = @player.wallet.available_minor
-
     post "/backoffice/faucet_requests/#{@pending_request.id}/approve"
-
     assert_response :redirect
     follow_redirect!
     assert_response :success
-
     @pending_request.reload
     assert_predicate @pending_request, :approved?
-
     assert_equal initial_balance + 5_000, @player.wallet.reload.available_minor
     assert AuditEvent.where(action: "faucet_request.approve", target_id: @pending_request.id).exists?
   end
 
   test "moderator can reject a pending request" do
     sign_in @moderator
-
     post "/backoffice/faucet_requests/#{@pending_request.id}/reject"
-
     assert_response :redirect
     @pending_request.reload
     assert_predicate @pending_request, :rejected?
@@ -145,9 +90,7 @@ class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
     @pending_request.update!(status: :approved, reviewed_by: @admin)
     sign_in @moderator
     initial_balance = @player.wallet.reload.available_minor
-
     post "/backoffice/faucet_requests/#{@pending_request.id}/approve"
-
     assert_response :redirect
     assert_equal initial_balance, @player.wallet.reload.available_minor
   end
@@ -155,9 +98,7 @@ class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
   test "cannot reject an already-rejected request" do
     @pending_request.update!(status: :rejected, reviewed_by: @admin)
     sign_in @moderator
-
     post "/backoffice/faucet_requests/#{@pending_request.id}/reject"
-
     assert_response :redirect
     follow_redirect!
     assert_match "already been processed", flash[:alert]
@@ -165,17 +106,28 @@ class BackofficeFaucetRequestsTest < ActionDispatch::IntegrationTest
 end
 ```
 
-- [ ] **Step 2.2: Run tests to verify they fail**
+- [ ] **Step 2 — Run test, verify it fails**
 
 ```bash
 bin/rails test test/integration/backoffice_faucet_requests_test.rb -v
 ```
-Expected: FAIL with `uninitialized constant Backoffice::FaucetRequestsController`.
 
-- [ ] **Step 2.3: Implement the controller**
+Expected: FAIL with `uninitialized constant Backoffice::FaucetRequestsController` (routing error before controller exists).
+
+- [ ] **Step 3 — Implement controller + routes**
+
+In `config/routes.rb`, inside `namespace :backoffice`, add:
 
 ```ruby
-# app/controllers/backoffice/faucet_requests_controller.rb
+resources :faucet_requests, only: [:index] do
+  post :approve, on: :member
+  post :reject,  on: :member
+end
+```
+
+Create `app/controllers/backoffice/faucet_requests_controller.rb`:
+
+```ruby
 module Backoffice
   class FaucetRequestsController < BaseController
     before_action -> { require_permission!("wallet.faucet.review") }
@@ -213,20 +165,22 @@ module Backoffice
 end
 ```
 
-- [ ] **Step 2.4: Run tests to verify they pass**
+- [ ] **Step 4 — Run test, verify it passes**
 
 ```bash
 bin/rails test test/integration/backoffice_faucet_requests_test.rb -v
 ```
-Expected: 7 tests, 0 failures. (Will fail on missing view — proceed to Task 3.)
 
-- [ ] **Step 2.5: Commit**
+Expected: tests pass (or fail only on missing template — proceed to Task 2).
+
+- [ ] **Step 5 — Commit**
 
 ```bash
 git add app/controllers/backoffice/faucet_requests_controller.rb \
-        test/integration/backoffice_faucet_requests_test.rb
+        test/integration/backoffice_faucet_requests_test.rb \
+        config/routes.rb
 git commit -m "$(cat <<'EOF'
-feat(faucet-ui): add Backoffice::FaucetRequestsController
+feat(faucet-ui): add Backoffice::FaucetRequestsController and routes
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 EOF
@@ -235,37 +189,39 @@ EOF
 
 ---
 
-## Task 3: View + sidebar link
+## Task 2: Index View
 
 **Files:**
 - Create: `app/views/backoffice/faucet_requests/index.html.erb`
-- Modify: `app/views/layouts/backoffice.html.erb`
 
-- [ ] **Step 3.1: Create the index view**
+- [ ] **Step 1 — Write the failing test**
+
+The test from Task 1 (`"moderator can view faucet requests list"`) will fail with `ActionView::MissingTemplate` if the view does not exist. No new test code is needed.
+
+- [ ] **Step 2 — Run test, verify it fails**
+
+```bash
+bin/rails test test/integration/backoffice_faucet_requests_test.rb -v
+```
+
+Expected: FAIL — `ActionView::MissingTemplate` for `backoffice/faucet_requests/index`.
+
+- [ ] **Step 3 — Implement the view**
+
+Create `app/views/backoffice/faucet_requests/index.html.erb`:
 
 ```erb
 <%# app/views/backoffice/faucet_requests/index.html.erb %>
 <h1>Faucet Requests</h1>
 
-<% if flash[:notice] %>
-  <p class="notice"><%= flash[:notice] %></p>
-<% end %>
-<% if flash[:alert] %>
-  <p class="alert"><%= flash[:alert] %></p>
-<% end %>
+<% if flash[:notice] %><p class="notice"><%= flash[:notice] %></p><% end %>
+<% if flash[:alert] %><p class="alert"><%= flash[:alert] %></p><% end %>
 
 <h2>Pending (<%= @pending.count %>)</h2>
 
 <% if @pending.any? %>
   <table>
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Amount (minor)</th>
-        <th>Requested at</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Player</th><th>Amount (minor)</th><th>Requested at</th><th>Actions</th></tr></thead>
     <tbody>
       <% @pending.each do |req| %>
         <tr>
@@ -273,13 +229,9 @@ EOF
           <td><%= req.amount_minor %></td>
           <td><%= req.created_at.strftime("%Y-%m-%d %H:%M") %></td>
           <td>
-            <%= button_to "Approve",
-                  approve_backoffice_faucet_request_path(req),
-                  method: :post,
+            <%= button_to "Approve", approve_backoffice_faucet_request_path(req), method: :post,
                   data: { testid: "approve-#{req.id}" } %>
-            <%= button_to "Reject",
-                  reject_backoffice_faucet_request_path(req),
-                  method: :post,
+            <%= button_to "Reject", reject_backoffice_faucet_request_path(req), method: :post,
                   data: { testid: "reject-#{req.id}" } %>
           </td>
         </tr>
@@ -294,15 +246,7 @@ EOF
 
 <% if @processed.any? %>
   <table>
-    <thead>
-      <tr>
-        <th>Player</th>
-        <th>Amount (minor)</th>
-        <th>Status</th>
-        <th>Reviewed by</th>
-        <th>Processed at</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Player</th><th>Amount (minor)</th><th>Status</th><th>Reviewed by</th><th>Processed at</th></tr></thead>
     <tbody>
       <% @processed.each do |req| %>
         <tr>
@@ -320,35 +264,20 @@ EOF
 <% end %>
 ```
 
-- [ ] **Step 3.2: Add sidebar link to backoffice layout**
-
-In `app/views/layouts/backoffice.html.erb`, find the sidebar nav section and add:
-
-```erb
-<li><a href="/backoffice/faucet_requests" data-testid="nav-faucet-requests">Faucet Requests</a></li>
-```
-
-- [ ] **Step 3.3: Run the full integration test suite**
+- [ ] **Step 4 — Run test, verify it passes**
 
 ```bash
 bin/rails test test/integration/backoffice_faucet_requests_test.rb -v
 ```
+
 Expected: 7 tests, 0 failures.
 
-- [ ] **Step 3.4: Run full suite to confirm no regressions**
+- [ ] **Step 5 — Commit**
 
 ```bash
-bin/rails test
-```
-Expected: all tests pass, SimpleCov ≥ 90%.
-
-- [ ] **Step 3.5: Commit**
-
-```bash
-git add app/views/backoffice/faucet_requests/index.html.erb \
-        app/views/layouts/backoffice.html.erb
+git add app/views/backoffice/faucet_requests/index.html.erb
 git commit -m "$(cat <<'EOF'
-feat(faucet-ui): add faucet requests index view and sidebar link
+feat(faucet-ui): add faucet requests index view
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 EOF
@@ -357,16 +286,97 @@ EOF
 
 ---
 
-## Task 4: Update docs
+## Task 3: Integration Tests
 
-- [ ] Append entry to `docs/WORK_LOG.md`
-- [ ] Update `docs/INDEX.md` — move faucet backoffice UI from ⏳ Next to ✅ Done
-- [ ] Commit: `docs: update INDEX and WORK_LOG after faucet-backoffice-ui`
+> **Note (retrospective):** Tests were written as part of Task 1 (TDD — tests first, then controller). This task is a verification checkpoint confirming full suite health.
+
+**Files:**
+- Test: `test/integration/backoffice_faucet_requests_test.rb`
+
+- [ ] **Step 1 — Write the failing test**
+
+Already written in Task 1, Step 1. No new test code.
+
+- [ ] **Step 2 — Run test, verify it fails**
+
+Already executed in Task 1, Step 2.
+
+- [ ] **Step 3 — Implement**
+
+Already implemented in Tasks 1 and 2.
+
+- [ ] **Step 4 — Run full suite to confirm no regressions**
+
+```bash
+bin/rails test
+```
+
+Expected: all tests pass, SimpleCov ≥ 90%.
+
+- [ ] **Step 5 — Commit**
+
+No additional commit needed (tests committed with controller in Task 1, Step 5).
+
+---
+
+## Task 4: Update Docs
+
+**Files:**
+- Modify: `docs/WORK_LOG.md`
+- Modify: `docs/INDEX.md`
+
+- [ ] **Step 1 — Write the failing test**
+
+No test applicable for doc updates.
+
+- [ ] **Step 2 — Run test, verify it fails**
+
+N/A.
+
+- [ ] **Step 3 — Implement**
+
+Prepend a dated entry to `docs/WORK_LOG.md`:
+
+```
+## 2026-05-26 — faucet-backoffice-ui
+
+Built `Backoffice::FaucetRequestsController` with index/approve/reject actions guarded by
+`wallet.faucet.review` permission. Delegates state changes to `WalletGrantService`. Added
+index view with pending and processed tables. 7 integration tests covering access control
+and idempotency guard.
+
+Key files:
+- app/controllers/backoffice/faucet_requests_controller.rb
+- app/views/backoffice/faucet_requests/index.html.erb
+- test/integration/backoffice_faucet_requests_test.rb
+```
+
+Update `docs/INDEX.md` — move faucet backoffice UI item from TODO/Next to Done.
+
+- [ ] **Step 4 — Run test, verify it passes**
+
+N/A.
+
+- [ ] **Step 5 — Commit**
+
+```bash
+git add docs/WORK_LOG.md docs/INDEX.md
+git commit -m "$(cat <<'EOF'
+docs: update INDEX and WORK_LOG after faucet-backoffice-ui
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+EOF
+)"
+```
 
 ---
 
 ## Self-Review Checklist
-- [ ] Every spec invariant has a test (moderator can view/approve/reject, player blocked, double-process blocked)
-- [ ] Approve writes AuditEvent and LedgerEntry (via `WalletGrantService`)
+
+- [ ] Every spec invariant has a test (moderator can view/approve/reject, player blocked, unauthenticated blocked, double-process blocked)
+- [ ] Approve writes AuditEvent and LedgerEntry (delegated to `WalletGrantService`)
+- [ ] Reject writes AuditEvent (delegated to `WalletGrantService`)
+- [ ] Already-processed redirect uses `alert: "Request has already been processed"`
 - [ ] Full test suite passes: `bin/rails test`
+- [ ] SimpleCov ≥ 90%
 - [ ] No placeholder steps remain
