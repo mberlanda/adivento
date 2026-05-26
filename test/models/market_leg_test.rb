@@ -29,4 +29,16 @@ class MarketLegTest < ActiveSupport::TestCase
     leg = MarketLeg.new(market: draft, label: "YES", odds_minor: 5000)
     assert leg.valid?
   end
+
+  test "DB trigger prevents 3rd leg even when bypassing ActiveRecord validations" do
+    market = markets(:open_market)
+    assert_equal 2, market.market_legs.count
+
+    assert_raises ActiveRecord::StatementInvalid do
+      ActiveRecord::Base.connection.execute(
+        "INSERT INTO market_legs (market_id, label, odds_minor, active, created_at, updated_at) " \
+        "VALUES (#{market.id}, 'BYPASS', 5000, true, NOW(), NOW())"
+      )
+    end
+  end
 end
