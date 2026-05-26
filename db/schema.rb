@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_195936) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,6 +44,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195936) do
     t.index ["market_id"], name: "index_bets_on_market_id"
     t.index ["market_leg_id"], name: "index_bets_on_market_leg_id"
     t.index ["user_id"], name: "index_bets_on_user_id"
+  end
+
+  create_table "betslip_executions", force: :cascade do |t|
+    t.json "bet_ids", default: [], null: false
+    t.bigint "betslip_quote_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["betslip_quote_id"], name: "index_betslip_executions_on_betslip_quote_id", unique: true
+    t.index ["user_id"], name: "index_betslip_executions_on_user_id"
   end
 
   create_table "betslip_quotes", force: :cascade do |t|
@@ -185,6 +196,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_195936) do
   add_foreign_key "bets", "market_legs"
   add_foreign_key "bets", "markets"
   add_foreign_key "bets", "users"
+  add_foreign_key "betslip_executions", "betslip_quotes"
+  add_foreign_key "betslip_executions", "users"
   add_foreign_key "betslip_quotes", "users"
   add_foreign_key "faucet_requests", "users"
   add_foreign_key "faucet_requests", "users", column: "reviewed_by_id"
