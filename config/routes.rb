@@ -13,8 +13,12 @@ Rails.application.routes.draw do
     root to: "dashboard#index"
     resources :permissions, only: [:index, :update]
     resources :grants, only: [:index, :create]
-    resources :templates, only: [:index, :create] do
+    resources :templates, only: [:index, :create, :edit, :update, :destroy] do
       post :create_market, on: :member
+    end
+    resources :markets, only: [:index, :show, :create] do
+      post :open, on: :member
+      post :settle, on: :member
     end
   end
 
@@ -34,12 +38,20 @@ Rails.application.routes.draw do
   end
 
   resources :markets, only: [:index, :show]
+  resources :markets, only: [] do
+    resources :bets, only: [:create]
+  end
   resources :faucet_requests, only: [:create]
   resource :wallet, only: [:show]
 
   namespace :admin do
+    resources :bets, only: [] do
+      post :void, on: :member
+    end
+
     resources :markets, only: [:create, :update] do
       post :settle, on: :member
+      get :risk, on: :member
       resources :legs, only: [:create], controller: "market_legs"
     end
 

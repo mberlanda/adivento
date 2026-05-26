@@ -1,30 +1,52 @@
-<h1>Market Templates</h1>
+<h1 data-testid="backoffice-templates-title">Market Templates</h1>
 
 <div class="panel">
   <h3>Create Template</h3>
-  <%= form_with url: backoffice_templates_path, method: :post do |f| %>
-    <p><label>Key</label><br><%= text_field_tag :key, nil, required: true %></p>
-    <p><label>Name</label><br><%= text_field_tag :name, nil, required: true %></p>
-    <p><label>Description</label><br><%= text_area_tag :description %></p>
-    <p><label>Default Legs (comma separated)</label><br><%= text_field_tag :default_legs, "YES,NO" %></p>
-    <p><label>Default Duration (hours)</label><br><%= number_field_tag :default_duration_hours, 24, min: 1 %></p>
-    <p><label>Active</label> <%= check_box_tag :active, true, true %></p>
-    <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true %></p>
-    <p><%= f.submit "Create template" %></p>
+  <%= form_with url: backoffice_templates_path, method: :post, html: { data: { testid: "create-template-form" } } do |f| %>
+    <p><label>Key</label><br><%= text_field_tag :key, nil, required: true, data: { testid: "template-key" } %></p>
+    <p><label>Name</label><br><%= text_field_tag :name, nil, required: true, data: { testid: "template-name" } %></p>
+    <p><label>Description</label><br><%= text_area_tag :description, nil, data: { testid: "template-description" } %></p>
+    <p><label>Default Legs (comma separated)</label><br><%= text_field_tag :default_legs, "YES,NO", data: { testid: "template-default-legs" } %></p>
+    <p><label>Default Duration (hours)</label><br><%= number_field_tag :default_duration_hours, 24, min: 1, data: { testid: "template-duration-hours" } %></p>
+    <p><label>Active</label> <%= check_box_tag :active, true, true, data: { testid: "template-active" } %></p>
+    <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, data: { testid: "template-reason" } %></p>
+    <p><%= f.submit "Create template", data: { testid: "template-submit" } %></p>
   <% end %>
 </div>
 
 <div class="panel">
   <h3>Available Templates</h3>
   <% @templates.each do |template| %>
-    <article style="padding:12px;border:1px solid #33434c;border-radius:10px;margin-bottom:10px;">
-      <strong><%= template.name %></strong> (<%= template.key %>)
-      <p><%= template.description %></p>
-      <p>Legs: <%= template.legs.join(", ") %></p>
-      <%= form_with url: create_market_backoffice_template_path(template), method: :post do |f| %>
-        <p><label>Question</label><br><%= text_field_tag :question, nil, required: true %></p>
-        <p><label>Description</label><br><%= text_area_tag :description, nil, required: true %></p>
-        <p><%= f.submit "Create market from template" %></p>
+    <article style="padding:12px;border:1px solid #33434c;border-radius:10px;margin-bottom:10px;" data-testid="template-card-<%= template.id %>">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <strong><%= template.name %></strong> (<%= template.key %>)
+          <% unless template.active? %>
+            <span style="color:#f0bc5c;font-size:0.8em;margin-left:8px;">[INACTIVE]</span>
+          <% end %>
+          <p><%= template.description %></p>
+          <p>Legs: <%= template.legs.join(", ") %></p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <%= link_to "Edit", edit_backoffice_template_path(template),
+                style: "background:#2a3a44;color:#edf3f5;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:0.85em;",
+                data: { testid: "edit-template-#{template.id}" } %>
+          <%= form_with url: backoffice_template_path(template), method: :delete,
+                html: { style: "display:inline;", data: { testid: "deactivate-template-form-#{template.id}" } } do |f| %>
+            <%= hidden_field_tag :reason, "operator deactivation" %>
+            <%= f.submit "Deactivate", style: "background:#4a2222;color:#edf3f5;padding:6px 12px;",
+                  data: { testid: "deactivate-template-#{template.id}", confirm: "Deactivate this template?" },
+                  disabled: !template.active? %>
+          <% end %>
+        </div>
+      </div>
+      <% if template.active? %>
+        <%= form_with url: create_market_backoffice_template_path(template), method: :post,
+              html: { data: { testid: "create-market-from-template-form-#{template.id}" } } do |f| %>
+          <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, data: { testid: "create-market-question-#{template.id}" } %></p>
+          <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, data: { testid: "create-market-description-#{template.id}" } %></p>
+          <p><%= f.submit "Create market from template", data: { testid: "create-market-submit-#{template.id}" } %></p>
+        <% end %>
       <% end %>
     </article>
   <% end %>

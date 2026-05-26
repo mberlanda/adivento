@@ -1,0 +1,13 @@
+<%= form_with url: template.persisted? ? backoffice_template_path(template) : backoffice_templates_path,
+              method: template.persisted? ? :patch : :post,
+              html: { data: { testid: "template-form" } } do |f| %>
+  <p><label>Key</label><br><%= f.text_field :key, required: true, data: { testid: "template-key" } %></p>
+  <p><label>Name</label><br><%= f.text_field :name, required: true, data: { testid: "template-name" } %></p>
+  <p><label>Description</label><br><%= f.text_area :description, data: { testid: "template-description" } %></p>
+  <p><label>Default Legs (comma separated)</label><br>
+     <%= text_field_tag :default_legs, template.legs.join(", "), data: { testid: "template-default-legs" } %></p>
+  <p><label>Default Duration (hours)</label><br><%= f.number_field :default_duration_hours, min: 1, data: { testid: "template-duration-hours" } %></p>
+  <p><label>Active</label> <%= f.check_box :active, data: { testid: "template-active" } %></p>
+  <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, data: { testid: "template-reason" } %></p>
+  <p><%= f.submit data: { testid: "template-submit" } %></p>
+<% end %>

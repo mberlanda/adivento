@@ -1,0 +1,5 @@
+<h1>Edit Template: <%= @template.name %></h1>
+<div class="panel">
+  <%= render "form", template: @template %>
+</div>
+<p><%= link_to "Back to templates", backoffice_templates_path %></p>

@@ -1,0 +1,41 @@
+<h1 data-testid="backoffice-markets-title">Markets</h1>
+
+<div class="panel">
+  <h3>Create Market</h3>
+  <%= form_with url: backoffice_markets_path, method: :post, html: { data: { testid: "create-market-form" } } do |f| %>
+    <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, data: { testid: "market-question" } %></p>
+    <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, data: { testid: "market-description" } %></p>
+    <p><label>Legs (comma separated, default: YES,NO)</label><br><%= text_field_tag :legs, "YES,NO", data: { testid: "market-legs" } %></p>
+    <p><label>Fee (basis points, 100 = 1%)</label><br><%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %></p>
+    <p><label>Liability Cap (minor units)</label><br><%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %></p>
+    <%= hidden_field_tag :mechanism_type, "fixed_odds" %>
+    <p><%= submit_tag "Create market", data: { testid: "market-create-submit" } %></p>
+  <% end %>
+</div>
+
+<div class="panel">
+  <h3>All Markets</h3>
+  <% if @markets.any? %>
+    <table data-testid="markets-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Question</th><th>Status</th><th>Created by</th><th>Created</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @markets.each do |market| %>
+          <tr data-testid="market-row-<%= market.id %>">
+            <td><%= market.id %></td>
+            <td><%= market.question.truncate(60) %></td>
+            <td style="text-transform:uppercase;font-size:0.8em;"><%= market.status %></td>
+            <td><%= market.created_by.email %></td>
+            <td><%= market.created_at.strftime("%Y-%m-%d") %></td>
+            <td><%= link_to "View", backoffice_market_path(market), style: "color:#f0bc5c;text-decoration:none;" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="color:#9fb2b8;">No markets yet. Create one above or via a template.</p>
+  <% end %>
+</div>

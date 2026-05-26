@@ -1,0 +1,83 @@
+<h1 data-testid="backoffice-market-title"><%= @market.question %></h1>
+<p style="color:#9fb2b8;"><%= @market.description %></p>
+
+<div class="panel">
+  <h3>Status</h3>
+  <p>Status: <strong style="text-transform:uppercase;"><%= @market.status %></strong> &nbsp;
+     Mechanism: <%= @market.mechanism_type %> &nbsp;
+     Fee: <%= @market.fee_bps %>bps &nbsp;
+     Liability cap: <%= @market.liability_cap_minor %></p>
+  <% if @market.settled? %>
+    <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
+  <% end %>
+
+  <% if @market.draft? %>
+    <%= form_with url: open_backoffice_market_path(@market), method: :post,
+          html: { style: "display:inline;", data: { testid: "open-market-form" } } do |f| %>
+      <%= f.submit "Open market for betting", data: { testid: "open-market-submit" } %>
+    <% end %>
+  <% end %>
+
+  <% if @market.open? %>
+    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;">
+      <h4>Settle market</h4>
+      <%= form_with url: settle_backoffice_market_path(@market), method: :post,
+            html: { data: { testid: "settle-market-form" } } do |f| %>
+        <p>
+          <label>Winning outcome</label>
+          <select name="outcome" data-testid="settle-outcome" style="margin-left:8px;">
+            <% @market.market_legs.each do |leg| %>
+              <option value="<%= leg.label %>"><%= leg.label %></option>
+            <% end %>
+          </select>
+        </p>
+        <p><label>Reason</label><br><%= text_field_tag :reason, nil, data: { testid: "settle-reason" } %></p>
+        <%= f.submit "Settle market", style: "background:#4a2222;",
+              data: { testid: "settle-market-submit", confirm: "This will settle all bets. Proceed?" } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="panel">
+  <h3>Lines / Legs</h3>
+  <table>
+    <thead><tr><th>Label</th><th>Odds (minor)</th><th>Active</th></tr></thead>
+    <tbody>
+      <% @market.market_legs.each do |leg| %>
+        <tr data-testid="leg-row-<%= leg.id %>">
+          <td><strong><%= leg.label %></strong></td>
+          <td><%= leg.odds_minor %></td>
+          <td><%= leg.active? ? "Yes" : "No" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h3>Bets (<%= @bets.size %>)</h3>
+  <% if @bets.any? %>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>User</th><th>Leg</th><th>Stake</th><th>Payout</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <% @bets.each do |bet| %>
+          <tr data-testid="bet-row-<%= bet.id %>">
+            <td><%= bet.id %></td>
+            <td><%= bet.user.email %></td>
+            <td><%= bet.market_leg.label %></td>
+            <td><%= bet.stake_minor %></td>
+            <td><%= bet.potential_payout_minor %></td>
+            <td><%= bet.status %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="color:#9fb2b8;">No bets placed yet.</p>
+  <% end %>
+</div>
+
+<p><%= link_to "Back to markets", backoffice_markets_path %></p>

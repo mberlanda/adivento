@@ -57,4 +57,116 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
   end
+
+  test "admin can edit a template" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    template = market_templates(:binary)
+
+    get "/backoffice/templates/#{template.id}/edit"
+    assert_response :success
+    assert_match "Edit Template", response.body
+  end
+
+  test "admin can update a template" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    template = market_templates(:binary)
+
+    patch "/backoffice/templates/#{template.id}", params: {
+      key: template.key,
+      name: "Updated Binary",
+      description: "Updated desc",
+      default_legs: "YES,NO",
+      default_duration_hours: 48,
+      active: true,
+      reason: "name correction"
+    }
+
+    assert_response :redirect
+    template.reload
+    assert_equal "Updated Binary", template.name
+    assert AuditEvent.exists?(action: "template.update", target_id: template.id)
+  end
+
+  test "admin can deactivate a template" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    template = market_templates(:binary)
+
+    delete "/backoffice/templates/#{template.id}", params: { reason: "retiring template" }
+
+    assert_response :redirect
+    template.reload
+    assert_not template.active?
+    assert AuditEvent.exists?(action: "template.deactivate", target_id: template.id)
+  end
+
+  test "admin can list markets in backoffice" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    get "/backoffice/markets"
+
+    assert_response :success
+    assert_match "Markets", response.body
+  end
+
+  test "admin can create a market in backoffice" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+
+    assert_difference("Market.count", 1) do
+      post "/backoffice/markets", params: {
+        question: "Will it snow tomorrow?",
+        description: "Weather prediction",
+        legs: "YES,NO",
+        fee_bps: 100,
+        liability_cap_minor: 50000,
+        mechanism_type: "fixed_odds"
+      }
+    end
+
+    market = Market.last
+    assert_response :redirect
+    assert market.market_legs.count >= 2
+    assert AuditEvent.exists?(action: "market.create", target_id: market.id)
+  end
+
+  test "admin can open a draft market in backoffice" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    market = markets(:draft_market)
+
+    post "/backoffice/markets/#{market.id}/open"
+
+    assert_response :redirect
+    market.reload
+    assert_predicate market, :open?
+  end
+
+  test "admin can view market detail in backoffice" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    market = markets(:open_market)
+
+    get "/backoffice/markets/#{market.id}"
+
+    assert_response :success
+    assert_match market.question, response.body
+  end
+
+  test "admin can settle an open market in backoffice" do
+    post "/signin", params: { email: users(:admin).email, password: "password123" }
+    market = markets(:open_market)
+
+    post "/backoffice/markets/#{market.id}/settle", params: {
+      outcome: "YES",
+      reason: "result confirmed"
+    }
+
+    assert_response :redirect
+    market.reload
+    assert_predicate market, :settled?
+    assert_equal "YES", market.settled_outcome
+  end
+
+  test "player cannot access backoffice markets" do
+    post "/signin", params: { email: users(:player).email, password: "password123" }
+    get "/backoffice/markets"
+
+    assert_response :redirect
+  end
 end
