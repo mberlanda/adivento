@@ -69,8 +69,8 @@ Plan approved?
 | [08](adr/ADR-0008-modular-seams-for-microservices.md) | Modular seams for future microservices | ✅ accepted |
 | [09](adr/ADR-0009-fixed-odds-house-liability-model.md) | Fixed-odds house liability model | ✅ accepted |
 | [10](adr/ADR-0010-binary-market-line-model.md) | Binary market line model (YES/NO, UP/DOWN) | ✅ accepted |
-| [11](adr/ADR-0011-betslip-and-cashout-contract.md) | Betslip + cashout quote-execute contract | 🔵 proposed |
-| [12](adr/ADR-0012-hot-cold-storage-with-redis-projections.md) | Hot/cold storage: PG + Redis + SSE | 🔵 proposed |
+| [11](adr/ADR-0011-betslip-and-cashout-contract.md) | Betslip + cashout quote-execute contract | ✅ accepted |
+| [12](adr/ADR-0012-hot-cold-storage-with-redis-projections.md) | Hot/cold storage: PG + Redis + SSE | ✅ accepted |
 
 ---
 
@@ -87,18 +87,18 @@ Plan approved?
 - **Settlement engine** — SettlementService (WON/LOST transitions, payout credits, audit) `3a1789a`
 - Market templates — full CRUD (create, edit, update, deactivate) `5cb0ef3`
 - **Backoffice markets section** — list, show, create, open, settle `5cb0ef3`
-- Hot storage — Redis snapshot projection, MarketSnapshotProjector
-- SSE market stream
-- Faucet request flow (admin approve/reject)
+- Hot storage — Redis snapshot projection, MarketSnapshotProjector, ReconcileMarketHotStateJob, cold fallback
+- SSE market stream — snapshot-first with cold fallback
+- Faucet request flow (admin approve/reject + backoffice UI)
+- **Binary line DB invariants** — exactly-2-legs enforced at model + DB trigger level
+- **Betslip + cashout** — BetslipQuote/Execution models, services, web controllers+routes `c686641`
+- **CI/CD** — GitHub Actions + scripts/validate.sh pre-commit hook
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
-### ⏳ Next (in priority order)
-1. **PLAN-B Betslip + cashout** → [spec](specs/ITERATION_005_BETSLIP_CASHOUT_SPEC.md) · [plan](superpowers/plans/) needs writing
-2. **PLAN-C Hot/cold storage finalisation** → [spec](specs/ITERATION_005_HOT_COLD_STORAGE_SPEC.md) · [plan](superpowers/plans/) needs writing
-3. Binary line DB invariants (exactly 2 legs per market at model level)
-4. Faucet request backoffice UI
+### ⏳ Next
+- (all planned features implemented — resume E2E when Docker overlay2 resolved)
 
 ---
 
@@ -118,13 +118,20 @@ app/
       permissions_controller.rb
       grants_controller.rb
       dashboard_controller.rb
-    web/                        # HTML (no auth for index/show)
+    web/                        # HTML (no auth for index/show; player auth for betslip/positions)
       markets_controller.rb
+      betslips_controller.rb      POST /web/betslips/quotes, /web/betslips/execute
+      betslip_executions_controller.rb  GET /web/betslips/executions/:id
+      positions_controller.rb     GET /web/positions, POST cashout_quotes/cashout_execute
     auth/sessions_controller.rb # register, login, me (JWT)
   services/
     settlement_service.rb         bet WON/LOST + payout on market settle
     bet_placement_service.rb      place bet, risk check, ledger debit
     bet_void_service.rb           void bet, refund, ledger credit
+    betslip_quote_service.rb      multi-bet quote with idempotency
+    betslip_execution_service.rb  quote→bets all-or-nothing transaction
+    cashout_quote_service.rb      cashout payout quote
+    cashout_execution_service.rb  void bet + credit wallet
     house_risk_service.rb         worst-case liability formula
     market_from_template_service.rb
     hot_storage/                  Redis projection (projector, reader, store)

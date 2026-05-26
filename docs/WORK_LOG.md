@@ -4,6 +4,44 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-26 — Betslip + Cashout, Binary Invariants, Faucet UI, Hot/Cold Storage, CI/CD
+
+**Commits:** `fb448ad`–`c686641`
+
+### Betslip + Cashout (PLAN-B)
+- `BetslipQuote` model + migration — status enum, idempotency_key (unique), expires_at, items (json), total_stake_minor
+- `BetslipExecution` model + migration — belongs_to betslip_quote, bet_ids (json), status
+- `BetslipQuoteService.call(user:, items:, idempotency_key:)` — validates open market, computes payouts, idempotency replay, conflict detection
+- `BetslipExecutionService.execute!(quote:, actor:)` — expired/already-executed guards, row-level lock, all-or-nothing via BetPlacementService
+- `CashoutQuoteService.quote(bet:)` → Struct with gross/fee/net payout
+- `CashoutExecutionService.execute!(bet:, actor:)` — voids bet, credits wallet, writes ledger + audit
+- `Web::BetslipsController`, `Web::BetslipExecutionsController`, `Web::PositionsController` + routes
+- 167 tests, 0 failures, 95.77% line coverage
+
+### Binary Line DB Invariants
+- `MarketLeg` model: `validate :market_leg_count_within_limit, on: :create` (max 2)
+- `Market` model: `validate :requires_two_legs_to_open` (exactly 2 legs required to open)
+- `Admin::MarketLegsController`: early 422 if market already has 2 legs
+- PostgreSQL BEFORE INSERT trigger `enforce_max_two_market_legs`
+
+### Faucet Request Backoffice UI
+- `Backoffice::FaucetRequestsController` — index/approve/reject, delegates to `WalletGrantService`
+- `app/views/backoffice/faucet_requests/index.html.erb` — pending + processed tables
+
+### Hot/Cold Storage Finalisation (PLAN-C)
+- `MarketSnapshotProjector` — hardened with per-store error isolation
+- `MarketSnapshotReader` — cold fallback on Redis error
+- `ReconcileMarketHotStateJob` — per-market error isolation, open+settled scope
+- SSE controller — snapshot-first emission with cold fallback
+
+### CI/CD
+- `.github/workflows/ci.yml` — push/PR trigger, bundler cache, schema load, scripts/validate.sh, coverage artifact
+- `scripts/validate.sh` — rubocop + db:schema:load + test suite (reusable locally)
+- `scripts/install-hooks.sh` — installs validate.sh as git pre-commit hook
+- `Gemfile.lock` — added x86_64-linux platform for GitHub Actions runners
+
+---
+
 ## 2026-05-26 — Doc system + SDL lifecycle + legacy cleanup
 
 **Commits:** `199bfb4`, `ce2abe6`
