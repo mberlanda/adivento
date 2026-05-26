@@ -4,6 +4,18 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-26 — Doc system + SDL lifecycle + legacy cleanup
+
+**Commits:** `199bfb4`, `ce2abe6`
+
+- `CLAUDE.md` rewritten: full SDL lifecycle (ADR→spec→plan→review→implement→verify→docs), task artifact protocol (`.claude/tasks/<id>/`), Q&A blocking convention, commit discipline, docs maintenance obligation.
+- `docs/INDEX.md` expanded: folder guide table, sequencing flowchart, `superpowers/plans/` labelled as low-level design, fixture gotchas, auth patterns.
+- `docs/templates/` created: `adr.md`, `spec.md`, `plan.md`, `plan-review.md` — blank canonical templates for all future docs.
+- `.claude/tasks/README.md`: task artifact resume protocol.
+- All `docs/specs/ITERATION_*` and `docs/plans/ITERATION_*` stamped with LEGACY header — do not imitate their format.
+
+---
+
 ## 2026-05-26 — Settlement Engine + Backoffice Markets
 
 **Commits:** `3a1789a`, `5cb0ef3`
