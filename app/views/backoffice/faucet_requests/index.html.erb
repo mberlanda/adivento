@@ -1,0 +1,74 @@
+<%# app/views/backoffice/faucet_requests/index.html.erb %>
+<h1>Faucet Requests</h1>
+
+<% if flash[:notice] %>
+  <p class="notice"><%= flash[:notice] %></p>
+<% end %>
+<% if flash[:alert] %>
+  <p class="alert"><%= flash[:alert] %></p>
+<% end %>
+
+<h2>Pending (<%= @pending.count %>)</h2>
+
+<% if @pending.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Amount (minor)</th>
+        <th>Requested at</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @pending.each do |req| %>
+        <tr>
+          <td><%= req.user.email %></td>
+          <td><%= req.amount_minor %></td>
+          <td><%= req.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td>
+            <%= button_to "Approve",
+                  approve_backoffice_faucet_request_path(req),
+                  method: :post,
+                  data: { testid: "approve-#{req.id}" } %>
+            <%= button_to "Reject",
+                  reject_backoffice_faucet_request_path(req),
+                  method: :post,
+                  data: { testid: "reject-#{req.id}" } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No pending faucet requests.</p>
+<% end %>
+
+<h2>Recently Processed</h2>
+
+<% if @processed.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Amount (minor)</th>
+        <th>Status</th>
+        <th>Reviewed by</th>
+        <th>Processed at</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @processed.each do |req| %>
+        <tr>
+          <td><%= req.user.email %></td>
+          <td><%= req.amount_minor %></td>
+          <td><%= req.status %></td>
+          <td><%= req.reviewed_by&.email %></td>
+          <td><%= req.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>No processed requests.</p>
+<% end %>
