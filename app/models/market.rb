@@ -11,4 +11,14 @@ class Market < ApplicationRecord
   validates :mechanism_type, presence: true
   validates :fee_bps, numericality: { greater_than_or_equal_to: 0 }
   validates :liability_cap_minor, numericality: { greater_than: 0 }
+
+  validate :requires_two_legs_to_open, if: -> { will_save_change_to_status? && open? }
+
+  private
+
+  def requires_two_legs_to_open
+    unless market_legs.size == 2
+      errors.add(:base, "Market must have exactly 2 legs to open")
+    end
+  end
 end
