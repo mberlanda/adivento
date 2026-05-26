@@ -1,3 +1,7 @@
+<!-- LEGACY FORMAT — audit artifact only. Do NOT imitate this style.
+   Current templates: docs/templates/{adr,spec,plan,plan-review}.md
+   For implementation: read docs/INDEX.md first. -->
+
 # Iteration 005 UI E2E Plan Review
 
 ## Review Notes

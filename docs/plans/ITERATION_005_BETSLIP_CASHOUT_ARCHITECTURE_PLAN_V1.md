@@ -1,3 +1,7 @@
+<!-- LEGACY FORMAT — audit artifact only. Do NOT imitate this style.
+   Current templates: docs/templates/{adr,spec,plan,plan-review}.md
+   For implementation: read docs/INDEX.md first. -->
+
 # Iteration 005 Plan V1: Betslip and Cashout Architecture
 
 ## Context (Current State)

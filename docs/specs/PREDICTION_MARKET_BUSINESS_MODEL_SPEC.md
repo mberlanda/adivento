@@ -1,3 +1,7 @@
+<!-- LEGACY FORMAT — audit artifact only. Do NOT imitate this style.
+   Current templates: docs/templates/{adr,spec,plan,plan-review}.md
+   For implementation: read docs/INDEX.md first. -->
+
 # Prediction Market Business Model Spec (Fixed-Odds House Underwriting)
 
 ## 1. Objective
