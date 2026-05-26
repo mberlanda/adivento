@@ -1,177 +1,112 @@
-# Adivento — Claude Working Instructions
+# Adivento — Agent Guidelines
 
-## Session start: read this first
-
-1. **Read `docs/INDEX.md`** — project overview, implementation status, file map, fixtures, run commands.
-2. **Check `.claude/tasks/`** — if any task folder has an unfinished `PLAN.md` or unanswered `Q&A.md`, resume that task before starting new work.
-3. **Check `docs/WORK_LOG.md`** — to understand what was recently built.
+## START HERE
+Read `docs/INDEX.md` before any implementation work. It contains the project map, current status, file locations, fixtures cheat-sheet, and run commands. One file, under 200 lines.
 
 ---
 
-## Software Development Lifecycle
+## Coding rules
 
-Every feature follows this sequence. Never skip steps — they are guardrails for sub-agent execution.
-
-```
-1. ADR         (if architectural choice)   → docs/adr/ADR-NNNN-*.md
-2. Spec        (WHAT: contracts, invariants) → docs/specs/YYYY-MM-DD-*.md
-3. Plan        (HOW: step-by-step tasks)   → docs/superpowers/plans/YYYY-MM-DD-*.md
-4. Plan review (sanity check)              → docs/superpowers/plans/YYYY-MM-DD-*-review.md
-5. Implement   (task by task, TDD)
-6. Update docs (WORK_LOG + INDEX status)
-```
-
-**When to skip:**
-- Skip ADR for pure feature work (no new architectural choice).
-- Skip spec for trivial changes (<1 day, no new invariants or accounting).
-- **Never skip the plan.** Plans are the primary guardrail for agent execution.
-
-**Templates** for each doc type: `docs/templates/`
-
----
-
-## Task artifacts (for multi-session and blocked work)
-
-For any task that takes more than one session or may need to block for input, create a folder:
-
-```
-.claude/tasks/<task-id>/
-  TASK.md         ← restatement of what was asked
-  PLAN.md         ← numbered checklist with [ ] / [x] markers
-  Q&A.md          ← blocking questions + answers (append-only)
-```
-
-### Starting a task
-1. Create the folder and write `TASK.md` (what, why, done-criteria).
-2. Write `PLAN.md` as a numbered checklist. Derive it from the superpowers plan if one exists.
-3. Begin working through checklist items, marking `[x]` as you go.
-4. Commit after each logical unit.
-
-### Resuming a task
-1. Read `TASK.md`, `PLAN.md`, `Q&A.md`.
-2. Find the first unchecked `[ ]` item in `PLAN.md`.
-3. Continue from there. No re-explaining needed.
-
-### Blocking for input
-When you cannot proceed without a decision only the user can make:
-1. Append a `## Q:` block to `Q&A.md`:
-   ```
-   ## Q: [short label] — [date]
-   **Context:** [what you were doing]
-   **Tried:** [what you already considered]
-   **Need:** [specific decision or information]
-   ```
-2. Stop. Do not guess. Do not continue with a placeholder.
-3. When the user answers, they append `## A:` to `Q&A.md`. Resume from there.
-
----
-
-## Coding principles
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
 
 ### 1. Think before coding
-- State assumptions explicitly. If uncertain, stop and name the confusion.
-- If multiple interpretations exist, present them — don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
+- State assumptions explicitly. If uncertain, surface the ambiguity — don't pick silently.
+- If multiple interpretations exist, name them and pick the most reasonable one, then proceed.
+- Simpler approach exists? Say so. Push back when warranted.
 
 ### 2. Simplicity first
 - Minimum code that solves the problem. Nothing speculative.
-- No features beyond what was asked. No abstractions for single-use code.
-- No error handling for impossible scenarios.
-- If you wrote 200 lines and it could be 50, rewrite it.
+- No abstractions for single-use code. No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
 
 ### 3. Surgical changes
-- Touch only what you must. Match existing style.
-- Don't refactor things that aren't broken.
-- Don't "improve" adjacent code while fixing something else.
-- Every changed line should trace directly to the request.
+- Touch only what you must. Don't "improve" adjacent code.
+- Match existing style. Every changed line must trace to the request.
+- Remove imports/variables YOUR changes made unused. Leave pre-existing dead code alone.
 
-### 4. TDD
-- Write the failing test first. Run it. See it fail.
-- Write minimal implementation. Run the test. See it pass.
-- Run the full suite before committing.
-
-### 5. Atomic commits
-- One commit per logical unit (service, controller+routes, tests).
-- Commit message: `type(scope): what and why` — e.g., `feat(settlement): add SettlementService`.
-- Never commit with failing tests.
+### 4. Goal-driven execution
+- Transform tasks into verifiable goals before starting.
+- Run tests. Check output. Don't claim success without evidence.
 
 ---
 
-## Docs update obligation
+## Software development lifecycle
 
-After every feature implementation:
-1. **Append to `docs/WORK_LOG.md`**: date, what was built, key files, commit refs.
-2. **Update `docs/INDEX.md` status**: move items from TODO to Done, add new active plans.
-3. Commit: `docs: update INDEX and WORK_LOG after [feature]`.
+Every feature follows this sequence. Skip steps only when explicitly told to.
 
-This keeps the docs authoritative for the next session. A stale INDEX.md misleads future agents.
+```
+1. ADR (if architectural)   → docs/adr/ADR-NNNN-name.md
+2. Spec                     → docs/specs/YYYY-MM-DD-name.md
+3. Plan                     → docs/superpowers/plans/YYYY-MM-DD-name.md
+4. Plan review              → docs/superpowers/plans/YYYY-MM-DD-name-review.md
+5. Implement                → per plan, one commit per task
+6. Verify                   → bin/rails test (must pass, 90% coverage)
+7. Update docs              → WORK_LOG.md entry + INDEX.md status update
+```
+
+**Use the templates.** Every new doc starts from `docs/templates/`. Never imitate the legacy format of files in `docs/specs/` or `docs/plans/` — those carry a LEGACY header for a reason.
+
+**When is an ADR needed?** When the decision affects multiple systems, is irreversible, or changes a cross-cutting constraint (auth, storage engine, data model shape). Bug fixes and UI additions don't need ADRs.
 
 ---
 
-## Adivento-specific patterns
+## Task artifacts (for multi-session work)
 
-### Write actions always produce audit events
-```ruby
-AuditEvent.create!(
-  actor: current_user,
-  action: "resource.verb",    # e.g., "market.settle", "bet.place"
-  target_type: "ClassName",
-  target_id: record.id,
-  reason: params[:reason],    # optional but encouraged
-  metadata: {}
-)
+When a task will span multiple sessions or is handed to an agent loop, create a task folder:
+
+```
+.claude/tasks/<task-id>/
+  TASK.md              ← restatement of what was asked (one paragraph)
+  PLAN.md              ← numbered checkbox checklist with status markers
+  FINDINGS.md          ← decisions made, results, surprises discovered
+  Q&A.md               ← questions and answers (append-only, see below)
 ```
 
-### Ledger entries for every money movement
-```ruby
-LedgerEntry.create!(
-  user: user,
-  actor: actor,
-  entry_type: "BET_WIN_PAYOUT",   # SCREAMING_SNAKE_CASE
-  amount_minor: amount,
-  direction: "credit",            # or "debit"
-  metadata: { bet_id: bet.id, market_id: market.id }
-)
-```
+**Naming:** use the plan filename slug (e.g. `2026-05-26-betslip-cashout`) as the task-id.
 
-### Hot storage projection after market state changes
-```ruby
-HotStorage::MarketSnapshotProjector.project!(market: market.reload, reason: "market.settle")
-```
+**On session start:** if `.claude/tasks/<task-id>/` exists, read all four files first and continue from the first unchecked step in PLAN.md. Do not re-explain completed work.
 
-### Backoffice controllers: session auth + permission check
-```ruby
-module Backoffice
-  class FooController < BaseController
-    before_action -> { require_permission!("foo.manage") }
-    # render HTML, redirect on success/error
-  end
-end
-```
+**On session end / handoff:** mark completed steps `[x]`, write a brief FINDINGS.md entry for anything non-obvious discovered, leave PLAN.md pointing to the next step.
 
-### Admin API controllers: JWT auth + permission check
-```ruby
-module Admin
-  class FooController < BaseController
-    before_action -> { require_permission!("foo.read") }
-    # render json:, status:
-  end
-end
-```
+### Q&A — blocking questions
+When genuinely blocked (missing information only the user can provide):
+1. Append to `Q&A.md`:
+   ```
+   ## Q: [short title] — [date]
+   **Context:** what you were doing
+   **Tried:** what you already attempted
+   **Need:** exactly what decision or information is required
+   ```
+2. Stop work on this task. Leave PLAN.md on the blocking step.
+3. To resume after an answer is added, read the `## A:` block under the question and continue.
 
-### Test: backoffice auth
-```ruby
-post "/signin", params: { email: users(:admin).email, password: "password123" }
-```
+Do **not** use Q&A for things you can infer from the codebase, the spec, or `docs/INDEX.md`. Reserve it for genuine blockers.
 
-### Test: admin API auth
-```ruby
-get "/admin/foo", headers: auth_headers_for(users(:admin)), as: :json
-```
+---
 
-### Test: fixture bets interfere with settlement tests
-```ruby
-setup do
-  @market.bets.delete_all   # remove fixture bets so only test-created bets are settled
-end
+## Docs maintenance obligation
+
+After every implementation:
+- **`docs/WORK_LOG.md`** — prepend a dated entry: what was built, key files, commit hash.
+- **`docs/INDEX.md`** — move implemented items from TODO to DONE in the status table.
+- **`docs/plans/ITERATION_005_MASTER_TODO_TREE.md`** — update plan/task statuses.
+
+These updates are part of the task, not optional cleanup. Commit them with the message: `docs: update INDEX and WORK_LOG after [feature-name]`.
+
+---
+
+## Commit discipline
+- One commit per logical unit (service, controller+routes, tests, docs). Not one big commit at the end.
+- Message format: `type(scope): short description` — e.g. `feat(settlement): ...`, `test(backoffice): ...`, `docs: ...`
+- Always `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`
+
+---
+
+## Running the project
+```bash
+docker compose up -d db          # required before bin/rails test
+bin/rails db:prepare             # create + migrate + seed
+bin/rails test                   # full suite (90% coverage threshold)
+bin/rails test path/to/file.rb   # single file
+docker compose up -d             # full stack (web + db + redis)
 ```
