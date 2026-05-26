@@ -92,13 +92,23 @@ Plan approved?
 - Faucet request flow (admin approve/reject + backoffice UI)
 - **Binary line DB invariants** — exactly-2-legs enforced at model + DB trigger level
 - **Betslip + cashout** — BetslipQuote/Execution models, services, web controllers+routes `c686641`
-- **CI/CD** — GitHub Actions + scripts/validate.sh pre-commit hook
+- **CI/CD** — GitHub Actions + scripts/validate.sh pre-commit hook + E2E job (Playwright/Chromium)
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
 ### ⏳ Next
 - (all planned features implemented — resume E2E when Docker overlay2 resolved)
+
+### Plans + Reviews
+All four feature plans written and reviewed:
+
+| Feature | Plan | Review | Status |
+|---------|------|--------|--------|
+| Betslip + cashout | [plan](superpowers/plans/2026-05-26-betslip-cashout.md) | [review](superpowers/plans/2026-05-26-betslip-cashout-review.md) | ✅ implemented |
+| Hot/cold storage | [plan](superpowers/plans/2026-05-26-hot-cold-storage.md) | [review](superpowers/plans/2026-05-26-hot-cold-storage-review.md) | ✅ implemented |
+| Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
+| Faucet backoffice UI | [plan](superpowers/plans/2026-05-26-faucet-backoffice-ui.md) | [review](superpowers/plans/2026-05-26-faucet-backoffice-ui-review.md) | ✅ implemented |
 
 ---
 
