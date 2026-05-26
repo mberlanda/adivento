@@ -1,0 +1,21 @@
+player_yes_open_bet:
+  user: player
+  market: open_market
+  market_leg: yes_leg
+  stake_minor: 100
+  fee_minor: 1
+  net_stake_minor: 99
+  odds_minor: 5000
+  potential_payout_minor: 50
+  status: 0
+
+moderator_no_open_bet:
+  user: moderator
+  market: open_market
+  market_leg: no_leg
+  stake_minor: 200
+  fee_minor: 2
+  net_stake_minor: 198
+  odds_minor: 5000
+  potential_payout_minor: 100
+  status: 0

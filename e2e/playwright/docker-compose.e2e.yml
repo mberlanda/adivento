@@ -1,0 +1,18 @@
+services:
+  ui-tests:
+    build:
+      context: ./e2e/playwright
+      dockerfile: Dockerfile
+    environment:
+      BASE_URL: http://web:3000
+      DOCKER: "1"
+    networks:
+      - default
+    depends_on:
+      web:
+        condition: service_healthy
+
+networks:
+  default:
+    name: adivento_default
+    external: true
