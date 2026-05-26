@@ -4,13 +4,17 @@ module HotStorage
       snapshot = build_snapshot(market)
       version = market_version(market)
 
-      store.write_market_snapshot!(market_id: market.id, snapshot: snapshot, version: version)
-      store.append_market_event!(
-        market_id: market.id,
-        event_name: "market.snapshot.v1",
-        payload: snapshot.merge(reason: reason),
-        version: version
-      )
+      begin
+        store.write_market_snapshot!(market_id: market.id, snapshot: snapshot, version: version)
+        store.append_market_event!(
+          market_id: market.id,
+          event_name: "market.snapshot.v1",
+          payload: snapshot.merge(reason: reason),
+          version: version
+        )
+      rescue StandardError => e
+        Rails.logger.warn("HotStorage::MarketSnapshotProjector: Redis error for market #{market.id}: #{e.class}: #{e.message}")
+      end
 
       snapshot.merge(version: version)
     end

@@ -1,5 +1,11 @@
 require "test_helper"
 
+class ErrorRedis
+  def set(*) = raise(RuntimeError, "Redis::BaseError simulated")
+  def get(*) = raise(RuntimeError, "Redis::BaseError simulated")
+  def xadd(*) = raise(RuntimeError, "Redis::BaseError simulated")
+end
+
 class HotStorage::MarketSnapshotProjectorTest < ActiveSupport::TestCase
   setup do
     @fake_redis = HotStorage::FakeRedis.new
@@ -26,5 +32,22 @@ class HotStorage::MarketSnapshotProjectorTest < ActiveSupport::TestCase
     stream_key = "adivento:hot:v1:market:#{market.id}:events"
     assert_equal 1, @fake_redis.events.fetch(stream_key).length
     assert_equal "market.snapshot.v1", @fake_redis.events.fetch(stream_key).first.fetch(:fields).fetch("event")
+  end
+
+  test "project! does not raise when Redis raises an error" do
+    error_store = HotStorage::Store.new(redis: ErrorRedis.new)
+    market = markets(:open_market)
+
+    result = nil
+    assert_nothing_raised do
+      result = HotStorage::MarketSnapshotProjector.project!(
+        market: market,
+        reason: "test_resilience",
+        store: error_store
+      )
+    end
+
+    assert_equal market.id, result.fetch(:market_id)
+    assert_operator result.fetch(:version), :>, 0
   end
 end
