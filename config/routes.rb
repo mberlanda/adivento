@@ -20,6 +20,10 @@ Rails.application.routes.draw do
       post :open, on: :member
       post :settle, on: :member
     end
+    resources :faucet_requests, only: [:index] do
+      post :approve, on: :member
+      post :reject,  on: :member
+    end
   end
 
   namespace :sse do
