@@ -10,6 +10,7 @@ class User < ApplicationRecord
 	has_many :ledger_entries, dependent: :restrict_with_exception
 	has_many :user_grants, dependent: :destroy
 	has_many :granted_user_grants, class_name: "UserGrant", foreign_key: :granted_by_id, dependent: :nullify
+	has_many :bets, dependent: :restrict_with_exception
 
 	validates :email, presence: true, uniqueness: true
 	validates :role, presence: true

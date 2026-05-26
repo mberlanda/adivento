@@ -4,7 +4,11 @@ class Market < ApplicationRecord
   belongs_to :created_by, class_name: "User", inverse_of: :created_markets
   belongs_to :settled_by, class_name: "User", optional: true, inverse_of: :settled_markets
   has_many :market_legs, dependent: :destroy
+  has_many :bets, dependent: :destroy
 
   validates :question, presence: true
   validates :description, presence: true
+  validates :mechanism_type, presence: true
+  validates :fee_bps, numericality: { greater_than_or_equal_to: 0 }
+  validates :liability_cap_minor, numericality: { greater_than: 0 }
 end

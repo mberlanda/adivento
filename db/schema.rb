@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_25_122614) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -23,6 +26,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
     t.index ["action"], name: "index_audit_events_on_action"
     t.index ["actor_id"], name: "index_audit_events_on_actor_id"
     t.index ["target_type", "target_id"], name: "index_audit_events_on_target_type_and_target_id"
+  end
+
+  create_table "bets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "fee_minor", null: false
+    t.bigint "market_id", null: false
+    t.bigint "market_leg_id", null: false
+    t.bigint "net_stake_minor", null: false
+    t.integer "odds_minor", null: false
+    t.bigint "potential_payout_minor", null: false
+    t.bigint "stake_minor", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["market_id", "status"], name: "index_bets_on_market_id_and_status"
+    t.index ["market_id"], name: "index_bets_on_market_id"
+    t.index ["market_leg_id"], name: "index_bets_on_market_leg_id"
+    t.index ["user_id"], name: "index_bets_on_user_id"
   end
 
   create_table "faucet_requests", force: :cascade do |t|
@@ -79,6 +100,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
     t.datetime "created_at", null: false
     t.integer "created_by_id", null: false
     t.text "description", null: false
+    t.integer "fee_bps", default: 100, null: false
+    t.bigint "liability_cap_minor", default: 100000, null: false
+    t.string "mechanism_type", default: "fixed_odds", null: false
     t.string "question", null: false
     t.integer "settled_by_id"
     t.string "settled_outcome"
@@ -101,7 +125,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
 
   create_table "role_permissions", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "permission_id", null: false
+    t.bigint "permission_id", null: false
     t.string "role_name", null: false
     t.datetime "updated_at", null: false
     t.index ["permission_id"], name: "index_role_permissions_on_permission_id"
@@ -112,11 +136,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
     t.boolean "allow", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at"
-    t.integer "granted_by_id", null: false
-    t.integer "permission_id", null: false
+    t.bigint "granted_by_id", null: false
+    t.bigint "permission_id", null: false
     t.text "reason"
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["granted_by_id"], name: "index_user_grants_on_granted_by_id"
     t.index ["permission_id"], name: "index_user_grants_on_permission_id"
     t.index ["user_id", "permission_id", "created_at"], name: "index_user_grants_on_user_id_and_permission_id_and_created_at"
@@ -144,6 +168,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_25_112650) do
   end
 
   add_foreign_key "audit_events", "users", column: "actor_id"
+  add_foreign_key "bets", "market_legs"
+  add_foreign_key "bets", "markets"
+  add_foreign_key "bets", "users"
   add_foreign_key "faucet_requests", "users"
   add_foreign_key "faucet_requests", "users", column: "reviewed_by_id"
   add_foreign_key "ledger_entries", "users"

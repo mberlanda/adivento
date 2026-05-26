@@ -53,6 +53,48 @@ Run full suite:
 RAILS_ENV=test bin/rails test
 ```
 
+## UI End-to-End Tests (Playwright)
+Install dependencies and browsers:
+```bash
+cd e2e/playwright
+npm install
+npm run install:browsers
+```
+
+Run headless locally:
+```bash
+cd e2e/playwright
+npm run test
+```
+
+Run headed for local debugging:
+```bash
+cd e2e/playwright
+npm run test:headed
+```
+
+Run against docker compose app:
+```bash
+docker compose up --build
+cd e2e/playwright
+npm run test:docker
+```
+
+Run against stage deployment:
+```bash
+cd e2e/playwright
+BASE_URL=https://your-stage-host npm run test:docker
+```
+
+Reports:
+```bash
+cd e2e/playwright
+npm run report
+```
+
+E2E specs are under:
+- `e2e/playwright/tests/workflow.spec.js`
+
 Current suite status:
 - 53 tests passing
 - 94.59% line coverage (SimpleCov)

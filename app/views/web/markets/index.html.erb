@@ -1,14 +1,14 @@
 <h1>Explore Markets</h1>
 <p class="muted">Trending and active prediction markets. Guests see open/settled markets only.</p>
 
-<div class="cards">
+<div class="cards" data-testid="markets-list">
   <% @markets.each do |market| %>
-    <article class="card">
+    <article class="card" data-testid="market-card-<%= market.id %>">
       <div>
         <span class="badge"><%= market.status %></span>
         <% if market.settled_outcome.present? %><span class="badge">Settled: <%= market.settled_outcome %></span><% end %>
       </div>
-      <h3><a href="<%= web_market_path(market) %>"><%= market.question %></a></h3>
+      <h3><a href="<%= web_market_path(market) %>" data-testid="market-link-<%= market.id %>"><%= market.question %></a></h3>
       <p class="muted"><%= truncate(market.description, length: 120) %></p>
       <p>
         <% market.market_legs.each do |leg| %>

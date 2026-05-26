@@ -6,6 +6,7 @@ module Admin
       market = Market.find(params[:market_id])
       leg = market.market_legs.new(leg_params)
       if leg.save
+        HotStorage::MarketSnapshotProjector.project!(market: market.reload, reason: "market_leg.create")
         AuditEvent.create!(
           actor: current_user,
           action: "market_leg.create",

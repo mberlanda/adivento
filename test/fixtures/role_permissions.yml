@@ -10,6 +10,18 @@ admin_grant_manage:
   role_name: admin
   permission: grant_manage
 
+admin_bet_place:
+  role_name: admin
+  permission: bet_place
+
+admin_bet_void:
+  role_name: admin
+  permission: bet_void
+
+admin_risk_read:
+  role_name: admin
+  permission: risk_read
+
 admin_market_read:
   role_name: admin
   permission: market_read
@@ -42,6 +54,14 @@ moderator_backoffice_access:
   role_name: moderator
   permission: backoffice_access
 
+moderator_bet_void:
+  role_name: moderator
+  permission: bet_void
+
+moderator_risk_read:
+  role_name: moderator
+  permission: risk_read
+
 moderator_market_read:
   role_name: moderator
   permission: market_read
@@ -61,3 +81,7 @@ moderator_wallet_faucet_review:
 moderator_template_manage:
   role_name: moderator
   permission: template_manage
+
+player_bet_place:
+  role_name: player
+  permission: bet_place

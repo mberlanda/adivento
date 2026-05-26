@@ -19,19 +19,25 @@
       input, select, textarea, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #b8c8c3; }
       button { background: #0e7c66; color: white; border: 0; cursor: pointer; }
       form.inline { display: inline; }
+      nav a, .nav-button { color: var(--accent); text-decoration: none; font: inherit; }
+      .nav-button { background: transparent; border: 0; padding: 0; cursor: pointer; }
     </style>
   </head>
   <body>
     <header>
-      <strong><a href="/">Adivento</a></strong>
-      <nav>
-        <a href="/web/markets">Markets</a>
-        <% if session[:user_id].present? %>
-          &nbsp;|&nbsp;<a href="/backoffice">Backoffice</a>
+      <strong><a href="/" data-testid="nav-home">Adivento</a></strong>
+      <nav data-testid="top-nav">
+        <% if nav_action_available?("navigation.markets") %>
+          <a href="<%= nav_action_path("navigation.markets") %>" data-testid="nav-markets">Markets</a>
+        <% end %>
+        <% if nav_action_available?("navigation.backoffice") %>
+          &nbsp;|&nbsp;<a href="<%= nav_action_path("navigation.backoffice") %>" data-testid="nav-backoffice">Backoffice</a>
+        <% end %>
+        <% if nav_action_available?("navigation.sign_out") %>
           &nbsp;|&nbsp;
-          <%= button_to "Sign out", "/signout", method: :delete, form_class: "inline", style: "background:transparent;color:#0e7c66;" %>
-        <% else %>
-          &nbsp;|&nbsp;<a href="/signin">Sign in</a>
+          <%= button_to "Sign out", nav_action_path("navigation.sign_out"), method: :delete, form_class: "inline", class: "nav-button", form: { data: { testid: "signout-form" } }, data: { testid: "nav-signout" } %>
+        <% elsif nav_action_available?("navigation.sign_in") %>
+          &nbsp;|&nbsp;<a href="<%= nav_action_path("navigation.sign_in") %>" data-testid="nav-signin">Sign in</a>
         <% end %>
       </nav>
     </header>

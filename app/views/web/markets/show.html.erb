@@ -1,7 +1,7 @@
-<h1><%= @market.question %></h1>
+<h1 data-testid="market-title"><%= @market.question %></h1>
 <p class="muted"><%= @market.description %></p>
 
-<section class="card" style="margin-bottom: 16px;">
+<section class="card" style="margin-bottom: 16px;" data-testid="market-trust-panel">
   <h3>Trust Panel</h3>
   <p>Status: <strong><%= @market.status %></strong></p>
   <p>Creator: <%= @market.created_by.email %></p>
@@ -10,11 +10,11 @@
   <% end %>
 </section>
 
-<section class="card" style="margin-bottom: 16px;">
+<section class="card" style="margin-bottom: 16px;" data-testid="market-legs-panel">
   <h3>Legs</h3>
-  <ul>
+  <ul data-testid="market-legs-list">
     <% @market.market_legs.each do |leg| %>
-      <li><strong><%= leg.label %></strong> - <%= (leg.odds_minor / 100.0).round(1) %>%</li>
+      <li data-testid="market-leg-<%= leg.id %>"><strong><%= leg.label %></strong> - <%= (leg.odds_minor / 100.0).round(1) %>%</li>
     <% end %>
   </ul>
 </section>

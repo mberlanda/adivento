@@ -23,7 +23,12 @@ module Auth
     end
 
     def me
-      render json: { id: current_user.id, email: current_user.email, role: current_user.role }
+      render json: {
+        id: current_user.id,
+        email: current_user.email,
+        role: current_user.role,
+        actions: AvailableActionsService.call(user: current_user)
+      }
     end
 
     private
@@ -39,7 +44,8 @@ module Auth
           id: user.id,
           email: user.email,
           role: user.role
-        }
+        },
+        actions: AvailableActionsService.call(user: user)
       }
     end
   end

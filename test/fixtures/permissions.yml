@@ -13,6 +13,21 @@ grant_manage:
   description: Manage ad hoc grants
   active: true
 
+bet_place:
+  key: bet.place
+  description: Place bets on open markets
+  active: true
+
+bet_void:
+  key: bet.void
+  description: Void active bets with reason
+  active: true
+
+risk_read:
+  key: risk.read
+  description: Read risk metrics
+  active: true
+
 market_read:
   key: market.read
   description: Read market admin data

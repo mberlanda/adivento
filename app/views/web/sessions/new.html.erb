@@ -1,14 +1,14 @@
 <h1>Sign in</h1>
 <p class="muted">Use one of the seeded users or any registered account.</p>
 
-<%= form_with url: "/signin", method: :post do |f| %>
+<%= form_with url: "/signin", method: :post, html: { data: { testid: "signin-form" } } do |f| %>
   <p>
     <label>Email</label><br>
-    <%= f.email_field :email, required: true %>
+    <%= f.email_field :email, required: true, data: { testid: "signin-email" } %>
   </p>
   <p>
     <label>Password</label><br>
-    <%= f.password_field :password, required: true %>
+    <%= f.password_field :password, required: true, data: { testid: "signin-password" } %>
   </p>
-  <p><%= f.submit "Sign in" %></p>
+  <p><%= f.submit "Sign in", data: { testid: "signin-submit" } %></p>
 <% end %>
