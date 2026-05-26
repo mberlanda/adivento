@@ -82,7 +82,11 @@ class EndpointsCoverageTest < ActionDispatch::IntegrationTest
   end
 
   test "admin leg creation rejects duplicate labels" do
-    post "/admin/markets/#{markets(:open_market).id}/legs",
+    market = markets(:draft_market)
+    market.market_legs.create!(label: "YES", odds_minor: 5000)
+    assert_equal 1, market.market_legs.count
+
+    post "/admin/markets/#{market.id}/legs",
          params: { label: "YES", odds_minor: 2500 },
          headers: auth_headers_for(users(:admin)),
          as: :json

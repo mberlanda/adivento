@@ -31,11 +31,12 @@ class BetPlacementServiceTest < ActiveSupport::TestCase
     market = Market.create!(
       question: "Risk cap market",
       description: "single sided market for cap test",
-      status: :open,
       created_by: users(:admin),
       liability_cap_minor: 5
     )
     leg = MarketLeg.create!(market: market, label: "YES", odds_minor: 10_000, active: true)
+    MarketLeg.create!(market: market, label: "NO", odds_minor: 10_000, active: true)
+    market.update_columns(status: 1)
 
     assert_raises(BetPlacementService::RiskLimitExceeded) do
       BetPlacementService.place!(

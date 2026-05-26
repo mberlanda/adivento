@@ -23,14 +23,19 @@ class AdminPermissionsTest < ActionDispatch::IntegrationTest
     assert_equal ["NO", "YES"], market.market_legs.order(:label).pluck(:label)
   end
 
-  test "moderator can add leg and settle" do
-    post "/admin/markets/#{markets(:open_market).id}/legs",
-         params: { label: "DRAW", odds_minor: 2500 },
+  test "moderator can add leg to a draft market with fewer than 2 legs" do
+    market = markets(:draft_market)
+    assert market.market_legs.count < 2
+
+    post "/admin/markets/#{market.id}/legs",
+         params: { label: "YES", odds_minor: 5000 },
          headers: auth_headers_for(users(:moderator)),
          as: :json
 
     assert_response :created
+  end
 
+  test "moderator can settle an open market" do
     post "/admin/markets/#{markets(:open_market).id}/settle",
          params: { outcome: "YES", reason: "official result" },
          headers: auth_headers_for(users(:moderator)),

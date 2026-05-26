@@ -14,10 +14,11 @@ class HouseRiskServiceTest < ActiveSupport::TestCase
     market = Market.create!(
       question: "Isolated risk market",
       description: "used for risk simulation",
-      status: :open,
       created_by: users(:admin)
     )
     yes_leg = MarketLeg.create!(market: market, label: "YES", odds_minor: 10_000, active: true)
+    MarketLeg.create!(market: market, label: "NO", odds_minor: 10_000, active: true)
+    market.update_columns(status: 1)
 
     liability = HouseRiskService.worst_case_liability(
       market,

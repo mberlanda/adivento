@@ -59,11 +59,12 @@ class BetsTest < ActionDispatch::IntegrationTest
     market = Market.create!(
       question: "Low cap",
       description: "Risk rejection market",
-      status: :open,
       created_by: users(:admin),
       liability_cap_minor: 5
     )
     leg = MarketLeg.create!(market: market, label: "YES", odds_minor: 10_000, active: true)
+    MarketLeg.create!(market: market, label: "NO", odds_minor: 10_000, active: true)
+    market.update_columns(status: 1)
 
     assert_no_difference("Bet.count") do
       assert_no_difference("LedgerEntry.count") do

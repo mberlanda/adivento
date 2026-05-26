@@ -130,6 +130,8 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
   test "admin can open a draft market in backoffice" do
     post "/signin", params: { email: users(:admin).email, password: "password123" }
     market = markets(:draft_market)
+    market.market_legs.create!(label: "YES", odds_minor: 5000)
+    market.market_legs.create!(label: "NO", odds_minor: 5000)
 
     post "/backoffice/markets/#{market.id}/open"
 

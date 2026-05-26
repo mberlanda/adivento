@@ -4,6 +4,11 @@ module Admin
 
     def create
       market = Market.find(params[:market_id])
+
+      if market.market_legs.count >= 2
+        return render json: { error: "Market already has 2 legs" }, status: :unprocessable_entity
+      end
+
       leg = market.market_legs.new(leg_params)
       if leg.save
         HotStorage::MarketSnapshotProjector.project!(market: market.reload, reason: "market_leg.create")
