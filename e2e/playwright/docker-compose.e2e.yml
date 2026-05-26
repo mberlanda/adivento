@@ -1,11 +1,13 @@
 services:
   ui-tests:
     build:
-      context: ./e2e/playwright
+      context: .
       dockerfile: Dockerfile
     environment:
       BASE_URL: http://web:3000
       DOCKER: "1"
+    volumes:
+      - ./playwright-report:/e2e/playwright-report
     networks:
       - default
     depends_on:
