@@ -16,7 +16,7 @@ class AdminBetVoidTest < ActionDispatch::IntegrationTest
     assert_equal before_balance + bet.stake_minor, player.wallet.reload.available_minor
   end
 
-  test "voided bet shows in market SSE payload" do
+  test "voided bet reflects updated open interest in market SSE snapshot" do
     bet = bets(:moderator_no_open_bet)
     post "/admin/bets/#{bet.id}/void",
          params: { reason: "compliance" },
@@ -27,7 +27,7 @@ class AdminBetVoidTest < ActionDispatch::IntegrationTest
     get "/sse/markets/#{bet.market_id}"
 
     assert_response :success
-    assert_match "event: market.bet_voided.v1", response.body
-    assert_match "\"voided_bets_count\":", response.body
+    assert_match "event: market.snapshot.v1", response.body
+    assert_match "\"market_id\":#{bet.market_id}", response.body
   end
 end
