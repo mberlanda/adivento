@@ -108,7 +108,13 @@ Plan approved?
   - [x] SSE: projector called after CLOB, LMSR, and parimutuel trades
   - [x] Backoffice UI: mechanism picker + conditional fee fields
   - [x] Web UI: mechanism-appropriate price display
-  - 216 tests, 0 failures, 91.26% line coverage
+  - 220 tests, 0 failures, 91.46% line coverage
+- **CLOB order book completion** (ADR-0014) — fill ledger entries, last trade price, spread, CLOB positions endpoint `5d48ac1`
+  - [x] `ORDER_FILL_STAKE` + `ORDER_FILL_CREDIT` ledger entries per fill with metadata
+  - [x] `markets.last_fill_price_cents` updated on every fill
+  - [x] Order book response: `last_trade_price`, `spread`
+  - [x] `GET /web/positions` returns `clob_positions[]` with contract counts and unrealised value
+  - [x] Fixed `order_book_summary` best-ask sort and spread sign
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue

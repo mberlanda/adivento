@@ -4,6 +4,31 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-27 — CLOB Order Book Completion
+
+**PRs:** #10 (fill ledger entries + settlement lock), #11 (last_fill_price + spread + ADR-0014), #12 (CLOB positions endpoint)
+**Commits on main:** `3989e82`, `1d53312`, `5d48ac1`
+
+### Changes
+- `OrderMatchingService`: writes `ORDER_FILL_STAKE` (taker debit) and `ORDER_FILL_CREDIT` (maker credit) per fill; sets `market.last_fill_price_cents` after each fill
+- `ClobSettlementHandler`: `wallet.lock!` on settlement payout pass for concurrency safety
+- `ClobPricingEngine#order_book_summary`: fixed NO sort to `:asc` (lowest = best ask)
+- `OrderBooksController`: returns `last_trade_price` and `spread` (`(100 - best_ask) - best_bid`; negative = crossing available)
+- `PositionsController`: `GET /web/positions` returns `clob_positions[]` with `yes_contracts`, `no_contracts`, `avg_yes_price_cents`, `unrealised_value_minor`; preloads markets to avoid N+1
+- Migration: `markets.last_fill_price_cents` (nullable int)
+- ADR-0014 (CLOB order book migration) accepted and committed
+
+### Key files
+- `app/services/clob/order_matching_service.rb`
+- `app/services/settlement/clob_settlement_handler.rb`
+- `app/models/market.rb` — `ClobPricingEngine#order_book_summary`
+- `app/controllers/web/order_books_controller.rb`
+- `app/controllers/web/positions_controller.rb`
+- `db/migrate/20260527100006_add_last_fill_price_cents_to_markets.rb`
+- 220 tests, 0 failures, 91.46% line coverage
+
+---
+
 ## 2026-05-27 — Pluggable Market Mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds)
 
 **PRs:** #5 (db+market), #9 (clob), #7 (lmsr+parimutuel), #10 (settlement+ui+docs)
