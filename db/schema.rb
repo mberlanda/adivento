@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_100001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -127,12 +127,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
     t.text "description", null: false
     t.integer "fee_bps", default: 100, null: false
     t.bigint "liability_cap_minor", default: 100000, null: false
+    t.bigint "liquidity_subsidy_minor"
+    t.float "lmsr_b_parameter"
+    t.bigint "lmsr_q_no", default: 0, null: false
+    t.bigint "lmsr_q_yes", default: 0, null: false
     t.string "mechanism_type", default: "fixed_odds", null: false
+    t.bigint "parimutuel_pool_no_minor", default: 0, null: false
+    t.bigint "parimutuel_pool_yes_minor", default: 0, null: false
     t.string "question", null: false
     t.integer "settled_by_id"
     t.string "settled_outcome"
+    t.integer "spread_fee_bps"
     t.integer "status", default: 0, null: false
     t.boolean "structure_locked", default: false, null: false
+    t.integer "takeout_bps"
+    t.integer "taker_fee_bps"
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_markets_on_created_by_id"
     t.index ["settled_by_id"], name: "index_markets_on_settled_by_id"
