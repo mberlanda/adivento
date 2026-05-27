@@ -2,17 +2,17 @@
 
 ## Steps
 
-- [ ] **Step 1: Choose RuboCop version**
-  - Check rubygems.org (or `gem search rubocop`) for the latest stable versions of `rubocop`, `rubocop-rails`, and `rubocop-minitest`
-  - Pin all three in Gemfile as exact pessimistic constraints:
+- [ ] **Step 1: Add RuboCop gems to Gemfile**
+  - Versions pinned as of 2026-05-27 (patch-pessimistic — allows only bug-fix patches):
     ```ruby
-    gem 'rubocop', '~> X.Y', require: false
-    gem 'rubocop-rails', '~> X.Y', require: false
-    gem 'rubocop-minitest', '~> X.Y', require: false
+    group :development, :test do
+      gem 'rubocop', '~> 1.86.2', require: false
+      gem 'rubocop-rails', '~> 2.35.3', require: false
+      gem 'rubocop-minitest', '~> 0.39.1', require: false
+    end
     ```
-    (Replace X.Y with actual current stable versions at implementation time)
   - Run `bundle install` and verify no conflicts
-  - Expected: `Gemfile.lock` updated with pinned rubocop gems
+  - Expected: `Gemfile.lock` updated with pinned rubocop gems (1.86.2 / 2.35.3 / 0.39.1)
 
 - [ ] **Step 2: Create `.rubocop.yml`**
   - Inherit from `rubocop-rails` and `rubocop-minitest`
@@ -46,25 +46,10 @@
   - Run `bundle exec rubocop` (no flags) and confirm zero offenses
   - Expected: clean rubocop run with exit code 0
 
-- [ ] **Step 5: Add rubocop job to `.github/workflows/ci.yml`**
-  - Add a `rubocop` job (can run in parallel with `test`):
-    ```yaml
-    rubocop:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: ruby/setup-ruby@v1
-          with:
-            bundler-cache: true
-        - run: bundle exec rubocop
-    ```
-  - Expected: CI runs rubocop on every push/PR
-
-- [ ] **Step 6: Add rubocop to pre-commit hook (if applicable)**
-  - Check whether `scripts/validate.sh` or any pre-commit hook script exists
-  - If it does, append: `bundle exec rubocop --force-exclusion "$@"` (or equivalent)
-  - If no hook script exists, skip this step (note in FINDINGS.md)
-  - Expected: local pre-commit runs rubocop, or step skipped with note
+- [x] **Step 5: CI and pre-commit — already wired**
+  - `scripts/validate.sh` already contains: `if [ -f .rubocop.yml ]; then bundle exec rubocop; fi`
+  - CI runs `scripts/validate.sh` in the `test` job — no separate rubocop job needed
+  - Pre-commit hook also calls `validate.sh` — creating `.rubocop.yml` automatically activates rubocop in both
 
 - [ ] **Step 7: Commit**
   - Stage: `Gemfile`, `Gemfile.lock`, `.rubocop.yml`, `.github/workflows/ci.yml`, and all source files changed by autocorrect

@@ -1,10 +1,16 @@
 # Findings
 
-## Status: Not started
+## Status: DONE — commit a44e865
+
+## Implemented
+- Gems: rubocop 1.86.2, rubocop-rails 2.35.3, rubocop-minitest 0.39.1 (patch-pessimistic pins)
+- Use `plugins:` syntax (not `require:`) — these extensions support the new plugin API in rubocop 1.86
+- Autocorrected 1696 offenses; 49 remaining resolved via .rubocop.yml config
+- Disabled structural/metrics cops (Documentation, Metrics/*) — noise for a POC codebase
+- `validate.sh` already gates rubocop when `.rubocop.yml` exists — no CI job change needed
+- **Critical:** backoffice/web BaseControllers must stay on `ActionController::Base` (not ApplicationController < ActionController::API) for sessions/views/helpers to work. Added explicit Exclude in .rubocop.yml for `Rails/ApplicationController`
 
 ## Notes
-- Project uses Ruby 3.3.6 (set `TargetRubyVersion: 3.3` in .rubocop.yml)
-- Project uses Rails 8 — use `rubocop-rails` for Rails-aware cops
-- Project uses Minitest — use `rubocop-minitest` for test-specific cops
-- Check existing code style before choosing a base config — the codebase may have inconsistent indentation (tabs vs spaces in db/seeds.rb)
-- `db/migrate/` should be excluded from Rubocop (generated code)
+- Tabs in db/seeds.rb resolved by autocorrect (converted to spaces) — no manual decision needed
+- `db/migrate/` excluded (generated code)
+- Pre-existing flaky test ordering issues (SQLite locking under certain seeds) — not introduced by rubocop
