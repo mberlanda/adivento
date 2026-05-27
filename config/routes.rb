@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       resources :orders, only: [:create]
       resources :lmsr_trades, only: [:create]
       resources :parimutuel_bets, only: [:create]
-      get :order_book, to: "order_books#show"
+      get :order_book, to: 'order_books#show'
     end
     resources :orders, only: [:destroy]
 

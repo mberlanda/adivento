@@ -2,7 +2,7 @@ module Clob
   class OrderMatchingService
     Result = Struct.new(:success?, :incoming_order, :fills, :errors, keyword_init: true)
 
-    def self.call(**kwargs) = new(**kwargs).call
+    def self.call(**) = new(**).call
 
     def initialize(market:, incoming_order_params:)
       @market = market
@@ -28,10 +28,12 @@ module Clob
         fills = match!(order)
         apply_tif_cancellation!(order)
         emit_audit!(order, fills)
-        HotStorage::MarketSnapshotProjector.project!(market: @market, reason: "clob.order_match") if defined?(HotStorage::MarketSnapshotProjector)
+        if defined?(HotStorage::MarketSnapshotProjector)
+          HotStorage::MarketSnapshotProjector.project!(market: @market, reason: 'clob.order_match')
+        end
         Result.new(success?: true, incoming_order: order, fills: fills, errors: [])
       end
-    rescue => e
+    rescue StandardError => e
       Result.new(success?: false, incoming_order: nil, fills: [], errors: [e.message])
     end
 
@@ -39,36 +41,38 @@ module Clob
 
     def build_incoming_order
       Order.new(
-        market:        @market,
-        market_leg:    @params[:market_leg],
-        user:          @params[:user],
-        side:          @params[:side],
-        price_cents:   @params[:price_cents],
-        quantity:      @params[:quantity],
+        market: @market,
+        market_leg: @params[:market_leg],
+        user: @params[:user],
+        side: @params[:side],
+        price_cents: @params[:price_cents],
+        quantity: @params[:quantity],
         time_in_force: @params[:time_in_force] || :gtc,
-        status:        :open
+        status: :open
       )
     end
 
     def reserve_funds!(order)
       reservation = order.price_cents * order.quantity
       wallet = order.user.wallet.lock!
-      raise "Insufficient funds" if wallet.available_minor < reservation
+      raise 'Insufficient funds' if wallet.available_minor < reservation
+
       wallet.update!(
         available_minor: wallet.available_minor - reservation,
-        reserved_minor:  wallet.reserved_minor  + reservation
+        reserved_minor: wallet.reserved_minor + reservation
       )
     end
 
     def count_matchable_quantity(incoming)
-      opposite_side  = incoming.side == "YES" ? "NO" : "YES"
+      opposite_side  = incoming.side == 'YES' ? 'NO' : 'YES'
       resting_orders = @market.orders
-        .where(side: opposite_side, status: %w[open partial])
-        .order(price_cents: :desc, created_at: :asc)
+                              .where(side: opposite_side, status: %w[open partial])
+                              .order(price_cents: :desc, created_at: :asc)
 
       total = 0
       resting_orders.each do |resting|
         break unless compatible?(incoming, resting)
+
         total += resting.unfilled_quantity
         break if total >= incoming.quantity
       end
@@ -77,11 +81,11 @@ module Clob
 
     def match!(incoming)
       fills = []
-      opposite_side  = incoming.side == "YES" ? "NO" : "YES"
+      opposite_side  = incoming.side == 'YES' ? 'NO' : 'YES'
       resting_orders = @market.orders
-        .where(side: opposite_side, status: %w[open partial])
-        .lock("FOR UPDATE SKIP LOCKED")
-        .order(price_cents: :desc, created_at: :asc)
+                              .where(side: opposite_side, status: %w[open partial])
+                              .lock('FOR UPDATE SKIP LOCKED')
+                              .order(price_cents: :desc, created_at: :asc)
 
       resting_orders.each do |resting|
         break if incoming.unfilled_quantity <= 0
@@ -95,7 +99,7 @@ module Clob
     end
 
     def compatible?(incoming, resting)
-      if incoming.side == "YES"
+      if incoming.side == 'YES'
         incoming.price_cents + resting.price_cents >= 100
       else
         resting.price_cents + incoming.price_cents >= 100
@@ -124,10 +128,10 @@ module Clob
 
       # Taker fee charged on taker's stake
       fee = (@market.taker_fee_bps.to_i * taker_stake / 10_000.0).ceil
-      if fee > 0
+      if fee.positive?
         LedgerEntry.create!(
           user: taker.user, actor: taker.user,
-          entry_type: "CLOB_FEE", direction: "debit",
+          entry_type: 'CLOB_FEE', direction: 'debit',
           amount_minor: fee
         )
         taker_wallet.update!(available_minor: taker_wallet.available_minor - fee)
@@ -139,35 +143,37 @@ module Clob
     def apply_tif_cancellation!(order)
       return if order.filled? || order.cancelled?
       return unless order.ioc?
+
       cancel_remainder!(order)
     end
 
     def cancel_remainder!(order)
       unfilled = order.unfilled_quantity
       return if unfilled <= 0
+
       order.cancelled_quantity += unfilled
       order.status = order.filled_quantity.zero? ? :cancelled : :filled
       order.save!
       release = order.price_cents * unfilled
       wallet = order.user.wallet.lock!
       wallet.update!(
-        reserved_minor:  wallet.reserved_minor  - release,
+        reserved_minor: wallet.reserved_minor - release,
         available_minor: wallet.available_minor + release
       )
     end
 
     def emit_audit!(order, fills)
       AuditEvent.create!(
-        action: "order.place",
+        action: 'order.place',
         actor: order.user,
-        target_type: "Order", target_id: order.id,
+        target_type: 'Order', target_id: order.id,
         metadata: { side: order.side, price_cents: order.price_cents, quantity: order.quantity, fills: fills.size }
       )
       fills.each do |f|
         AuditEvent.create!(
-          action: "order.fill",
+          action: 'order.fill',
           actor: f[:taker_order].user,
-          target_type: "Order", target_id: f[:taker_order].id,
+          target_type: 'Order', target_id: f[:taker_order].id,
           metadata: { fill_qty: f[:qty], fill_price: f[:price], counterparty_order_id: f[:maker_order].id }
         )
       end

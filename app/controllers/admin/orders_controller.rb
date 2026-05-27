@@ -3,11 +3,11 @@ module Admin
     before_action -> { require_permission!('market.update') }
 
     def create
-      market = Market.find(params[:market_id])
-      return render json: { error: "Not a CLOB market" }, status: :unprocessable_entity unless market.clob?
+      market = Market.find(params.expect(:market_id))
+      return render json: { error: 'Not a CLOB market' }, status: :unprocessable_content unless market.clob?
 
-      user = User.find(params[:user_id])
-      leg  = market.market_legs.find_by!(label: params[:side])
+      user = User.find(params.expect(:user_id))
+      leg  = market.market_legs.find_by!(label: params.expect(:side))
       result = Clob::OrderMatchingService.call(
         market: market,
         incoming_order_params: {
@@ -16,20 +16,23 @@ module Admin
           price_cents: params[:price_cents].to_i,
           quantity: params[:quantity].to_i,
           market_leg: leg,
-          time_in_force: (params[:time_in_force] || "GTC").downcase.to_sym
+          time_in_force: (params[:time_in_force] || 'GTC').downcase.to_sym
         }
       )
 
       if result.success?
         render json: order_json(result.incoming_order), status: :created
       else
-        render json: { errors: result.errors }, status: :unprocessable_entity
+        render json: { errors: result.errors }, status: :unprocessable_content
       end
     end
 
     def destroy
-      order = Order.find(params[:id])
-      return render json: { error: "Order cannot be cancelled" }, status: :unprocessable_entity unless order.open? || order.partial?
+      order = Order.find(params.expect(:id))
+      unless order.open? || order.partial?
+        return render json: { error: 'Order cannot be cancelled' },
+                      status: :unprocessable_content
+      end
 
       released = order.reserved_minor
       ApplicationRecord.transaction do
@@ -39,24 +42,24 @@ module Admin
         w = order.user.wallet
         w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
         AuditEvent.create!(
-          action: "order.cancel",
+          action: 'order.cancel',
           actor: current_user,
-          target_type: "Order", target_id: order.id,
+          target_type: 'Order', target_id: order.id,
           metadata: { released_minor: released }
         )
       end
 
-      render json: { order_id: order.id, status: "cancelled", released_minor: released }
+      render json: { order_id: order.id, status: 'cancelled', released_minor: released }
     end
 
     private
 
-    def order_json(o)
+    def order_json(ord)
       {
-        order_id: o.id, market_id: o.market_id, side: o.side,
-        price_cents: o.price_cents, quantity: o.quantity,
-        filled_quantity: o.filled_quantity, status: o.status,
-        time_in_force: o.time_in_force, reserved_minor: o.reserved_minor
+        order_id: ord.id, market_id: ord.market_id, side: ord.side,
+        price_cents: ord.price_cents, quantity: ord.quantity,
+        filled_quantity: ord.filled_quantity, status: ord.status,
+        time_in_force: ord.time_in_force, reserved_minor: ord.reserved_minor
       }
     end
   end
