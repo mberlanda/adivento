@@ -117,32 +117,77 @@
   </div>
 </section>
 
-<% if current_user && @market.open? && @market.fixed_odds? %>
-  <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
-    <h3 style="margin-top:0;">Place a Bet</h3>
-    <%= form_with url: web_market_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-        <% @market.market_legs.each do |leg| %>
-          <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
-            <%= radio_button_tag :market_leg_id, leg.id, false, required: true, data: { testid: "bet-leg-#{leg.label.downcase}" } %>
-            <strong style="margin-left:4px;"><%= leg.label %></strong>
-            <span class="muted" style="font-size:0.82rem;"> (<%= (leg.odds_minor / 100.0).round(0) %>%)</span>
-          </label>
+<% if @market.open? %>
+  <% if current_user %>
+    <% if @market.fixed_odds? %>
+      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <h3 style="margin-top:0;">Place a Bet</h3>
+        <%= form_with url: web_market_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <% @market.market_legs.each do |leg| %>
+              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                <%= radio_button_tag :market_leg_id, leg.id, false, required: true, data: { testid: "bet-leg-#{leg.label.downcase}" } %>
+                <strong style="margin-left:4px;"><%= leg.label %></strong>
+                <span class="muted" style="font-size:0.82rem;"> (<%= (leg.odds_minor / 100.0).round(0) %>%)</span>
+              </label>
+            <% end %>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
+            <%= number_field_tag :stake_minor, 100, min: 1, style: 'width:120px;', required: true,
+                  data: { testid: 'bet-stake' } %>
+            <%= f.submit 'Place Bet', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
+          </div>
         <% end %>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <label style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
-        <%= number_field_tag :stake_minor, 100, min: 1, style: 'width:120px;', required: true,
-              data: { testid: 'bet-stake' } %>
-        <%= f.submit 'Place Bet', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
-      </div>
+      </section>
+    <% elsif @market.parimutuel? %>
+      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <h3 style="margin-top:0;">Place a Pool Bet</h3>
+        <%= form_with url: web_market_parimutuel_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
+              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                <strong style="margin-left:4px;"><%= label %> Pool</strong>
+              </label>
+            <% end %>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
+            <%= number_field_tag :stake_minor, 100, min: 1, style: 'width:120px;', required: true,
+                  data: { testid: 'bet-stake' } %>
+            <%= f.submit 'Place Stake', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
+          </div>
+        <% end %>
+      </section>
+    <% elsif @market.lmsr? %>
+      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <h3 style="margin-top:0;">Buy Shares</h3>
+        <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">LMSR — prices adjust automatically as you trade.</p>
+        <%= form_with url: web_market_lmsr_trades_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
+              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                <strong style="margin-left:4px;"><%= label %></strong>
+              </label>
+            <% end %>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <label style="font-size:0.88rem;white-space:nowrap;">Shares:</label>
+            <%= number_field_tag :quantity, 10, min: 1, style: 'width:120px;', required: true,
+                  data: { testid: 'bet-stake' } %>
+            <%= f.submit 'Buy Shares', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
+          </div>
+        <% end %>
+      </section>
     <% end %>
-  </section>
-<% elsif current_user.nil? && @market.open? && @market.fixed_odds? %>
-  <div class="card" style="margin-bottom:16px;text-align:center;padding:20px;" data-testid="bet-signin-prompt">
-    <p class="muted" style="margin:0 0 12px;">Sign in to place a bet on this market.</p>
-    <%= link_to 'Sign In', '/signin', class: 'pill pill-active' %>
-  </div>
+  <% else %>
+    <div class="card" style="margin-bottom:16px;text-align:center;padding:20px;" data-testid="bet-signin-prompt">
+      <p class="muted" style="margin:0 0 12px;">Sign in to participate in this market.</p>
+      <%= link_to 'Sign In', '/signin', class: 'pill pill-active' %>
+    </div>
+  <% end %>
 <% end %>
 
 <% if @market.resolution_criteria.present? || @market.close_at.present? || @market.settled_outcome.present? %>
