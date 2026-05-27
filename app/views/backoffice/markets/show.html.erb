@@ -99,4 +99,35 @@
   <% end %>
 </div>
 
+<div class="panel">
+  <h3>Edit Details</h3>
+  <%= form_with url: backoffice_market_path(@market), method: :patch,
+        html: { data: { testid: 'edit-market-form' } } do |f| %>
+    <p>
+      <label>Category</label><br>
+      <%= select_tag :category,
+            options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, @market.category),
+            data: { testid: 'edit-market-category' } %>
+    </p>
+    <p><label>Tags (comma-separated)</label><br>
+      <%= text_field_tag :tags_input, @market.tags.join(', '),
+            data: { testid: 'edit-market-tags' } %>
+    </p>
+    <p><label>Close date/time</label><br>
+      <%= datetime_local_field_tag :close_at,
+            (@market.close_at&.strftime('%Y-%m-%dT%H:%M') || ''),
+            data: { testid: 'edit-market-close-at' } %>
+    </p>
+    <p><label>Resolution criteria</label><br>
+      <%= text_area_tag :resolution_criteria, @market.resolution_criteria,
+            rows: 3, data: { testid: 'edit-market-resolution-criteria' } %>
+    </p>
+    <p><label>Resolution source</label><br>
+      <%= text_field_tag :resolution_source, @market.resolution_source,
+            data: { testid: 'edit-market-resolution-source' } %>
+    </p>
+    <%= f.submit 'Save Changes', data: { testid: 'edit-market-submit' } %>
+  <% end %>
+</div>
+
 <p><%= link_to "Back to markets", backoffice_markets_path %></p>

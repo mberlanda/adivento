@@ -44,7 +44,7 @@ Rails.application.routes.draw do
     resources :templates, only: %i[index create edit update destroy] do
       post :create_market, on: :member
     end
-    resources :markets, only: %i[index show create] do
+    resources :markets, only: %i[index show create update] do
       post :open, on: :member
       post :settle, on: :member
     end
