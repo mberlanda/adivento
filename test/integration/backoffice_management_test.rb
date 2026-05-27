@@ -131,6 +131,29 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
     assert AuditEvent.exists?(action: 'market.create', target_id: market.id)
   end
 
+  test 'admin can create a market with category and tags' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+
+    assert_difference('Market.count', 1) do
+      post '/backoffice/markets', params: {
+        question: 'Will the Fed hike rates?',
+        description: 'Economics prediction',
+        legs: 'YES,NO',
+        fee_bps: 100,
+        liability_cap_minor: 50_000,
+        mechanism_type: 'fixed_odds',
+        category: 'economics',
+        tags_input: 'fed, rates, macro'
+      }
+    end
+
+    market = Market.last
+
+    assert_response :redirect
+    assert_equal 'economics', market.category
+    assert_equal %w[fed rates macro], market.tags
+  end
+
   test 'admin can open a draft market in backoffice' do
     post '/signin', params: { email: users(:admin).email, password: 'password123' }
     market = markets(:draft_market)

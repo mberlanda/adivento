@@ -1,5 +1,6 @@
 class Market < ApplicationRecord
   MECHANISM_TYPES = %w[fixed_odds clob lmsr parimutuel].freeze
+  CATEGORIES = %w[sports economics politics technology entertainment other].freeze
 
   enum :status, { draft: 0, open: 1, settled: 2, cancelled: 3 }, default: :draft
 
@@ -12,6 +13,7 @@ class Market < ApplicationRecord
   validates :question, presence: true
   validates :description, presence: true
   validates :mechanism_type, inclusion: { in: MECHANISM_TYPES }
+  validates :category, inclusion: { in: CATEGORIES }
   validates :fee_bps, numericality: { greater_than_or_equal_to: 0 }
   validates :liability_cap_minor, numericality: { greater_than: 0 }
 
@@ -20,6 +22,10 @@ class Market < ApplicationRecord
   validate :mechanism_fee_config_present
 
   before_save :compute_lmsr_b_parameter, if: -> { lmsr? && will_save_change_to_status? && open? }
+
+  def tags=(val)
+    super(Array(val).map { |t| t.to_s.strip }.reject(&:empty?))
+  end
 
   def fixed_odds? = mechanism_type == 'fixed_odds'
   def clob?       = mechanism_type == 'clob'
