@@ -9,7 +9,7 @@
      Fee: <%= @market.fee_bps %>bps &nbsp;
      Liability cap: <%= @market.liability_cap_minor %></p>
   <% if @market.tags.any? %>
-    <p>Tags: <%= @market.tags.map { |t| "<span style='background:#1a2e38;padding:2px 6px;border-radius:3px;'>#{h(t)}</span>" }.join(' ').html_safe %></p>
+    <p>Tags: <%= safe_join(@market.tags.map { |t| content_tag(:span, t, style: 'background:#1a2e38;padding:2px 6px;border-radius:3px;') }, ' ') %></p>
   <% end %>
   <% if @market.settled? %>
     <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>

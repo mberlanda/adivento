@@ -44,4 +44,19 @@ class WebCustomerPagesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match markets(:draft_market).question, response.body
   end
+
+  test 'category filter returns only markets in that category' do
+    get '/web/markets', params: { category: 'economics' }
+
+    assert_response :success
+    assert_match markets(:clob_market).question, response.body
+    assert_no_match markets(:open_market).question, response.body
+  end
+
+  test 'invalid category param is ignored and shows all open/settled markets' do
+    get '/web/markets', params: { category: 'not_a_real_category' }
+
+    assert_response :success
+    assert_match markets(:open_market).question, response.body
+  end
 end

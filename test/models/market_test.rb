@@ -114,6 +114,35 @@ class MarketTest < ActiveSupport::TestCase
     assert_includes m.errors[:mechanism_type], 'cannot be changed after market is open'
   end
 
+  test 'category must be in CATEGORIES' do
+    m = markets(:open_market).dup
+    m.category = 'invalid_category'
+
+    assert_not m.valid?
+    assert_includes m.errors[:category], 'is not included in the list'
+  end
+
+  test 'valid category passes validation' do
+    m = build_draft
+    m.category = 'sports'
+
+    assert_predicate m, :valid?
+  end
+
+  test 'tags= strips whitespace and removes blank entries' do
+    market = markets(:open_market)
+    market.tags = ['  nba ', '', 'fed', '  ']
+
+    assert_equal %w[nba fed], market.tags
+  end
+
+  test 'tags= handles nil gracefully' do
+    market = markets(:open_market)
+    market.tags = nil
+
+    assert_equal [], market.tags
+  end
+
   test 'pricing_engine returns correct class for each mechanism_type' do
     m = markets(:open_market)
 
