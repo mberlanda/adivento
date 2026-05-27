@@ -277,7 +277,7 @@
 
 <section class="card" style="margin-bottom:16px;" data-testid="market-trust-panel">
   <h3 style="margin-top:0;">About this market</h3>
-  <p class="muted" style="font-size:0.85rem;">Status: <strong><%= @market.status.capitalize %></strong> &nbsp;&bull;&nbsp; Created by <%= @market.created_by.email.split('@').first %></p>
+  <p class="muted" style="font-size:0.85rem;">Status: <strong><%= @market.status %></strong> &nbsp;&bull;&nbsp; Created by <%= @market.created_by.email.split('@').first %></p>
   <% if @market.settled_outcome.present? %>
     <p style="font-size:0.88rem;margin:6px 0 0;">Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
   <% end %>
