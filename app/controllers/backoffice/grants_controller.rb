@@ -1,6 +1,6 @@
 module Backoffice
   class GrantsController < BaseController
-    before_action -> { require_permission!("grant.manage") }
+    before_action -> { require_permission!('grant.manage') }
 
     def index
       @users = User.order(:email)
@@ -9,14 +9,12 @@ module Backoffice
     end
 
     def create
-      user = User.find(params[:user_id])
-      permission = Permission.find(params[:permission_id])
+      user = User.find(params.expect(:user_id))
+      permission = Permission.find(params.expect(:permission_id))
       allow = ActiveModel::Type::Boolean.new.cast(params[:allow])
       reason = params[:reason].to_s
 
-      if reason.blank?
-        return redirect_to backoffice_grants_path, alert: "Reason is required"
-      end
+      return redirect_to backoffice_grants_path, alert: 'Reason is required' if reason.blank?
 
       UserGrant.create!(
         user: user,
@@ -28,14 +26,14 @@ module Backoffice
 
       AuditEvent.create!(
         actor: current_user,
-        action: "permission.user_grant_changed",
-        target_type: "User",
+        action: 'permission.user_grant_changed',
+        target_type: 'User',
         target_id: user.id,
         reason: reason,
         metadata: { permission_key: permission.key, allow: allow }
       )
 
-      redirect_to backoffice_grants_path, notice: "Grant created"
+      redirect_to backoffice_grants_path, notice: 'Grant created'
     end
   end
 end

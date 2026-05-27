@@ -1,21 +1,21 @@
 module Web
   class MarketsController < BaseController
-    skip_before_action :authenticate_request!, only: [:index, :show]
-    before_action :attach_current_user, only: [:index, :show]
+    skip_before_action :authenticate_request!, only: %i[index show]
+    before_action :attach_current_user, only: %i[index show]
 
     def index
       @markets = if current_user
                    Market.includes(:market_legs).order(created_at: :desc)
                  else
-                   Market.includes(:market_legs).where(status: [:open, :settled]).order(created_at: :desc)
+                   Market.includes(:market_legs).where(status: %i[open settled]).order(created_at: :desc)
                  end
     end
 
     def show
-      @market = Market.includes(:market_legs).find(params[:id])
+      @market = Market.includes(:market_legs).find(params.expect(:id))
       return if current_user || @market.open? || @market.settled?
 
-      redirect_to web_markets_path, alert: "This market is not publicly visible yet"
+      redirect_to web_markets_path, alert: 'This market is not publicly visible yet'
     end
 
     private

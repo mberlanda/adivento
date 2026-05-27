@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class CashoutQuoteServiceTest < ActiveSupport::TestCase
   setup do
@@ -23,8 +23,9 @@ class CashoutQuoteServiceTest < ActiveSupport::TestCase
     )
   end
 
-  test "computes gross, fee, and net payout" do
+  test 'computes gross, fee, and net payout' do
     quote = CashoutQuoteService.quote(bet: @bet)
+
     assert_equal @bet.id, quote.bet_id
     assert_equal 2000, quote.gross_payout_minor
     assert_equal 20, quote.fee_minor
@@ -32,7 +33,7 @@ class CashoutQuoteServiceTest < ActiveSupport::TestCase
     assert_in_delta 60.0, (quote.expires_at - Time.current), 5.0
   end
 
-  test "raises InvalidPosition when bet is not open" do
+  test 'raises InvalidPosition when bet is not open' do
     @bet.update!(status: :voided)
     assert_raises(CashoutQuoteService::InvalidPosition) do
       CashoutQuoteService.quote(bet: @bet)

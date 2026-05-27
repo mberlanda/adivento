@@ -9,16 +9,16 @@ class WalletGrantService
       LedgerEntry.create!(
         user: faucet_request.user,
         actor: actor,
-        entry_type: "FAUCET_GRANT",
+        entry_type: 'FAUCET_GRANT',
         amount_minor: faucet_request.amount_minor,
-        direction: "credit",
+        direction: 'credit',
         metadata: { faucet_request_id: faucet_request.id }
       )
 
       AuditEvent.create!(
         actor: actor,
-        action: "faucet_request.approve",
-        target_type: "FaucetRequest",
+        action: 'faucet_request.approve',
+        target_type: 'FaucetRequest',
         target_id: faucet_request.id,
         reason: note,
         metadata: { amount_minor: faucet_request.amount_minor }
@@ -31,8 +31,8 @@ class WalletGrantService
 
     AuditEvent.create!(
       actor: actor,
-      action: "faucet_request.reject",
-      target_type: "FaucetRequest",
+      action: 'faucet_request.reject',
+      target_type: 'FaucetRequest',
       target_id: faucet_request.id,
       reason: note,
       metadata: {}

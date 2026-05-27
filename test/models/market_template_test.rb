@@ -1,7 +1,7 @@
-require "test_helper"
+require 'test_helper'
 
 class MarketTemplateTest < ActiveSupport::TestCase
-  test "returns configured legs" do
-    assert_equal ["YES", "NO"], market_templates(:binary).legs
+  test 'returns configured legs' do
+    assert_equal %w[YES NO], market_templates(:binary).legs
   end
 end

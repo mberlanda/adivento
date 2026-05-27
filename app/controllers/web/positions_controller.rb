@@ -18,25 +18,25 @@ module Web
         expires_at: quote.expires_at.iso8601
       }
     rescue ActiveRecord::RecordNotFound
-      render json: { error: "Bet not found" }, status: :not_found
+      render json: { error: 'Bet not found' }, status: :not_found
     rescue CashoutQuoteService::InvalidPosition => e
-      render json: { error: e.message }, status: :unprocessable_entity
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     def cashout_execute
       bet = current_user_bet
       credited = CashoutExecutionService.execute!(bet: bet, actor: current_user)
-      render json: { status: "completed", credited_minor: credited }
+      render json: { status: 'completed', credited_minor: credited }
     rescue ActiveRecord::RecordNotFound
-      render json: { error: "Bet not found" }, status: :not_found
+      render json: { error: 'Bet not found' }, status: :not_found
     rescue CashoutExecutionService::InvalidPosition, CashoutQuoteService::InvalidPosition => e
-      render json: { error: e.message }, status: :unprocessable_entity
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     private
 
     def current_user_bet
-      Bet.where(user_id: current_user.id).find(params[:bet_id])
+      Bet.where(user_id: current_user.id).find(params.expect(:bet_id))
     end
 
     def serialize_position(bet)

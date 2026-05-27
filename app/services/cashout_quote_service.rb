@@ -6,8 +6,8 @@ class CashoutQuoteService
   TTL_SECONDS = 60
 
   def self.quote(bet:)
-    raise InvalidPosition, "Bet is not open" unless bet.open?
-    raise InvalidPosition, "Market is not open" unless bet.market.open?
+    raise InvalidPosition, 'Bet is not open' unless bet.open?
+    raise InvalidPosition, 'Market is not open' unless bet.market.open?
 
     gross = (bet.stake_minor * bet.market_leg.odds_minor / 10_000.0).floor
     fee = (gross * bet.market.fee_bps / 10_000.0).ceil

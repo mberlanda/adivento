@@ -6,8 +6,8 @@ module Backoffice
     helper_method :current_user
 
     before_action :authenticate_request!
-    before_action -> { require_permission!("backoffice.access") }
+    before_action -> { require_permission!('backoffice.access') }
 
-    layout "backoffice"
+    layout 'backoffice'
   end
 end

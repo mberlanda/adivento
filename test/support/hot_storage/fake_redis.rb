@@ -9,7 +9,7 @@ module HotStorage
 
     def set(key, payload, ex: nil)
       @writes[key] = { payload: payload, ex: ex }
-      "OK"
+      'OK'
     end
 
     def get(key)

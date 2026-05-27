@@ -1,19 +1,19 @@
 module Admin
   class FaucetRequestsController < BaseController
-    before_action -> { require_permission!("wallet.faucet.review") }
+    before_action -> { require_permission!('wallet.faucet.review') }
 
     def index
       render json: FaucetRequest.order(created_at: :desc).map { |request| serialize_request(request) }
     end
 
     def approve
-      faucet_request = FaucetRequest.pending.find(params[:id])
+      faucet_request = FaucetRequest.pending.find(params.expect(:id))
       WalletGrantService.approve!(faucet_request: faucet_request, actor: current_user, note: params[:note])
       render json: serialize_request(faucet_request.reload)
     end
 
     def reject
-      faucet_request = FaucetRequest.pending.find(params[:id])
+      faucet_request = FaucetRequest.pending.find(params.expect(:id))
       WalletGrantService.reject!(faucet_request: faucet_request, actor: current_user, note: params[:note])
       render json: serialize_request(faucet_request.reload)
     end

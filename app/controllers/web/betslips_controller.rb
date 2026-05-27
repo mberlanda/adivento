@@ -10,11 +10,11 @@ module Web
     rescue BetslipQuoteService::Conflict => e
       render json: { error: e.message }, status: :conflict
     rescue BetslipQuoteService::InvalidQuote => e
-      render json: { error: e.message }, status: :unprocessable_entity
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     def execute
-      quote = BetslipQuote.where(user_id: current_user.id).find(params[:quote_id])
+      quote = BetslipQuote.where(user_id: current_user.id).find(params.expect(:quote_id))
       execution = BetslipExecutionService.execute!(quote: quote, actor: current_user)
       render json: {
         execution_id: execution.id,
@@ -22,11 +22,11 @@ module Web
         status: execution.status
       }
     rescue ActiveRecord::RecordNotFound
-      render json: { error: "Quote not found" }, status: :not_found
+      render json: { error: 'Quote not found' }, status: :not_found
     rescue BetslipExecutionService::ExpiredQuote,
            BetslipExecutionService::AlreadyExecuted,
            BetslipExecutionService::ExecutionFailed => e
-      render json: { error: e.message }, status: :unprocessable_entity
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     private
@@ -36,7 +36,7 @@ module Web
       raw = raw.values if raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
       Array(raw).map do |item|
         h = item.respond_to?(:to_unsafe_h) ? item.to_unsafe_h : item
-        { market_leg_id: h[:market_leg_id] || h["market_leg_id"], stake_minor: h[:stake_minor] || h["stake_minor"] }
+        { market_leg_id: h[:market_leg_id] || h['market_leg_id'], stake_minor: h[:stake_minor] || h['stake_minor'] }
       end
     end
 

@@ -11,8 +11,9 @@ class MarketLeg < ApplicationRecord
 
   def market_leg_count_within_limit
     return unless market
-    if market.market_legs.count >= 2
-      errors.add(:base, "Market already has the maximum of 2 legs")
-    end
+
+    return unless market.market_legs.count >= 2
+
+    errors.add(:base, 'Market already has the maximum of 2 legs')
   end
 end

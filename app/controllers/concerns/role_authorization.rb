@@ -17,9 +17,9 @@ module RoleAuthorization
 
   def render_forbidden
     if request.format.html?
-      redirect_to root_path, alert: "Forbidden"
+      redirect_to root_path, alert: 'Forbidden'
     else
-      render json: { error: "Forbidden" }, status: :forbidden
+      render json: { error: 'Forbidden' }, status: :forbidden
     end
   end
 end

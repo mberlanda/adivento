@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class BetslipExecutionServiceTest < ActiveSupport::TestCase
   setup do
@@ -21,27 +21,30 @@ class BetslipExecutionServiceTest < ActiveSupport::TestCase
     )
   end
 
-  test "execute! creates bets, marks quote executed, writes audit event" do
+  test 'execute! creates bets, marks quote executed, writes audit event' do
     quote = build_quote
     initial_balance = @user.wallet.available_minor
 
     execution = BetslipExecutionService.execute!(quote: quote, actor: @user)
 
     quote.reload
+
     assert_predicate quote, :executed?
     assert_predicate execution, :completed?
     assert_equal 2, execution.bet_ids.length
 
     @user.wallet.reload
+
     assert_equal initial_balance - 1500, @user.wallet.available_minor
 
     bets = Bet.where(id: execution.bet_ids)
+
     assert bets.all?(&:open?)
 
-    assert AuditEvent.where(action: "betslip.execute", target_type: "BetslipExecution", target_id: execution.id).exists?
+    assert AuditEvent.exists?(action: 'betslip.execute', target_type: 'BetslipExecution', target_id: execution.id)
   end
 
-  test "execute! raises ExpiredQuote when quote has expired" do
+  test 'execute! raises ExpiredQuote when quote has expired' do
     quote = build_quote
     quote.update_column(:expires_at, 1.second.ago)
 
@@ -52,11 +55,12 @@ class BetslipExecutionServiceTest < ActiveSupport::TestCase
     end
 
     @user.wallet.reload
+
     assert_equal initial_balance, @user.wallet.available_minor
     assert_equal 0, Bet.where(user: @user).where.not(status: :voided).count
   end
 
-  test "execute! raises AlreadyExecuted when quote already executed" do
+  test 'execute! raises AlreadyExecuted when quote already executed' do
     quote = build_quote
     BetslipExecutionService.execute!(quote: quote, actor: @user)
 
@@ -76,6 +80,7 @@ class BetslipExecutionServiceTest < ActiveSupport::TestCase
     end
 
     @user.wallet.reload
+
     assert_equal initial_balance, @user.wallet.available_minor
     assert_equal 0, Bet.where(market: @market, user: @user).count
     assert_predicate quote.reload, :pending?

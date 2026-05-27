@@ -5,7 +5,7 @@ module Web
 
     helper_method :current_user
 
-    layout "application"
+    layout 'application'
 
     # Skip CSRF verification when the client authenticates via Bearer token.
     # Bearer tokens are already unforgeable (JWT-signed), so CSRF protection
@@ -15,7 +15,7 @@ module Web
     private
 
     def bearer_token_present?
-      request.headers["Authorization"].to_s.start_with?("Bearer ")
+      request.headers['Authorization'].to_s.start_with?('Bearer ')
     end
   end
 end

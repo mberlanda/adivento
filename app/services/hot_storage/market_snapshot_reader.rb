@@ -5,7 +5,7 @@ module HotStorage
       return hot_snapshot.deep_symbolize_keys if hot_snapshot.present?
 
       market = Market.includes(:market_legs, :bets).find(market_id)
-      MarketSnapshotProjector.project!(market: market, reason: "cache_miss", store: store)
+      MarketSnapshotProjector.project!(market: market, reason: 'cache_miss', store: store)
     rescue StandardError => e
       Rails.logger.warn("HotStorage::MarketSnapshotReader: Redis error for market #{market_id}: #{e.class}: #{e.message}")
       market = Market.includes(:market_legs, :bets).find(market_id)

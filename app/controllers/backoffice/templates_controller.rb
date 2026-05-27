@@ -1,48 +1,47 @@
 module Backoffice
   class TemplatesController < BaseController
-    before_action -> { require_permission!("template.manage") }
-    before_action :set_template, only: [:edit, :update, :destroy, :create_market]
+    before_action -> { require_permission!('template.manage') }
+    before_action :set_template, only: %i[edit update destroy create_market]
 
     def index
       @templates = MarketTemplate.order(:name)
     end
 
+    def edit; end
+
     def create
       template = MarketTemplate.new(template_params)
-      template.default_legs = params[:default_legs].to_s.split(",").map(&:strip).reject(&:blank?)
+      template.default_legs = params[:default_legs].to_s.split(',').map(&:strip).compact_blank
 
       if template.save
         AuditEvent.create!(
           actor: current_user,
-          action: "template.create",
-          target_type: "MarketTemplate",
+          action: 'template.create',
+          target_type: 'MarketTemplate',
           target_id: template.id,
           reason: params[:reason],
           metadata: {}
         )
-        redirect_to backoffice_templates_path, notice: "Template created"
+        redirect_to backoffice_templates_path, notice: 'Template created'
       else
-        redirect_to backoffice_templates_path, alert: template.errors.full_messages.join(", ")
+        redirect_to backoffice_templates_path, alert: template.errors.full_messages.join(', ')
       end
     end
 
-    def edit
-    end
-
     def update
-      legs = params[:default_legs].to_s.split(",").map(&:strip).reject(&:blank?)
+      legs = params[:default_legs].to_s.split(',').map(&:strip).compact_blank
       if @template.update(template_params.merge(default_legs: legs))
         AuditEvent.create!(
           actor: current_user,
-          action: "template.update",
-          target_type: "MarketTemplate",
+          action: 'template.update',
+          target_type: 'MarketTemplate',
           target_id: @template.id,
           reason: params[:reason],
           metadata: {}
         )
-        redirect_to backoffice_templates_path, notice: "Template updated"
+        redirect_to backoffice_templates_path, notice: 'Template updated'
       else
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_content
       end
     end
 
@@ -50,13 +49,13 @@ module Backoffice
       @template.update!(active: false)
       AuditEvent.create!(
         actor: current_user,
-        action: "template.deactivate",
-        target_type: "MarketTemplate",
+        action: 'template.deactivate',
+        target_type: 'MarketTemplate',
         target_id: @template.id,
         reason: params[:reason],
         metadata: {}
       )
-      redirect_to backoffice_templates_path, notice: "Template deactivated"
+      redirect_to backoffice_templates_path, notice: 'Template deactivated'
     end
 
     def create_market
@@ -66,13 +65,13 @@ module Backoffice
         description: params[:description],
         creator: current_user
       )
-      redirect_to backoffice_market_path(market), notice: "Market created from template"
+      redirect_to backoffice_market_path(market), notice: 'Market created from template'
     end
 
     private
 
     def set_template
-      @template = MarketTemplate.find(params[:id])
+      @template = MarketTemplate.find(params.expect(:id))
     end
 
     def template_params

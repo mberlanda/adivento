@@ -1,4 +1,4 @@
-require_dependency Rails.root.join("app/domain/catalogs/action_catalog").to_s
+require_dependency Rails.root.join('app/domain/catalogs/action_catalog').to_s
 
 class AvailableActionsService
   def self.call(user:)
@@ -17,11 +17,11 @@ class AvailableActionsService
 
   def self.audience_matches?(audience, user)
     case audience
-    when "all"
+    when 'all'
       true
-    when "guest"
+    when 'guest'
       user.nil?
-    when "signed_in"
+    when 'signed_in'
       user.present?
     else
       false

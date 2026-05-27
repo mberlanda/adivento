@@ -1,6 +1,6 @@
 module Backoffice
   class FaucetRequestsController < BaseController
-    before_action -> { require_permission!("wallet.faucet.review") }
+    before_action -> { require_permission!('wallet.faucet.review') }
 
     def index
       @pending = FaucetRequest.pending
@@ -13,23 +13,23 @@ module Backoffice
     end
 
     def approve
-      faucet_request = FaucetRequest.find(params[:id])
+      faucet_request = FaucetRequest.find(params.expect(:id))
       unless faucet_request.pending?
         return redirect_to backoffice_faucet_requests_path,
-                           alert: "Request has already been processed"
+                           alert: 'Request has already been processed'
       end
       WalletGrantService.approve!(faucet_request: faucet_request, actor: current_user)
-      redirect_to backoffice_faucet_requests_path, notice: "Faucet request approved"
+      redirect_to backoffice_faucet_requests_path, notice: 'Faucet request approved'
     end
 
     def reject
-      faucet_request = FaucetRequest.find(params[:id])
+      faucet_request = FaucetRequest.find(params.expect(:id))
       unless faucet_request.pending?
         return redirect_to backoffice_faucet_requests_path,
-                           alert: "Request has already been processed"
+                           alert: 'Request has already been processed'
       end
       WalletGrantService.reject!(faucet_request: faucet_request, actor: current_user)
-      redirect_to backoffice_faucet_requests_path, notice: "Faucet request rejected"
+      redirect_to backoffice_faucet_requests_path, notice: 'Faucet request rejected'
     end
   end
 end

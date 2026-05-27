@@ -1,4 +1,4 @@
-require_dependency Rails.root.join("app/domain/catalogs/permission_catalog").to_s
+require_dependency Rails.root.join('app/domain/catalogs/permission_catalog').to_s
 
 module Seeds
   class SyncPermissionsService

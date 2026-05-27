@@ -1,6 +1,6 @@
 module Web
   class SessionsController < ActionController::Base
-    layout "application"
+    layout 'application'
 
     def new; end
 
@@ -8,16 +8,16 @@ module Web
       user = User.find_by(email: params[:email].to_s.downcase)
       if user&.authenticate(params[:password])
         session[:user_id] = user.id
-        redirect_to root_path, notice: "Signed in"
+        redirect_to root_path, notice: 'Signed in'
       else
-        flash.now[:alert] = "Invalid credentials"
-        render :new, status: :unprocessable_entity
+        flash.now[:alert] = 'Invalid credentials'
+        render :new, status: :unprocessable_content
       end
     end
 
     def destroy
       session.delete(:user_id)
-      redirect_to root_path, notice: "Signed out"
+      redirect_to root_path, notice: 'Signed out'
     end
   end
 end

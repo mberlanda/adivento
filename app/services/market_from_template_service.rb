@@ -14,8 +14,8 @@ class MarketFromTemplateService
 
       AuditEvent.create!(
         actor: creator,
-        action: "market.template_used",
-        target_type: "Market",
+        action: 'market.template_used',
+        target_type: 'Market',
         target_id: market.id,
         metadata: { template_key: template.key }
       )

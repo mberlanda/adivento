@@ -6,12 +6,12 @@ module Sse
 
     def show
       snapshot = HotStorage::MarketSnapshotReader.call(market_id: params[:id])
-      response.headers["Content-Type"] = "text/event-stream"
-      response.headers["Cache-Control"] = "no-cache"
+      response.headers['Content-Type'] = 'text/event-stream'
+      response.headers['Cache-Control'] = 'no-cache'
 
       render plain: sse_event(
         id: snapshot[:version],
-        name: "market.snapshot.v1",
+        name: 'market.snapshot.v1',
         data: snapshot.except(:version)
       )
     end

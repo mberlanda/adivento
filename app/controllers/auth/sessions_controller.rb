@@ -2,14 +2,14 @@ module Auth
   class SessionsController < ApplicationController
     include Authentication
 
-    skip_before_action :authenticate_request!, only: [:register, :login]
+    skip_before_action :authenticate_request!, only: %i[register login]
 
     def register
       user = User.new(register_params)
       if user.save
         render json: auth_payload(user), status: :created
       else
-        render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: user.errors.full_messages }, status: :unprocessable_content
       end
     end
 
@@ -18,7 +18,7 @@ module Auth
       if user&.authenticate(params[:password])
         render json: auth_payload(user)
       else
-        render json: { error: "Invalid credentials" }, status: :unauthorized
+        render json: { error: 'Invalid credentials' }, status: :unauthorized
       end
     end
 

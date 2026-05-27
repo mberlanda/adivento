@@ -1,0 +1,88 @@
+plugins:
+  - rubocop-rails
+  - rubocop-minitest
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  Exclude:
+    - 'db/migrate/**/*'
+    - 'db/schema.rb'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'bin/**/*'
+
+# POC codebase — suppress noisy structural cops that add no safety value
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Rails i18n locale extraction is out of scope for this POC
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# Metrics cops cause too many false positives; rely on code review instead
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+# Integration tests legitimately verify multiple outcomes; 3 is too strict
+Minitest/MultipleAssertions:
+  Max: 15
+
+# update_columns/update_all/touch are intentional in seeds and test setup to bypass callbacks
+Rails/SkipsModelValidations:
+  Enabled: false
+
+# Navigation helpers use instance variables set by the controller — accepted pattern here
+Rails/HelperInstanceVariable:
+  Enabled: false
+
+# Rails auto-detects inverse_of for standard associations; explicit opt-out is noise
+Rails/InverseOf:
+  Enabled: false
+
+# ex: is the conventional Redis TTL parameter name; short names are fine here
+Naming/MethodParameterName:
+  AllowedNames:
+    - ex
+    - io
+    - id
+
+# Backoffice and Web HTML surfaces inherit from ActionController::Base (not
+# ApplicationController < ActionController::API) because they need sessions,
+# cookies, view helpers, and layouts. This is the correct and intentional design.
+Rails/ApplicationController:
+  Exclude:
+    - 'app/controllers/backoffice/base_controller.rb'
+    - 'app/controllers/web/base_controller.rb'
+
+Layout/IndentationStyle:
+  EnforcedStyle: spaces
+
+Layout/LineLength:
+  Max: 130
+  AllowedPatterns:
+    - '^\s*#'
+
+# Web surface controllers intentionally inherit from ActionController::Base
+# (not ApplicationController which is API-only) to get sessions, cookies, and
+# view rendering. This cop's suggestion is incorrect for these controllers.
+Rails/ApplicationController:
+  Enabled: false

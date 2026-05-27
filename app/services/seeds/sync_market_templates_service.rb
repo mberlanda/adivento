@@ -1,4 +1,4 @@
-require_dependency Rails.root.join("app/domain/catalogs/market_template_catalog").to_s
+require_dependency Rails.root.join('app/domain/catalogs/market_template_catalog').to_s
 
 module Seeds
   class SyncMarketTemplatesService

@@ -1,4 +1,4 @@
-require "json"
+require 'json'
 
 module HotStorage
   class NullRedis
@@ -9,12 +9,12 @@ module HotStorage
     end
 
     def xadd(*)
-      "0-0"
+      '0-0'
     end
   end
 
   class Store
-    DEFAULT_NAMESPACE = "adivento:hot:v1".freeze
+    DEFAULT_NAMESPACE = 'adivento:hot:v1'.freeze
 
     class << self
       attr_writer :current
@@ -30,16 +30,16 @@ module HotStorage
       private
 
       def build_default_redis
-        return NullRedis.new if ENV["DISABLE_HOT_STORAGE"] == "1"
+        return NullRedis.new if ENV['DISABLE_HOT_STORAGE'] == '1'
 
         begin
-          require "redis"
+          require 'redis'
         rescue LoadError
-          Rails.logger.warn("HotStorage disabled: redis gem missing")
+          Rails.logger.warn('HotStorage disabled: redis gem missing')
           return NullRedis.new
         end
 
-        redis_url = ENV["REDIS_URL"].to_s
+        redis_url = ENV['REDIS_URL'].to_s
         return NullRedis.new if redis_url.blank?
 
         client = Redis.new(
@@ -56,7 +56,8 @@ module HotStorage
       end
     end
 
-    def initialize(redis: self.class.default_redis, namespace: DEFAULT_NAMESPACE, snapshot_ttl_seconds: 120, stream_maxlen: 5_000)
+    def initialize(redis: self.class.default_redis, namespace: DEFAULT_NAMESPACE, snapshot_ttl_seconds: 120,
+                   stream_maxlen: 5_000)
       @redis = redis
       @namespace = namespace
       @snapshot_ttl_seconds = snapshot_ttl_seconds
@@ -82,9 +83,9 @@ module HotStorage
       @redis.xadd(
         stream_key(market_id),
         {
-          "event" => event_name,
-          "version" => version.to_s,
-          "payload" => payload.to_json
+          'event' => event_name,
+          'version' => version.to_s,
+          'payload' => payload.to_json
         },
         maxlen: @stream_maxlen,
         approximate: true

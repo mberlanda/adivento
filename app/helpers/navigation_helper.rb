@@ -7,7 +7,7 @@ module NavigationHelper
 
   def navigation_actions
     @navigation_actions ||= AvailableActionsService.call(user: current_nav_user)
-                                                 .select { |action| action[:surface] == "navigation" }
+                                                   .select { |action| action[:surface] == 'navigation' }
   end
 
   def nav_action_path(action_key)
@@ -19,6 +19,6 @@ module NavigationHelper
   end
 
   def backoffice_visible_in_nav?
-    nav_action_available?("navigation.backoffice")
+    nav_action_available?('navigation.backoffice')
   end
 end

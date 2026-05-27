@@ -1,6 +1,6 @@
 class LedgerEntry < ApplicationRecord
   belongs_to :user
-  belongs_to :actor, class_name: "User"
+  belongs_to :actor, class_name: 'User'
 
   validates :entry_type, presence: true
   validates :direction, inclusion: { in: %w[credit debit] }

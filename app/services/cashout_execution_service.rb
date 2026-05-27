@@ -4,8 +4,8 @@ class CashoutExecutionService
   def self.execute!(bet:, actor:)
     ApplicationRecord.transaction do
       locked_bet = Bet.lock.find(bet.id)
-      raise InvalidPosition, "Bet is not open" unless locked_bet.open?
-      raise InvalidPosition, "Market is not open" unless locked_bet.market.open?
+      raise InvalidPosition, 'Bet is not open' unless locked_bet.open?
+      raise InvalidPosition, 'Market is not open' unless locked_bet.market.open?
 
       quote = CashoutQuoteService.quote(bet: locked_bet)
 
@@ -17,9 +17,9 @@ class CashoutExecutionService
       LedgerEntry.create!(
         user: locked_bet.user,
         actor: actor,
-        entry_type: "BET_CASHOUT_PAYOUT",
+        entry_type: 'BET_CASHOUT_PAYOUT',
         amount_minor: quote.net_payout_minor,
-        direction: "credit",
+        direction: 'credit',
         metadata: { bet_id: locked_bet.id, market_id: locked_bet.market_id }
       )
 
@@ -27,17 +27,17 @@ class CashoutExecutionService
         LedgerEntry.create!(
           user: locked_bet.user,
           actor: actor,
-          entry_type: "BET_CASHOUT_FEE",
+          entry_type: 'BET_CASHOUT_FEE',
           amount_minor: quote.fee_minor,
-          direction: "debit",
+          direction: 'debit',
           metadata: { bet_id: locked_bet.id, market_id: locked_bet.market_id }
         )
       end
 
       AuditEvent.create!(
         actor: actor,
-        action: "bet.cashout",
-        target_type: "Bet",
+        action: 'bet.cashout',
+        target_type: 'Bet',
         target_id: locked_bet.id,
         metadata: {
           bet_id: locked_bet.id,

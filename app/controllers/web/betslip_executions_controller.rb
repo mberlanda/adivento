@@ -1,7 +1,7 @@
 module Web
   class BetslipExecutionsController < BaseController
     def show
-      execution = BetslipExecution.where(user_id: current_user.id).find(params[:id])
+      execution = BetslipExecution.where(user_id: current_user.id).find(params.expect(:id))
       render json: {
         execution_id: execution.id,
         quote_id: execution.betslip_quote_id,
@@ -9,7 +9,7 @@ module Web
         status: execution.status
       }
     rescue ActiveRecord::RecordNotFound
-      render json: { error: "Execution not found" }, status: :not_found
+      render json: { error: 'Execution not found' }, status: :not_found
     end
   end
 end

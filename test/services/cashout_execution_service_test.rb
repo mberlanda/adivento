@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class CashoutExecutionServiceTest < ActiveSupport::TestCase
   setup do
@@ -23,37 +23,41 @@ class CashoutExecutionServiceTest < ActiveSupport::TestCase
     )
   end
 
-  test "credits net payout, voids bet, writes ledger and audit" do
+  test 'credits net payout, voids bet, writes ledger and audit' do
     initial_balance = @user.wallet.available_minor
 
     credited = CashoutExecutionService.execute!(bet: @bet, actor: @user)
 
     assert_equal 1980, credited
     @bet.reload
+
     assert_predicate @bet, :voided?
 
     @user.wallet.reload
+
     assert_equal initial_balance + 1980, @user.wallet.available_minor
 
-    assert LedgerEntry.where(user: @user, entry_type: "BET_CASHOUT_PAYOUT", direction: "credit", amount_minor: 1980).exists?
-    assert LedgerEntry.where(user: @user, entry_type: "BET_CASHOUT_FEE", direction: "debit", amount_minor: 20).exists?
-    assert AuditEvent.where(action: "bet.cashout", target_type: "Bet", target_id: @bet.id).exists?
+    assert LedgerEntry.exists?(user: @user, entry_type: 'BET_CASHOUT_PAYOUT', direction: 'credit',
+                               amount_minor: 1980)
+    assert LedgerEntry.exists?(user: @user, entry_type: 'BET_CASHOUT_FEE', direction: 'debit', amount_minor: 20)
+    assert AuditEvent.exists?(action: 'bet.cashout', target_type: 'Bet', target_id: @bet.id)
   end
 
-  test "skips fee ledger entry when fee is zero" do
+  test 'skips fee ledger entry when fee is zero' do
     @market.update!(fee_bps: 0)
     CashoutExecutionService.execute!(bet: @bet.reload, actor: @user)
-    assert_not LedgerEntry.where(user: @user, entry_type: "BET_CASHOUT_FEE").exists?
+
+    assert_not LedgerEntry.exists?(user: @user, entry_type: 'BET_CASHOUT_FEE')
   end
 
-  test "raises InvalidPosition when bet is already voided" do
+  test 'raises InvalidPosition when bet is already voided' do
     @bet.update!(status: :voided)
     assert_raises(CashoutExecutionService::InvalidPosition) do
       CashoutExecutionService.execute!(bet: @bet, actor: @user)
     end
   end
 
-  test "raises InvalidPosition when bet is settled" do
+  test 'raises InvalidPosition when bet is settled' do
     @bet.update!(status: :settled_win)
     assert_raises(CashoutExecutionService::InvalidPosition) do
       CashoutExecutionService.execute!(bet: @bet, actor: @user)

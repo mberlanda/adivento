@@ -31,7 +31,10 @@ gem 'bootsnap', '>= 1.18', require: false
 # gem 'rack-cors'
 
 group :development, :test do
-  gem 'debug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'rubocop', '~> 1.86.2', require: false
+  gem 'rubocop-minitest', '~> 0.39.1', require: false
+  gem 'rubocop-rails', '~> 2.35.3', require: false
 end
 
 group :development do
@@ -39,4 +42,4 @@ group :development do
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

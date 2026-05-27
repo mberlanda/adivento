@@ -21,10 +21,10 @@ module Authentication
   end
 
   def find_authenticated_user
-    bearer = request.headers["Authorization"].to_s.split.last
+    bearer = request.headers['Authorization'].to_s.split.last
     if bearer.present?
       payload = JsonWebToken.decode(bearer)
-      return User.find_by(id: payload["user_id"])
+      return User.find_by(id: payload['user_id'])
     end
 
     User.find_by(id: session[:user_id]) if respond_to?(:session)
@@ -32,13 +32,15 @@ module Authentication
 
   def render_unauthorized
     if browser_page_request?
-      redirect_to signin_path, alert: "Please sign in"
+      redirect_to signin_path, alert: 'Please sign in'
     else
-      render json: { error: "Unauthorized" }, status: :unauthorized
+      render json: { error: 'Unauthorized' }, status: :unauthorized
     end
   end
 
   def browser_page_request?
-    request.format.html? && request.path.start_with?("/web", "/backoffice", "/signin", "/signout", "/") && !request.path.start_with?("/auth", "/admin", "/wallet", "/faucet_requests", "/markets", "/sse")
+    request.format.html? && request.path.start_with?('/web', '/backoffice', '/signin', '/signout',
+                                                     '/') && !request.path.start_with?('/auth', '/admin', '/wallet',
+                                                                                       '/faucet_requests', '/markets', '/sse')
   end
 end

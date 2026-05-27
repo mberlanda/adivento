@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class SettlementServiceTest < ActiveSupport::TestCase
   setup do
@@ -48,71 +48,77 @@ class SettlementServiceTest < ActiveSupport::TestCase
     )
   end
 
-  test "settles market and transitions bets" do
-    SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+  test 'settles market and transitions bets' do
+    SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
 
     @market.reload
+
     assert_predicate @market, :settled?
-    assert_equal "YES", @market.settled_outcome
+    assert_equal 'YES', @market.settled_outcome
 
     @winner_bet.reload
+
     assert_predicate @winner_bet, :settled_win?
 
     @loser_bet.reload
+
     assert_predicate @loser_bet, :settled_loss?
   end
 
-  test "credits payout to winner wallet" do
+  test 'credits payout to winner wallet' do
     initial_balance = @winner_user.wallet.available_minor
 
-    SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+    SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
 
     @winner_user.wallet.reload
+
     assert_equal initial_balance + @winner_bet.potential_payout_minor, @winner_user.wallet.available_minor
   end
 
-  test "does not change loser wallet on settlement" do
+  test 'does not change loser wallet on settlement' do
     initial_balance = @loser_user.wallet.available_minor
 
-    SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+    SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
 
     @loser_user.wallet.reload
+
     assert_equal initial_balance, @loser_user.wallet.available_minor
   end
 
-  test "creates ledger entry for each winner" do
+  test 'creates ledger entry for each winner' do
     assert_difference("LedgerEntry.where(entry_type: 'BET_WIN_PAYOUT').count", 1) do
-      SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+      SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
     end
   end
 
-  test "creates audit events for market settle and each bet" do
-    assert_difference("AuditEvent.count", 3) do
-      SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+  test 'creates audit events for market settle and each bet' do
+    assert_difference('AuditEvent.count', 3) do
+      SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
     end
   end
 
-  test "raises on invalid outcome" do
+  test 'raises on invalid outcome' do
     assert_raises(SettlementService::InvalidSettlement) do
-      SettlementService.settle!(market: @market, outcome: "DRAW", actor: @actor)
+      SettlementService.settle!(market: @market, outcome: 'DRAW', actor: @actor)
     end
   end
 
-  test "raises if market is not open" do
+  test 'raises if market is not open' do
     @market.update!(status: :draft)
     assert_raises(SettlementService::InvalidSettlement) do
-      SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+      SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
     end
   end
 
-  test "skips already-settled or voided bets" do
+  test 'skips already-settled or voided bets' do
     @loser_bet.update!(status: :voided)
 
     assert_nothing_raised do
-      SettlementService.settle!(market: @market, outcome: "YES", actor: @actor)
+      SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
     end
 
     @loser_bet.reload
+
     assert_predicate @loser_bet, :voided?
   end
 end
