@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_100005) do
   create_table "audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -127,16 +124,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
     t.text "description", null: false
     t.integer "fee_bps", default: 100, null: false
     t.bigint "liability_cap_minor", default: 100000, null: false
+    t.bigint "liquidity_subsidy_minor"
+    t.float "lmsr_b_parameter"
+    t.bigint "lmsr_q_no", default: 0, null: false
+    t.bigint "lmsr_q_yes", default: 0, null: false
     t.string "mechanism_type", default: "fixed_odds", null: false
+    t.bigint "parimutuel_pool_no_minor", default: 0, null: false
+    t.bigint "parimutuel_pool_yes_minor", default: 0, null: false
     t.string "question", null: false
     t.integer "settled_by_id"
     t.string "settled_outcome"
+    t.integer "spread_fee_bps"
     t.integer "status", default: 0, null: false
     t.boolean "structure_locked", default: false, null: false
+    t.integer "takeout_bps"
+    t.integer "taker_fee_bps"
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_markets_on_created_by_id"
     t.index ["settled_by_id"], name: "index_markets_on_settled_by_id"
     t.index ["status"], name: "index_markets_on_status"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.integer "cancelled_quantity", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "filled_quantity", default: 0, null: false
+    t.bigint "market_id", null: false
+    t.bigint "market_leg_id", null: false
+    t.integer "price_cents", null: false
+    t.integer "quantity", null: false
+    t.string "side", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "time_in_force", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["market_id", "side", "price_cents", "status"], name: "index_orders_book"
+    t.index ["market_id"], name: "index_orders_on_market_id"
+    t.index ["market_leg_id"], name: "index_orders_on_market_leg_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "permissions", force: :cascade do |t|
@@ -146,6 +171,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
     t.string "key", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_permissions_on_key", unique: true
+  end
+
+  create_table "price_snapshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "market_id", null: false
+    t.string "mechanism_type", null: false
+    t.datetime "recorded_at", null: false
+    t.json "snapshot_data", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["market_id", "recorded_at"], name: "index_price_snapshots_on_market_id_and_recorded_at"
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -206,6 +241,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_26_200210) do
   add_foreign_key "market_legs", "markets"
   add_foreign_key "markets", "users", column: "created_by_id"
   add_foreign_key "markets", "users", column: "settled_by_id"
+  add_foreign_key "orders", "market_legs"
+  add_foreign_key "orders", "markets"
+  add_foreign_key "orders", "users"
+  add_foreign_key "price_snapshots", "markets"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "user_grants", "permissions"
   add_foreign_key "user_grants", "users"
