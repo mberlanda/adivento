@@ -133,7 +133,7 @@ module Clob
         amount_minor: taker_stake, metadata: fill_meta
       )
       LedgerEntry.create!(
-        user: maker.user, actor: maker.user,
+        user: maker.user, actor: taker.user,
         entry_type: 'ORDER_FILL_CREDIT', direction: 'credit',
         amount_minor: maker_stake, metadata: fill_meta
       )

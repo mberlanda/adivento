@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_100005) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_100006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -126,6 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100005) do
     t.integer "created_by_id", null: false
     t.text "description", null: false
     t.integer "fee_bps", default: 100, null: false
+    t.integer "last_fill_price_cents"
     t.bigint "liability_cap_minor", default: 100000, null: false
     t.bigint "liquidity_subsidy_minor"
     t.float "lmsr_b_parameter"
