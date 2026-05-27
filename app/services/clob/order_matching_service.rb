@@ -138,6 +138,8 @@ module Clob
         amount_minor: maker_stake, metadata: fill_meta
       )
 
+      @market.update_columns(last_fill_price_cents: price, updated_at: Time.current)
+
       # Taker fee charged on taker's stake
       fee = (@market.taker_fee_bps.to_i * taker_stake / 10_000.0).ceil
       if fee.positive?
