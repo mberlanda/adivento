@@ -15,8 +15,9 @@ module Web
       @markets = @markets.where(category: @selected_category) if @selected_category
       if @search_query
         term = "%#{@search_query}%"
+        t = Market.arel_table
         @markets = @markets.where(
-          'question ILIKE :t OR description ILIKE :t OR category ILIKE :t', t: term
+          t[:question].matches(term).or(t[:description].matches(term)).or(t[:category].matches(term))
         )
       end
       @markets = @markets.order(created_at: :desc)
