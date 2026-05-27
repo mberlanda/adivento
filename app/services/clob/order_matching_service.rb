@@ -126,6 +126,18 @@ module Clob
       taker_wallet = taker.user.wallet.lock!
       taker_wallet.update!(reserved_minor: taker_wallet.reserved_minor - taker_stake)
 
+      fill_meta = { market_id: @market.id, fill_price: price, fill_qty: qty }
+      LedgerEntry.create!(
+        user: taker.user, actor: taker.user,
+        entry_type: 'ORDER_FILL_STAKE', direction: 'debit',
+        amount_minor: taker_stake, metadata: fill_meta
+      )
+      LedgerEntry.create!(
+        user: maker.user, actor: maker.user,
+        entry_type: 'ORDER_FILL_CREDIT', direction: 'credit',
+        amount_minor: maker_stake, metadata: fill_meta
+      )
+
       # Taker fee charged on taker's stake
       fee = (@market.taker_fee_bps.to_i * taker_stake / 10_000.0).ceil
       if fee.positive?

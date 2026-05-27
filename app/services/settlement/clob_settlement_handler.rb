@@ -30,7 +30,7 @@ module Settlement
         payout = order.filled_quantity * 100
         next if payout.zero?
 
-        w = order.user.wallet
+        w = order.user.wallet.lock!
         w.update!(available_minor: w.available_minor + payout)
         LedgerEntry.create!(
           user: order.user, actor: @settled_by,
