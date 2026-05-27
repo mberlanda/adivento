@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_100002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -148,6 +148,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100001) do
     t.index ["status"], name: "index_markets_on_status"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.integer "cancelled_quantity", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.integer "filled_quantity", default: 0, null: false
+    t.bigint "market_id", null: false
+    t.bigint "market_leg_id", null: false
+    t.integer "price_cents", null: false
+    t.integer "quantity", null: false
+    t.string "side", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "time_in_force", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["market_id", "side", "price_cents", "status"], name: "index_orders_book"
+    t.index ["market_id"], name: "index_orders_on_market_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
+  end
+
   create_table "permissions", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -215,6 +233,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100001) do
   add_foreign_key "market_legs", "markets"
   add_foreign_key "markets", "users", column: "created_by_id"
   add_foreign_key "markets", "users", column: "settled_by_id"
+  add_foreign_key "orders", "market_legs"
+  add_foreign_key "orders", "markets"
+  add_foreign_key "orders", "users"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "user_grants", "permissions"
   add_foreign_key "user_grants", "users"
