@@ -59,4 +59,12 @@ class WebCustomerPagesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match markets(:open_market).question, response.body
   end
+
+  test 'search q matches market tags' do
+    get '/web/markets', params: { q: 'rates' }
+
+    assert_response :success
+    assert_match markets(:clob_market).question, response.body
+    assert_no_match markets(:open_market).question, response.body
+  end
 end
