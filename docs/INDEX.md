@@ -119,6 +119,8 @@ Plan approved?
 - **F-002: Full-text search** — Arel ILIKE across question/description/tags (PR #16, `c400e5f`)
 - **F-005: User profile page** — wallet stat-grid, P&L summary, bet history, faucet request form, nav balance chip (PR #17, `07d79ce`)
 - **F-003: Market detail enrichment** — `close_at`, `resolution_criteria`, `resolution_source`; backoffice + customer display; admin API extended (PR #18, `b088d44`)
+- **F-007: Public leaderboard** — ranked by net P&L, public page, nav link (PR #18)
+- **Betting forms on market show** — quick-bet panel for all 4 mechanism types (fixed_odds/CLOB/LMSR/parimutuel); signed-in users get form, guests get sign-in prompt (PR #18)
 - **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
 
 ### 🔄 In Progress

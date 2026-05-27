@@ -42,9 +42,35 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 - Market show: mechanism-appropriate price panels (fixed-odds, CLOB, LMSR, parimutuel), stat grid
 - Seeds: 17 markets across 5 categories, 5 users, 8 demo bets; idempotent via `find_or_initialize_by`
 
+### F-007: Public leaderboard page (PR #18)
+- `GET /web/leaderboard` — ranked list of players by net P&L from settled bets
+- `Web::LeaderboardController` — SQL aggregation via Arel, grouped by user, top 50
+- Nav link (always visible, public); medal icons for top 3
+- Unit tests: `test/integration/web_leaderboard_test.rb` (5 tests)
+- E2E tests: `e2e/playwright/tests/leaderboard.spec.js`
+
+### Betting forms on customer market pages (PR #18)
+- Quick-bet panel on market show page for signed-in players:
+  - **Fixed-odds**: leg radio + stake form → `POST /web/markets/:id/bets` (new `Web::BetsController`)
+  - **CLOB**: price + quantity limit order form → `POST /web/markets/:id/orders`
+  - **LMSR**: side + shares form → `POST /web/markets/:id/lmsr_trades`
+  - **Parimutuel**: side + stake form → `POST /web/markets/:id/parimutuel_bets`
+- Unauthenticated users see a "Sign in to participate" prompt
+- `LmsrTradesController` and `ParimutuelBetsController` updated to `respond_to` HTML+JSON
+- `OrdersController` updated to `respond_to` HTML+JSON with side `.upcase` normalization
+- Unit tests: `test/integration/web_bets_test.rb` (4 tests)
+- E2E tests: `e2e/playwright/tests/quick-bet.spec.js`
+
+### Admin API extension (PR #18)
+- `admin/markets_controller.rb` `market_params` now permits `close_at`, `resolution_criteria`, `resolution_source`
+
 ### Tests added (PR #18)
 - `test/integration/web_faucet_requests_test.rb` — 5 integration tests (auth gate, create, defaults)
+- `test/integration/web_leaderboard_test.rb` — 5 integration tests
+- `test/integration/web_bets_test.rb` — 4 integration tests
 - `e2e/playwright/tests/profile.spec.js` — profile page, nav balance chip, faucet form, F-003 resolution panel, market stats
+- `e2e/playwright/tests/leaderboard.spec.js` — public access, settled player, nav link
+- `e2e/playwright/tests/quick-bet.spec.js` — quick-bet panel visibility, form submission, auth prompt
 
 ### Key files
 - `app/views/layouts/application.html.erb` — CSS system + nav
