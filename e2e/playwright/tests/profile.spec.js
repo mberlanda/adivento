@@ -36,12 +36,12 @@ test.describe('User profile page', () => {
     await page.goto('/web/profile');
 
     const details = page.locator('details').filter({ hasText: 'Request more tokens' });
-    await details.click();
+    await details.locator('summary').click();
 
     const amountInput = details.locator('input[name="amount_minor"]');
     await amountInput.fill('5000');
 
-    await details.locator('button[type="submit"]').click();
+    await page.getByTestId('faucet-submit').click();
     await page.waitForURL(/web\/profile/);
     await expect(page.locator('.notice')).toContainText('Token request submitted');
   });
