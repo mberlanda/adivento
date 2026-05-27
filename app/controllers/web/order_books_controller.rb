@@ -15,7 +15,7 @@ module Web
       asks = market.orders.where(side: 'NO', status: %w[open partial])
                    .group(:price_cents)
                    .sum('quantity - filled_quantity - cancelled_quantity')
-                   .sort.reverse.first(10)
+                   .sort.first(10)
                    .map { |price, qty| { price_cents: price, quantity: qty } }
 
       render json: {
