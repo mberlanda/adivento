@@ -13,3 +13,6 @@
 /coverage/
 /vendor/bundle
 /.DS_Store
+
+# Playwright test reports
+e2e/playwright/playwright-report/
