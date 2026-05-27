@@ -6,12 +6,20 @@ module Web
     def index
       raw_cat = params[:category].presence
       @selected_category = Market::CATEGORIES.include?(raw_cat) ? raw_cat : nil
+      @search_query = params[:q].presence
       @markets = if current_user
                    Market.includes(:market_legs)
                  else
                    Market.includes(:market_legs).where(status: %i[open settled])
                  end
       @markets = @markets.where(category: @selected_category) if @selected_category
+      if @search_query
+        term = "%#{@search_query}%"
+        t = Market.arel_table
+        @markets = @markets.where(
+          t[:question].matches(term).or(t[:description].matches(term)).or(t[:category].matches(term))
+        )
+      end
       @markets = @markets.order(created_at: :desc)
     end
 
