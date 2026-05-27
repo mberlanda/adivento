@@ -59,4 +59,20 @@ class WebCustomerPagesTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match markets(:open_market).question, response.body
   end
+
+  test 'search query filters markets by question text' do
+    get '/web/markets', params: { q: 'rain tomorrow' }
+
+    assert_response :success
+    assert_match markets(:open_market).question, response.body
+    assert_no_match markets(:clob_market).question, response.body
+  end
+
+  test 'search and category compose with AND logic' do
+    get '/web/markets', params: { q: 'rain tomorrow', category: 'economics' }
+
+    assert_response :success
+    assert_select '[data-testid="bets-empty"], .cards', true
+    assert_no_match markets(:open_market).question, response.body
+  end
 end
