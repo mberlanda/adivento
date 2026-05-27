@@ -5,7 +5,7 @@
   <h3>Trust Panel</h3>
   <p>Status: <strong><%= @market.status %></strong> &nbsp; Category: <strong data-testid="market-category"><%= @market.category.capitalize %></strong></p>
   <% if @market.tags.any? %>
-    <p data-testid="market-tags">Tags: <%= @market.tags.map { |t| "<span class='badge'>#{h(t)}</span>" }.join(' ').html_safe %></p>
+    <p data-testid="market-tags">Tags: <%= safe_join(@market.tags.map { |t| content_tag(:span, t, class: 'badge') }, ' ') %></p>
   <% end %>
   <p>Creator: <%= @market.created_by.email %></p>
   <% if @market.settled_outcome.present? %>

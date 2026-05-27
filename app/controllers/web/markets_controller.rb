@@ -4,7 +4,8 @@ module Web
     before_action :attach_current_user, only: %i[index show]
 
     def index
-      @selected_category = params[:category].presence
+      raw_cat = params[:category].presence
+      @selected_category = Market::CATEGORIES.include?(raw_cat) ? raw_cat : nil
       @markets = if current_user
                    Market.includes(:market_legs)
                  else
