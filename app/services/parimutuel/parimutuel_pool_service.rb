@@ -5,6 +5,7 @@ module Parimutuel
     def self.add_stake(market:, user:, side:, stake_minor:)
       ApplicationRecord.transaction do
         raise 'Market is not open' unless market.open?
+        raise 'Invalid side; must be YES or NO' unless %w[YES NO].include?(side)
 
         wallet = user.wallet.lock!
         raise 'Insufficient funds' if wallet.available_minor < stake_minor

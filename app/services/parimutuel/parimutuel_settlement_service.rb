@@ -34,7 +34,7 @@ module Parimutuel
                      payout = (entry.amount_minor * payout_ratio).floor
                      next if payout.zero?
 
-                     w = entry.user.wallet
+                     w = entry.user.wallet.lock!
                      w.update!(available_minor: w.available_minor + payout)
                      LedgerEntry.create!(
                        user: entry.user, actor: @settled_by,

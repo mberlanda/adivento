@@ -52,7 +52,8 @@ module Lmsr
         @market.lock!
         @market.update_columns(
           lmsr_q_yes: @market.lmsr_q_yes + delta_yes,
-          lmsr_q_no: @market.lmsr_q_no + delta_no
+          lmsr_q_no: @market.lmsr_q_no + delta_no,
+          updated_at: Time.current
         )
 
         AuditEvent.create!(
