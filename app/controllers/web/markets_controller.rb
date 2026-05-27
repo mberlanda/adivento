@@ -35,6 +35,7 @@ module Web
 
       @volume_minor = @market.bets.sum(:net_stake_minor)
       @open_bet_count = @market.bets.where(status: :open).count
+      @user_bets = current_user ? @market.bets.includes(:market_leg).where(user_id: current_user.id).order(created_at: :desc) : []
     end
 
     private

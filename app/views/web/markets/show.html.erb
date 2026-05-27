@@ -242,6 +242,39 @@
   </section>
 <% end %>
 
+<% if current_user && @user_bets.any? %>
+  <section class="card" style="margin-bottom:16px;" data-testid="user-bets-panel">
+    <h3 style="margin-top:0;">Your Bets</h3>
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="padding:6px 0;font-size:0.8rem;color:var(--muted);text-align:left;">Outcome</th>
+          <th style="padding:6px 8px;font-size:0.8rem;color:var(--muted);text-align:right;">Stake</th>
+          <th style="padding:6px 8px;font-size:0.8rem;color:var(--muted);text-align:right;">Payout</th>
+          <th style="padding:6px 0;font-size:0.8rem;color:var(--muted);text-align:right;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @user_bets.each do |bet| %>
+          <tr style="border-bottom:1px solid var(--border);" data-testid="user-bet-<%= bet.id %>">
+            <td style="padding:6px 0;font-size:0.88rem;"><strong><%= bet.market_leg.label %></strong></td>
+            <td style="padding:6px 8px;font-size:0.88rem;text-align:right;"><%= number_with_delimiter(bet.net_stake_minor) %> ADIV</td>
+            <td style="padding:6px 8px;font-size:0.88rem;text-align:right;"><%= number_with_delimiter(bet.potential_payout_minor) %> ADIV</td>
+            <td style="padding:6px 0;font-size:0.82rem;text-align:right;">
+              <% status_color = case bet.status
+                                when 'open' then 'var(--accent)'
+                                when 'settled_win' then 'var(--accent)'
+                                when 'settled_loss' then '#d9534f'
+                                else 'var(--muted)' end %>
+              <span style="color:<%= status_color %>;"><%= bet.status.gsub('_', ' ').capitalize %></span>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+<% end %>
+
 <section class="card" style="margin-bottom:16px;" data-testid="market-trust-panel">
   <h3 style="margin-top:0;">About this market</h3>
   <p class="muted" style="font-size:0.85rem;">Status: <strong><%= @market.status.capitalize %></strong> &nbsp;&bull;&nbsp; Created by <%= @market.created_by.email.split('@').first %></p>
