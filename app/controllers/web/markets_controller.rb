@@ -16,8 +16,12 @@ module Web
       if @search_query
         term = "%#{@search_query}%"
         t = Market.arel_table
+        tags_text = Arel::Nodes::NamedFunction.new('CAST', [t[:tags].as('TEXT')])
         @markets = @markets.where(
-          t[:question].matches(term).or(t[:description].matches(term)).or(t[:category].matches(term))
+          t[:question].matches(term)
+            .or(t[:description].matches(term))
+            .or(t[:category].matches(term))
+            .or(tags_text.matches(term))
         )
       end
       @markets = @markets.order(created_at: :desc)

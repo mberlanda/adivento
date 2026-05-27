@@ -28,7 +28,7 @@ clob_market:
   status: 1
   mechanism_type: clob
   category: economics
-  tags: []
+  tags: '["fed","rates"]'
   taker_fee_bps: 70
   fee_bps: 0
   liability_cap_minor: 100000
