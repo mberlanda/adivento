@@ -72,6 +72,7 @@ Rails/ApplicationController:
   Exclude:
     - 'app/controllers/backoffice/base_controller.rb'
     - 'app/controllers/web/base_controller.rb'
+    - 'app/controllers/web/sessions_controller.rb'
 
 Layout/IndentationStyle:
   EnforcedStyle: spaces
@@ -80,9 +81,3 @@ Layout/LineLength:
   Max: 130
   AllowedPatterns:
     - '^\s*#'
-
-# Web surface controllers intentionally inherit from ActionController::Base
-# (not ApplicationController which is API-only) to get sessions, cookies, and
-# view rendering. This cop's suggestion is incorrect for these controllers.
-Rails/ApplicationController:
-  Enabled: false
