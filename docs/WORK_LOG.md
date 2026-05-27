@@ -6,7 +6,8 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ## 2026-05-27 — Pluggable Market Mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds)
 
-**Commits:** `90728bd`–`b26bf56`
+**PRs:** #5 (db+market), #9 (clob), #7 (lmsr+parimutuel), #10 (settlement+ui+docs)
+**Commits on main:** `74857ed`, `ba7d2dc`, `ca3f626`, `4a7555d`
 
 ### Architecture
 - `markets.mechanism_type` (existing string column) is the single branch point across all mechanism logic

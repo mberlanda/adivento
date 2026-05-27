@@ -107,7 +107,7 @@ Plan approved?
   - [x] SSE: projector called after CLOB, LMSR, and parimutuel trades
   - [x] Backoffice UI: mechanism picker + conditional fee fields
   - [x] Web UI: mechanism-appropriate price display
-  - 216 tests, 0 failures, 91.87% line coverage
+  - 216 tests, 0 failures, 91.26% line coverage
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
