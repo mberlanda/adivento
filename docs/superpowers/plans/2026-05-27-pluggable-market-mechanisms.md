@@ -69,7 +69,7 @@
 **Files:**
 - Create: `db/migrate/20260527100001_add_mechanism_columns_to_markets.rb`
 
-- [ ] **Step 1.1: Write migration**
+- [x] **Step 1.1: Write migration**
 
 ```ruby
 # db/migrate/20260527100001_add_mechanism_columns_to_markets.rb
@@ -92,21 +92,21 @@ class AddMechanismColumnsToMarkets < ActiveRecord::Migration[8.1]
 end
 ```
 
-- [ ] **Step 1.2: Run migration**
+- [x] **Step 1.2: Run migration**
 
 ```bash
 bin/rails db:migrate
 ```
 Expected: `AddMechanismColumnsToMarkets: migrated`
 
-- [ ] **Step 1.3: Verify schema.rb reflects new columns on markets table**
+- [x] **Step 1.3: Verify schema.rb reflects new columns on markets table**
 
 ```bash
 grep -E "taker_fee_bps|liquidity_subsidy_minor|takeout_bps|lmsr_q|parimutuel_pool" db/schema.rb
 ```
 Expected: 7 lines with the new column names.
 
-- [ ] **Step 1.4: Commit**
+- [x] **Step 1.4: Commit**
 
 ```bash
 git add db/migrate/20260527100001_add_mechanism_columns_to_markets.rb db/schema.rb
@@ -123,7 +123,7 @@ git commit -m "feat(db): add mechanism fee columns and runtime state to markets"
 - Modify: `app/models/market.rb`
 - Test: `test/models/market_test.rb` (modify existing)
 
-- [ ] **Step 2.1: Write failing tests**
+- [x] **Step 2.1: Write failing tests**
 
 Add to `test/models/market_test.rb`:
 
@@ -194,14 +194,14 @@ test "pricing_engine returns correct class for each mechanism_type" do
 end
 ```
 
-- [ ] **Step 2.2: Run tests to confirm failure**
+- [x] **Step 2.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/models/market_test.rb -v
 ```
 Expected: 6 new failures for missing validation and method.
 
-- [ ] **Step 2.3: Implement in Market model**
+- [x] **Step 2.3: Implement in Market model**
 
 Add to `app/models/market.rb`:
 
@@ -284,14 +284,14 @@ def mechanism_fee_config_present
 end
 ```
 
-- [ ] **Step 2.4: Run tests to confirm pass**
+- [x] **Step 2.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/models/market_test.rb -v
 ```
 Expected: all market tests pass.
 
-- [ ] **Step 2.5: Commit**
+- [x] **Step 2.5: Commit**
 
 ```bash
 git add app/models/market.rb test/models/market_test.rb
@@ -309,7 +309,7 @@ git commit -m "feat(market): mechanism validations and pricing_engine factory"
 - Create: `app/models/order.rb`
 - Create: `test/fixtures/orders.yml`
 
-- [ ] **Step 3.1: Write migration**
+- [x] **Step 3.1: Write migration**
 
 ```ruby
 # db/migrate/20260527100002_create_orders.rb
@@ -339,7 +339,7 @@ class CreateOrders < ActiveRecord::Migration[8.1]
 end
 ```
 
-- [ ] **Step 3.2: Write Order model**
+- [x] **Step 3.2: Write Order model**
 
 ```ruby
 # app/models/order.rb
@@ -371,7 +371,7 @@ class Order < ApplicationRecord
 end
 ```
 
-- [ ] **Step 3.3: Write fixture**
+- [x] **Step 3.3: Write fixture**
 
 ```yaml
 # test/fixtures/orders.yml
@@ -388,7 +388,7 @@ open_yes_order:
   time_in_force: 0
 ```
 
-- [ ] **Step 3.4: Run migration and basic model test**
+- [x] **Step 3.4: Run migration and basic model test**
 
 ```bash
 bin/rails db:migrate
@@ -396,7 +396,7 @@ bin/rails test test/models/ -v 2>&1 | tail -20
 ```
 Expected: no new failures.
 
-- [ ] **Step 3.5: Commit**
+- [x] **Step 3.5: Commit**
 
 ```bash
 git add db/migrate/20260527100002_create_orders.rb app/models/order.rb test/fixtures/orders.yml db/schema.rb
@@ -413,7 +413,7 @@ git commit -m "feat(db): create orders table and Order model for CLOB"
 - Create: `app/services/clob/order_matching_service.rb`
 - Create: `test/services/clob/order_matching_service_test.rb`
 
-- [ ] **Step 4.1: Write failing tests**
+- [x] **Step 4.1: Write failing tests**
 
 ```ruby
 # test/services/clob/order_matching_service_test.rb
@@ -545,14 +545,14 @@ class Clob::OrderMatchingServiceTest < ActiveSupport::TestCase
 end
 ```
 
-- [ ] **Step 4.2: Run to confirm failure**
+- [x] **Step 4.2: Run to confirm failure**
 
 ```bash
 bin/rails test test/services/clob/order_matching_service_test.rb -v
 ```
 Expected: `uninitialized constant Clob::OrderMatchingService`
 
-- [ ] **Step 4.3: Implement OrderMatchingService**
+- [x] **Step 4.3: Implement OrderMatchingService**
 
 ```ruby
 # app/services/clob/order_matching_service.rb
@@ -716,14 +716,14 @@ module Clob
 end
 ```
 
-- [ ] **Step 4.4: Run tests to confirm pass**
+- [x] **Step 4.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/services/clob/order_matching_service_test.rb -v
 ```
 Expected: all 5 tests pass.
 
-- [ ] **Step 4.5: Commit**
+- [x] **Step 4.5: Commit**
 
 ```bash
 git add app/services/clob/ test/services/clob/
@@ -742,7 +742,7 @@ git commit -m "feat(clob): OrderMatchingService with price-time priority, partia
 - Modify: `config/routes.rb`
 - Create: `test/integration/clob_orders_test.rb`
 
-- [ ] **Step 5.1: Write integration tests**
+- [x] **Step 5.1: Write integration tests**
 
 ```ruby
 # test/integration/clob_orders_test.rb
@@ -794,14 +794,14 @@ class ClobOrdersTest < ActionDispatch::IntegrationTest
 end
 ```
 
-- [ ] **Step 5.2: Run tests to confirm failure**
+- [x] **Step 5.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/integration/clob_orders_test.rb -v
 ```
 Expected: routing errors (no routes defined yet).
 
-- [ ] **Step 5.3: Add routes**
+- [x] **Step 5.3: Add routes**
 
 In `config/routes.rb`, inside `namespace :admin`:
 
@@ -824,7 +824,7 @@ resources :markets, only: [] do
 end
 ```
 
-- [ ] **Step 5.4: Implement admin orders controller**
+- [x] **Step 5.4: Implement admin orders controller**
 
 ```ruby
 # app/controllers/admin/orders_controller.rb
@@ -880,14 +880,14 @@ class Admin::OrdersController < AdminController
 end
 ```
 
-- [ ] **Step 5.5: Run tests to confirm pass**
+- [x] **Step 5.5: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/integration/clob_orders_test.rb -v
 ```
 Expected: all 3 tests pass.
 
-- [ ] **Step 5.6: Commit**
+- [x] **Step 5.6: Commit**
 
 ```bash
 git add app/controllers/admin/orders_controller.rb app/controllers/web/orders_controller.rb \
@@ -905,7 +905,7 @@ git commit -m "feat(clob): admin and web order placement/cancellation endpoints"
 - Create: `app/services/lmsr/lmsr_pricing_service.rb`
 - Create: `test/services/lmsr/lmsr_pricing_service_test.rb`
 
-- [ ] **Step 6.1: Write failing tests**
+- [x] **Step 6.1: Write failing tests**
 
 ```ruby
 # test/services/lmsr/lmsr_pricing_service_test.rb
@@ -954,14 +954,14 @@ class Lmsr::LmsrPricingServiceTest < ActiveSupport::TestCase
 end
 ```
 
-- [ ] **Step 6.2: Run tests to confirm failure**
+- [x] **Step 6.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/services/lmsr/lmsr_pricing_service_test.rb -v
 ```
 Expected: `uninitialized constant Lmsr::LmsrPricingService`
 
-- [ ] **Step 6.3: Implement service**
+- [x] **Step 6.3: Implement service**
 
 ```ruby
 # app/services/lmsr/lmsr_pricing_service.rb
@@ -1002,14 +1002,14 @@ module Lmsr
 end
 ```
 
-- [ ] **Step 6.4: Run tests to confirm pass**
+- [x] **Step 6.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/services/lmsr/lmsr_pricing_service_test.rb -v
 ```
 Expected: all 6 tests pass.
 
-- [ ] **Step 6.5: Commit**
+- [x] **Step 6.5: Commit**
 
 ```bash
 git add app/services/lmsr/lmsr_pricing_service.rb test/services/lmsr/lmsr_pricing_service_test.rb
@@ -1026,7 +1026,7 @@ git commit -m "feat(lmsr): LmsrPricingService cost function and trade cost delta
 - Create: `app/services/lmsr/lmsr_trade_service.rb`
 - Create: `test/services/lmsr/lmsr_trade_service_test.rb`
 
-- [ ] **Step 7.1: Write failing tests**
+- [x] **Step 7.1: Write failing tests**
 
 ```ruby
 # test/services/lmsr/lmsr_trade_service_test.rb
@@ -1081,14 +1081,14 @@ class Lmsr::LmsrTradeServiceTest < ActiveSupport::TestCase
 end
 ```
 
-- [ ] **Step 7.2: Run tests to confirm failure**
+- [x] **Step 7.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/services/lmsr/lmsr_trade_service_test.rb -v
 ```
 Expected: `uninitialized constant Lmsr::LmsrTradeService`
 
-- [ ] **Step 7.3: Implement service**
+- [x] **Step 7.3: Implement service**
 
 ```ruby
 # app/services/lmsr/lmsr_trade_service.rb
@@ -1162,14 +1162,14 @@ module Lmsr
 end
 ```
 
-- [ ] **Step 7.4: Run tests to confirm pass**
+- [x] **Step 7.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/services/lmsr/lmsr_trade_service_test.rb -v
 ```
 Expected: all 5 tests pass.
 
-- [ ] **Step 7.5: Commit**
+- [x] **Step 7.5: Commit**
 
 ```bash
 git add app/services/lmsr/lmsr_trade_service.rb test/services/lmsr/lmsr_trade_service_test.rb
@@ -1186,7 +1186,7 @@ git commit -m "feat(lmsr): LmsrTradeService place trade, ledger, audit"
 - Create: `app/services/parimutuel/parimutuel_pool_service.rb`
 - Create: `test/services/parimutuel/parimutuel_pool_service_test.rb`
 
-- [ ] **Step 8.1: Write failing tests**
+- [x] **Step 8.1: Write failing tests**
 
 ```ruby
 # test/services/parimutuel/parimutuel_pool_service_test.rb
@@ -1244,14 +1244,14 @@ class Parimutuel::ParimutuelPoolServiceTest < ActiveSupport::TestCase
 end
 ```
 
-- [ ] **Step 8.2: Run tests to confirm failure**
+- [x] **Step 8.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/services/parimutuel/parimutuel_pool_service_test.rb -v
 ```
 Expected: `uninitialized constant Parimutuel::ParimutuelPoolService`
 
-- [ ] **Step 8.3: Implement service**
+- [x] **Step 8.3: Implement service**
 
 ```ruby
 # app/services/parimutuel/parimutuel_pool_service.rb
@@ -1299,14 +1299,14 @@ module Parimutuel
 end
 ```
 
-- [ ] **Step 8.4: Run tests to confirm pass**
+- [x] **Step 8.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/services/parimutuel/parimutuel_pool_service_test.rb -v
 ```
 Expected: all 6 tests pass.
 
-- [ ] **Step 8.5: Commit**
+- [x] **Step 8.5: Commit**
 
 ```bash
 git add app/services/parimutuel/parimutuel_pool_service.rb test/services/parimutuel/parimutuel_pool_service_test.rb
@@ -1323,7 +1323,7 @@ git commit -m "feat(parimutuel): ParimutuelPoolService stake, pool update, impli
 - Create: `app/services/parimutuel/parimutuel_settlement_service.rb`
 - Create: `test/services/parimutuel/parimutuel_settlement_service_test.rb`
 
-- [ ] **Step 9.1: Write failing tests**
+- [x] **Step 9.1: Write failing tests**
 
 ```ruby
 # test/services/parimutuel/parimutuel_settlement_service_test.rb
@@ -1372,14 +1372,14 @@ class Parimutuel::ParimutuelSettlementServiceTest < ActiveSupport::TestCase
 end
 ```
 
-- [ ] **Step 9.2: Run tests to confirm failure**
+- [x] **Step 9.2: Run tests to confirm failure**
 
 ```bash
 bin/rails test test/services/parimutuel/parimutuel_settlement_service_test.rb -v
 ```
 Expected: `uninitialized constant Parimutuel::ParimutuelSettlementService`
 
-- [ ] **Step 9.3: Implement service**
+- [x] **Step 9.3: Implement service**
 
 ```ruby
 # app/services/parimutuel/parimutuel_settlement_service.rb
@@ -1447,14 +1447,14 @@ module Parimutuel
 end
 ```
 
-- [ ] **Step 9.4: Run tests to confirm pass**
+- [x] **Step 9.4: Run tests to confirm pass**
 
 ```bash
 bin/rails test test/services/parimutuel/parimutuel_settlement_service_test.rb -v
 ```
 Expected: all 2 tests pass.
 
-- [ ] **Step 9.5: Commit**
+- [x] **Step 9.5: Commit**
 
 ```bash
 git add app/services/parimutuel/parimutuel_settlement_service.rb \
@@ -1475,7 +1475,7 @@ git commit -m "feat(parimutuel): ParimutuelSettlementService takeout deduction a
 - Create: `app/services/settlement/lmsr_settlement_handler.rb`
 - Test: `test/services/settlement_service_test.rb` (modify existing)
 
-- [ ] **Step 10.1: Write failing tests**
+- [x] **Step 10.1: Write failing tests**
 
 Add to `test/services/settlement_service_test.rb`:
 
@@ -1496,7 +1496,7 @@ test "SettlementService delegates to ClobSettlementHandler for clob markets" do
 end
 ```
 
-- [ ] **Step 10.2: Add routing logic to SettlementService**
+- [x] **Step 10.2: Add routing logic to SettlementService**
 
 In `app/services/settlement_service.rb`, locate the entry method and add:
 
@@ -1521,7 +1521,7 @@ def settle_by_mechanism
 end
 ```
 
-- [ ] **Step 10.3: Implement ClobSettlementHandler**
+- [x] **Step 10.3: Implement ClobSettlementHandler**
 
 ```ruby
 # app/services/settlement/clob_settlement_handler.rb
@@ -1577,14 +1577,14 @@ module Settlement
 end
 ```
 
-- [ ] **Step 10.4: Run full test suite to verify no regression**
+- [x] **Step 10.4: Run full test suite to verify no regression**
 
 ```bash
 bin/rails test -v 2>&1 | tail -30
 ```
 Expected: existing tests pass; new tests pass.
 
-- [ ] **Step 10.5: Commit**
+- [x] **Step 10.5: Commit**
 
 ```bash
 git add app/services/settlement_service.rb \
@@ -1605,7 +1605,7 @@ git commit -m "feat(settlement): route SettlementService by mechanism_type, add 
 - Create: `app/services/price_snapshot_recorder.rb`
 - Create: `app/jobs/record_price_snapshot_job.rb`
 
-- [ ] **Step 11.1: Write migration**
+- [x] **Step 11.1: Write migration**
 
 ```ruby
 # db/migrate/20260527100005_create_price_snapshots.rb
@@ -1624,7 +1624,7 @@ class CreatePriceSnapshots < ActiveRecord::Migration[8.1]
 end
 ```
 
-- [ ] **Step 11.2: Implement PriceSnapshotRecorder**
+- [x] **Step 11.2: Implement PriceSnapshotRecorder**
 
 ```ruby
 # app/services/price_snapshot_recorder.rb
@@ -1659,7 +1659,7 @@ class PriceSnapshotRecorder
 end
 ```
 
-- [ ] **Step 11.3: Implement job**
+- [x] **Step 11.3: Implement job**
 
 ```ruby
 # app/jobs/record_price_snapshot_job.rb
@@ -1674,7 +1674,7 @@ class RecordPriceSnapshotJob < ApplicationJob
 end
 ```
 
-- [ ] **Step 11.4: Run migration and confirm**
+- [x] **Step 11.4: Run migration and confirm**
 
 ```bash
 bin/rails db:migrate
@@ -1682,7 +1682,7 @@ grep "price_snapshots" db/schema.rb
 ```
 Expected: table definition present.
 
-- [ ] **Step 11.5: Commit**
+- [x] **Step 11.5: Commit**
 
 ```bash
 git add db/migrate/20260527100005_create_price_snapshots.rb db/schema.rb \
@@ -1700,7 +1700,7 @@ git commit -m "feat(price): PriceSnapshot model and RecordPriceSnapshotJob"
 **Files:**
 - Modify: `app/services/hot_storage/market_snapshot_projector.rb`
 
-- [ ] **Step 12.1: Locate and extend the projector**
+- [x] **Step 12.1: Locate and extend the projector**
 
 In `app/services/hot_storage/market_snapshot_projector.rb`, add a `mechanism_snapshot` helper and call it from the main `project` method:
 
@@ -1740,14 +1740,14 @@ end
 Add `mechanism_type: market.mechanism_type` to the base snapshot hash.
 Merge `mechanism_snapshot(market)` into the returned hash.
 
-- [ ] **Step 12.2: Run existing hot storage tests to confirm no regression**
+- [x] **Step 12.2: Run existing hot storage tests to confirm no regression**
 
 ```bash
 bin/rails test test/services/hot_storage/ -v
 ```
 Expected: all existing hot storage tests pass.
 
-- [ ] **Step 12.3: Commit**
+- [x] **Step 12.3: Commit**
 
 ```bash
 git add app/services/hot_storage/market_snapshot_projector.rb
@@ -1767,7 +1767,7 @@ git commit -m "feat(hot-storage): extend MarketSnapshotProjector with mechanism-
 
 Note: The SSE controller reads from Redis via the projector; no change to the controller is needed. The projector is called after each state-mutating trade/order event to keep Redis fresh.
 
-- [ ] **Step 13.1: Add projector call to OrderMatchingService**
+- [x] **Step 13.1: Add projector call to OrderMatchingService**
 
 At the end of the `call` method in `Clob::OrderMatchingService`, after `emit_audit!`:
 
@@ -1775,7 +1775,7 @@ At the end of the `call` method in `Clob::OrderMatchingService`, after `emit_aud
 HotStorage::MarketSnapshotProjector.project(@market) if defined?(HotStorage::MarketSnapshotProjector)
 ```
 
-- [ ] **Step 13.2: Add projector call to LmsrTradeService**
+- [x] **Step 13.2: Add projector call to LmsrTradeService**
 
 In `Lmsr::LmsrTradeService`, after `AuditEvent.create!`:
 
@@ -1783,7 +1783,7 @@ In `Lmsr::LmsrTradeService`, after `AuditEvent.create!`:
 HotStorage::MarketSnapshotProjector.project(@market) if defined?(HotStorage::MarketSnapshotProjector)
 ```
 
-- [ ] **Step 13.3: Add projector call to ParimutuelPoolService**
+- [x] **Step 13.3: Add projector call to ParimutuelPoolService**
 
 In `Parimutuel::ParimutuelPoolService.add_stake`, after `AuditEvent.create!`:
 
@@ -1791,14 +1791,14 @@ In `Parimutuel::ParimutuelPoolService.add_stake`, after `AuditEvent.create!`:
 HotStorage::MarketSnapshotProjector.project(market) if defined?(HotStorage::MarketSnapshotProjector)
 ```
 
-- [ ] **Step 13.4: Run SSE-related tests**
+- [x] **Step 13.4: Run SSE-related tests**
 
 ```bash
 bin/rails test test/integration/ -v 2>&1 | grep -E "PASS|FAIL|Error"
 ```
 Expected: no new failures.
 
-- [ ] **Step 13.5: Commit**
+- [x] **Step 13.5: Commit**
 
 ```bash
 git add app/services/clob/order_matching_service.rb \
@@ -1816,7 +1816,7 @@ git commit -m "feat(sse): push mechanism-appropriate Redis snapshot after each t
 **Files:**
 - Modify: `app/views/backoffice/markets/new.html.erb` (or `_form.html.erb`)
 
-- [ ] **Step 14.1: Add mechanism picker**
+- [x] **Step 14.1: Add mechanism picker**
 
 In the market creation form partial, add:
 
@@ -1878,19 +1878,19 @@ In the market creation form partial, add:
 </script>
 ```
 
-- [ ] **Step 14.2: Update markets controller strong params**
+- [x] **Step 14.2: Update markets controller strong params**
 
 In `app/controllers/backoffice/markets_controller.rb`, add to permitted params:
 `taker_fee_bps, liquidity_subsidy_minor, spread_fee_bps, takeout_bps, mechanism_type`
 
-- [ ] **Step 14.3: Run backoffice integration tests**
+- [x] **Step 14.3: Run backoffice integration tests**
 
 ```bash
 bin/rails test test/integration/backoffice_web_access_test.rb -v
 ```
 Expected: no new failures.
 
-- [ ] **Step 14.4: Commit**
+- [x] **Step 14.4: Commit**
 
 ```bash
 git add app/views/backoffice/markets/ app/controllers/backoffice/markets_controller.rb
@@ -1906,7 +1906,7 @@ git commit -m "feat(backoffice): mechanism picker on market creation form with c
 **Files:**
 - Modify: `app/views/web/markets/show.html.erb`
 
-- [ ] **Step 15.1: Add mechanism-specific price section**
+- [x] **Step 15.1: Add mechanism-specific price section**
 
 Replace or augment the existing odds display with a mechanism-aware partial:
 
@@ -1953,14 +1953,14 @@ Replace or augment the existing odds display with a mechanism-aware partial:
 <% end %>
 ```
 
-- [ ] **Step 15.2: Run web integration tests**
+- [x] **Step 15.2: Run web integration tests**
 
 ```bash
 bin/rails test test/integration/web_customer_pages_test.rb -v
 ```
 Expected: no new failures.
 
-- [ ] **Step 15.3: Commit**
+- [x] **Step 15.3: Commit**
 
 ```bash
 git add app/views/web/markets/show.html.erb
@@ -1973,14 +1973,14 @@ git commit -m "feat(web): mechanism-appropriate price display on market show pag
 
 **Commit:** `test(all): verify full suite passes at 90% coverage`
 
-- [ ] **Step 16.1: Run full suite**
+- [x] **Step 16.1: Run full suite**
 
 ```bash
 bin/rails test
 ```
 Expected: all tests pass; SimpleCov coverage >= 90%.
 
-- [ ] **Step 16.2: Fix any failures before committing docs**
+- [x] **Step 16.2: Fix any failures before committing docs**
 
 ---
 
@@ -1988,9 +1988,9 @@ Expected: all tests pass; SimpleCov coverage >= 90%.
 
 **Commit:** `docs: update INDEX and WORK_LOG after pluggable market mechanisms`
 
-- [ ] Prepend entry to `docs/WORK_LOG.md`
-- [ ] Update `docs/INDEX.md` implementation status (add ADR-0013 to ADR table; add spec/plan to Plans table; add mechanism items to Done once implemented)
-- [ ] Update `docs/superpowers/plans/2026-05-27-pluggable-market-mechanisms.md` — mark completed tasks `[x]`
+- [x] Prepend entry to `docs/WORK_LOG.md`
+- [x] Update `docs/INDEX.md` implementation status (add ADR-0013 to ADR table; add spec/plan to Plans table; add mechanism items to Done once implemented)
+- [x] Update `docs/superpowers/plans/2026-05-27-pluggable-market-mechanisms.md` — mark completed tasks `[x]`
 
 ```bash
 git add docs/WORK_LOG.md docs/INDEX.md docs/superpowers/plans/2026-05-27-pluggable-market-mechanisms.md

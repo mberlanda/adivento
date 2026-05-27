@@ -2,7 +2,7 @@ open_yes_order:
   market: open_market
   market_leg: yes_leg
   user: player
-  side: YES
+  side: "YES"
   price_cents: 40
   quantity: 10
   filled_quantity: 0
