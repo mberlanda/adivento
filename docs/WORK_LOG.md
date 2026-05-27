@@ -4,6 +4,61 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — UX polish, rich seeds, F-003 market detail enrichment, F-005 profile, F-002 search (PR #18)
+
+**PR:** #18 (`feat/ux-improvements`)
+**Commits on branch:** `ca23ea2`, `0d6dff8`, `b088d44`, `250e730`, `d629162`, `2d1f120`
+
+### F-001: Market taxonomy (PRs #13–15)
+- Migration: `category` string enum + `tags` jsonb on `markets`
+- `Market::CATEGORIES` constant, validation, custom `tags=` setter
+- Backoffice: category select + tags input on create form
+- Customer UI: category filter bar (pill tabs), category badge on cards and show page, tags badge row
+- Full-text search picks up tag content via `CAST(tags AS TEXT) ILIKE ?`
+- Commits on main: `286cf78`, `9eaebf1`, `8496a72`
+
+### F-002: Full-text market search (PR #16)
+- `Web::MarketsController#index`: Arel-based ILIKE across `question`, `description`, tags cast
+- Search form in index header; clear-search link preserves active category filter
+- Integration test: `search_q_matches_market_tags`
+- Commit: `c400e5f`, `6326f32` (tags fix)
+
+### F-005: User profile page (PR #17)
+- `Web::ProfileController#show`: wallet stat-grid, P&L summary, bet history with status-tab filter
+- `Web::FaucetRequestsController#create`: submit faucet request from profile
+- `navigation.profile` action catalog entry for signed-in users
+- Nav header: "My Profile" link + ADIV balance chip
+- Commits on main: `07d79ce`, `3181b44`
+
+### F-003: Market detail enrichment (PR #18)
+- Migration: `close_at` (datetime), `resolution_criteria` (text), `resolution_source` (string)
+- Backoffice create form: datetime picker, resolution criteria textarea, source field
+- Backoffice show page: close countdown, resolution criteria, source display
+- Customer market show: Resolution Details panel (conditional), countdown text, criteria & source
+- Admin API: `close_at`/`resolution_criteria`/`resolution_source` added to permitted params
+
+### UX improvements (PR #18)
+- Full CSS design system overhaul in `application.html.erb`: `.pill`, `.pill-active`, `.pill-outline`, `.stat-card`, `.stat-grid`, `.balance-chip`, `.header-nav` components
+- Market show: mechanism-appropriate price panels (fixed-odds, CLOB, LMSR, parimutuel), stat grid
+- Seeds: 17 markets across 5 categories, 5 users, 8 demo bets; idempotent via `find_or_initialize_by`
+
+### Tests added (PR #18)
+- `test/integration/web_faucet_requests_test.rb` — 5 integration tests (auth gate, create, defaults)
+- `e2e/playwright/tests/profile.spec.js` — profile page, nav balance chip, faucet form, F-003 resolution panel, market stats
+
+### Key files
+- `app/views/layouts/application.html.erb` — CSS system + nav
+- `app/views/web/markets/index.html.erb` — filter bar, search form, market cards
+- `app/views/web/markets/show.html.erb` — price panels, stats, resolution panel
+- `app/views/web/profile/show.html.erb` — wallet, P&L, bet history
+- `app/controllers/web/faucet_requests_controller.rb` (new)
+- `app/controllers/web/profile_controller.rb`
+- `app/domain/catalogs/action_catalog.rb` — `navigation.profile` entry
+- `db/migrate/20260527221019_add_market_detail_fields.rb`
+- `db/seeds.rb` — full rewrite with 17 markets + demo bets
+
+---
+
 ## 2026-05-27 — CLOB Order Book Completion
 
 **PRs:** #10 (fill ledger entries + settlement lock), #11 (last_fill_price + spread + ADR-0014), #12 (CLOB positions endpoint)

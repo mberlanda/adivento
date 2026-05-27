@@ -115,12 +115,19 @@ Plan approved?
   - [x] Order book response: `last_trade_price`, `spread`
   - [x] `GET /web/positions` returns `clob_positions[]` with contract counts and unrealised value
   - [x] Fixed `order_book_summary` best-ask sort and spread sign
+- **F-001: Market taxonomy** — `category` enum + `tags` jsonb; backoffice create form; customer filter bar + badges; full-text search (PRs #13–15, commits `286cf78`–`8496a72`)
+- **F-002: Full-text search** — Arel ILIKE across question/description/tags (PR #16, `c400e5f`)
+- **F-005: User profile page** — wallet stat-grid, P&L summary, bet history, faucet request form, nav balance chip (PR #17, `07d79ce`)
+- **F-003: Market detail enrichment** — `close_at`, `resolution_criteria`, `resolution_source`; backoffice + customer display; admin API extended (PR #18, `b088d44`)
+- **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
 
 ### 🔄 In Progress
-- PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
+- PR #18 — UX/seeds/F-003 (CI running, awaiting merge)
 
 ### ⏳ Next
-- PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
+- F-006: Market creation UX improvements (backoffice form refinement)
+- F-007: Leaderboard page
+- PLAN-D: Playwright E2E — additional coverage
 
 ### Plans + Reviews
 
@@ -131,6 +138,7 @@ Plan approved?
 | Hot/cold storage | [plan](superpowers/plans/2026-05-26-hot-cold-storage.md) | [review](superpowers/plans/2026-05-26-hot-cold-storage-review.md) | ✅ implemented |
 | Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
 | Faucet backoffice UI | [plan](superpowers/plans/2026-05-26-faucet-backoffice-ui.md) | [review](superpowers/plans/2026-05-26-faucet-backoffice-ui-review.md) | ✅ implemented |
+| Market taxonomy (F-001) | [plan](superpowers/plans/2026-05-27-market-taxonomy.md) | — | ✅ implemented |
 
 ---
 
@@ -150,11 +158,13 @@ app/
       permissions_controller.rb
       grants_controller.rb
       dashboard_controller.rb
-    web/                        # HTML (no auth for index/show; player auth for betslip/positions)
-      markets_controller.rb
+    web/                        # HTML (no auth for index/show; player auth for betslip/positions/profile)
+      markets_controller.rb       index (search+filter), show (stats, price panels, resolution)
       betslips_controller.rb      POST /web/betslips/quotes, /web/betslips/execute
       betslip_executions_controller.rb  GET /web/betslips/executions/:id
       positions_controller.rb     GET /web/positions, POST cashout_quotes/cashout_execute
+      profile_controller.rb       GET /web/profile (wallet, P&L, bet history)
+      faucet_requests_controller.rb  POST /web/faucet_requests
     auth/sessions_controller.rb # register, login, me (JWT)
   services/
     settlement_service.rb         bet WON/LOST + payout on market settle
