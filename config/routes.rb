@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   namespace :web do
     resources :markets, only: %i[index show] do
+      resources :bets, only: [:create]
       resources :orders, only: [:create]
       resources :lmsr_trades, only: [:create]
       resources :parimutuel_bets, only: [:create]
