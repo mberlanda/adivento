@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     resources :betslip_executions, only: [:show], path: 'betslips/executions'
 
     get :profile, to: 'profile#show'
+    resources :faucet_requests, only: [:create]
 
     resources :positions, only: [:index] do
       collection do

@@ -1,43 +1,68 @@
-<h1>Explore Markets</h1>
-<p class="muted">Trending and active prediction markets. Guests see open/settled markets only.</p>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+  <div>
+    <h1 style="margin:0 0 4px;">Explore Markets</h1>
+    <p class="muted" style="margin:0;">Prediction markets across sports, economics, politics, and more.</p>
+  </div>
+  <form method="get" action="<%= web_markets_path %>" data-testid="market-search-form" style="display:flex;gap:8px;align-items:center;">
+    <% if @selected_category %>
+      <%= hidden_field_tag :category, @selected_category %>
+    <% end %>
+    <input type="search" name="q" value="<%= @search_query %>"
+           placeholder="Search markets…" data-testid="market-search-input"
+           style="width:260px;">
+    <button type="submit" style="white-space:nowrap;">Search</button>
+  </form>
+</div>
 
-<form method="get" action="<%= web_markets_path %>" style="margin-bottom:16px;" data-testid="market-search-form">
-  <% if @selected_category %>
-    <%= hidden_field_tag :category, @selected_category %>
-  <% end %>
-  <input type="search" name="q" value="<%= @search_query %>"
-         placeholder="Search markets…" data-testid="market-search-input"
-         style="width:100%;max-width:480px;padding:8px 12px;background:#0f2530;border:1px solid #33434c;color:#c8d8e0;border-radius:4px;">
-  <% if @search_query.present? %>
-    <p class="muted" style="margin-top:6px;">Results for "<%= @search_query %>" <%= @selected_category ? "in #{@selected_category}" : "" %> — <%= link_to "Clear", web_markets_path(category: @selected_category) %></p>
-  <% end %>
-</form>
-
-<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;" data-testid="category-filter">
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;" data-testid="category-filter">
   <%= link_to "All", web_markets_path(q: @search_query),
-        style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category.nil? ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
+        class: "pill #{@selected_category.nil? ? 'pill-active' : 'pill-outline'}" %>
   <% Market::CATEGORIES.each do |cat| %>
     <%= link_to cat.capitalize, web_markets_path(category: cat, q: @search_query),
           data: { testid: "category-#{cat}" },
-          style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category == cat ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
+          class: "pill #{@selected_category == cat ? 'pill-active' : 'pill-outline'}" %>
   <% end %>
 </div>
 
+<% if @search_query.present? %>
+  <p class="muted" style="margin-bottom:12px;">
+    Results for "<strong><%= @search_query %></strong>"
+    <% if @selected_category %> in <%= @selected_category.capitalize %><% end %>
+    &mdash; <%= link_to "Clear search", web_markets_path(category: @selected_category) %>
+  </p>
+<% end %>
+
 <div class="cards" data-testid="markets-list">
-  <% @markets.each do |market| %>
-    <article class="card" data-testid="market-card-<%= market.id %>">
-      <div>
-        <span class="badge"><%= market.status %></span>
-        <span class="badge" style="background:#1a2e38;" data-testid="category-badge-<%= market.id %>"><%= market.category %></span>
-        <% if market.settled_outcome.present? %><span class="badge">Settled: <%= market.settled_outcome %></span><% end %>
-      </div>
-      <h3><a href="<%= web_market_path(market) %>" data-testid="market-link-<%= market.id %>"><%= market.question %></a></h3>
-      <p class="muted"><%= truncate(market.description, length: 120) %></p>
-      <p>
-        <% market.market_legs.each do |leg| %>
-          <span class="badge"><%= leg.label %> <%= (leg.odds_minor / 100.0).round(1) %>%</span>
-        <% end %>
+  <% if @markets.empty? %>
+    <div style="grid-column:1/-1;text-align:center;padding:40px 20px;">
+      <p style="font-size:1.1rem;color:var(--muted);margin-bottom:12px;">
+        No markets found<% if @search_query %> for "<%= @search_query %>"<% end %>.
       </p>
-    </article>
+      <%= link_to "Browse all markets", web_markets_path, class: "pill pill-active" %>
+    </div>
+  <% else %>
+    <% @markets.each do |market| %>
+      <article class="card" data-testid="market-card-<%= market.id %>">
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">
+          <span class="badge badge-status" data-testid="status-badge-<%= market.id %>"><%= market.status.capitalize %></span>
+          <span class="badge" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
+          <% if market.settled_outcome.present? %>
+            <span class="badge" style="background:#fef3e2;color:#8a5c10;">Settled: <%= market.settled_outcome %></span>
+          <% end %>
+        </div>
+        <h3><%= link_to market.question, web_market_path(market),
+              data: { testid: "market-link-#{market.id}" }, style: "color:var(--ink);" %></h3>
+        <p class="muted" style="margin:4px 0 10px;"><%= truncate(market.description, length: 100) %></p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;">
+          <% market.market_legs.each do |leg| %>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;background:#f4f9f7;border:1px solid #d0e8de;border-radius:8px;padding:4px 12px;min-width:48px;">
+              <span style="font-size:0.75rem;color:var(--muted);"><%= leg.label %></span>
+              <span style="font-weight:700;font-size:1rem;color:var(--accent);"><%= (leg.odds_minor / 100.0).round(0) %>%</span>
+            </span>
+          <% end %>
+          <span style="margin-left:auto;font-size:0.78rem;color:var(--muted);align-self:flex-end;"><%= market.mechanism_type.upcase %></span>
+        </div>
+      </article>
+    <% end %>
   <% end %>
 </div>

@@ -29,9 +29,12 @@ module Web
 
     def show
       @market = Market.includes(:market_legs).find(params.expect(:id))
-      return if current_user || @market.open? || @market.settled?
+      unless current_user || @market.open? || @market.settled?
+        return redirect_to web_markets_path, alert: 'This market is not publicly visible yet'
+      end
 
-      redirect_to web_markets_path, alert: 'This market is not publicly visible yet'
+      @volume_minor = @market.bets.sum(:net_stake_minor)
+      @open_bet_count = @market.bets.where(status: :open).count
     end
 
     private
