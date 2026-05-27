@@ -19,10 +19,16 @@ _(none currently)_
 - **Action:** Once CI green, check Copilot comments on PR #18, address all high+medium, then merge and update INDEX.md In Progress → Done
 - **Files:** `feat/ux-improvements` branch, PR #18
 
-### F-007: Leaderboard
-- **Status:** Not started — no spec or plan
-- **Action:** Can brainstorm and implement. Suggested approach: ranked list of players by net P&L (won bets minus staked), with a public customer-facing page `/web/leaderboard`
-- **Complexity:** Small. Requires: DB query on bets aggregation, new route + controller + view, unit + E2E tests
+### F-007: Leaderboard ✅ DONE (PR #18)
+- Public `/web/leaderboard` page, ranked by net P&L
+- Nav link, unit tests, E2E tests
+- Commit: `d311fa3`
+
+### Quick-bet form ✅ DONE (PR #18)
+- Fixed-odds market show page now has a quick-bet form for signed-in players
+- Unauthenticated users see a "Sign in to bet" prompt
+- `Web::BetsController#create`, unit tests (`web_bets_test.rb`), E2E tests (`quick-bet.spec.js`)
+- Commit: `f7e2e6a`
 
 ### F-006: Market creation UX (backoffice)
 - **Status:** Not started
@@ -55,6 +61,8 @@ _(none currently)_
 | F-002 Full-text search | 2026-05-27 | PR #16 |
 | F-005 User profile | 2026-05-27 | PR #17 |
 | F-003 Market detail enrichment | 2026-05-28 | PR #18 (pending merge) |
+| F-007 Leaderboard | 2026-05-28 | PR #18 (pending merge) |
+| Quick-bet form (fixed-odds) | 2026-05-28 | PR #18 (pending merge) |
 | UX polish + rich seeds | 2026-05-28 | PR #18 (pending merge) |
 | Faucet controller unit tests | 2026-05-28 | PR #18 |
 | Profile + F-003 E2E tests | 2026-05-28 | PR #18 |
