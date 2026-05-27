@@ -71,6 +71,7 @@ Plan approved?
 | [10](adr/ADR-0010-binary-market-line-model.md) | Binary market line model (YES/NO, UP/DOWN) | ✅ accepted |
 | [11](adr/ADR-0011-betslip-and-cashout-contract.md) | Betslip + cashout quote-execute contract | ✅ accepted |
 | [12](adr/ADR-0012-hot-cold-storage-with-redis-projections.md) | Hot/cold storage: PG + Redis + SSE | ✅ accepted |
+| [13](adr/ADR-0013-pluggable-market-mechanisms.md) | Pluggable market mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds) | 📝 proposed |
 
 ---
 
@@ -98,13 +99,27 @@ Plan approved?
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
 ### ⏳ Next
-- (all planned features implemented — resume E2E when Docker overlay2 resolved)
+- **Pluggable market mechanisms** (ADR-0013): CLOB order book, LMSR AMM, Parimutuel pool — see checklist below
+  - [ ] DB: add `taker_fee_bps`, `liquidity_subsidy_minor`, `spread_fee_bps`, `takeout_bps`, LMSR/parimutuel state columns to `markets`
+  - [ ] Market model: mechanism validations, `pricing_engine` factory, `clob?`/`lmsr?`/`parimutuel?` helpers
+  - [ ] `Order` model + migration (CLOB)
+  - [ ] `Clob::OrderMatchingService` (price-time priority, partial fills, fee)
+  - [ ] Admin + web CLOB order endpoints + `Web::OrderBooksController`
+  - [ ] `Lmsr::LmsrPricingService` + `Lmsr::LmsrTradeService`
+  - [ ] `Parimutuel::ParimutuelPoolService` + `Parimutuel::ParimutuelSettlementService`
+  - [ ] Settlement router branching on `mechanism_type`
+  - [ ] `PriceSnapshot` model + `RecordPriceSnapshotJob`
+  - [ ] Hot storage: `MarketSnapshotProjector` extended with mechanism fields
+  - [ ] SSE: projector called after each trade
+  - [ ] Backoffice UI: mechanism picker + conditional fee fields
+  - [ ] Web UI: mechanism-appropriate price display
+- PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
 ### Plans + Reviews
-All four feature plans written and reviewed:
 
 | Feature | Plan | Review | Status |
 |---------|------|--------|--------|
+| Pluggable market mechanisms | [plan](superpowers/plans/2026-05-27-pluggable-market-mechanisms.md) | [review](superpowers/plans/2026-05-27-pluggable-market-mechanisms-review.md) | 📝 drafted |
 | Betslip + cashout | [plan](superpowers/plans/2026-05-26-betslip-cashout.md) | [review](superpowers/plans/2026-05-26-betslip-cashout-review.md) | ✅ implemented |
 | Hot/cold storage | [plan](superpowers/plans/2026-05-26-hot-cold-storage.md) | [review](superpowers/plans/2026-05-26-hot-cold-storage-review.md) | ✅ implemented |
 | Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
