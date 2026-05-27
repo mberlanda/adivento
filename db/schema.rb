@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_100006) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_200001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -122,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100006) do
   end
 
   create_table "markets", force: :cascade do |t|
+    t.string "category", default: "other", null: false
     t.datetime "created_at", null: false
     t.integer "created_by_id", null: false
     t.text "description", null: false
@@ -141,9 +142,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100006) do
     t.integer "spread_fee_bps"
     t.integer "status", default: 0, null: false
     t.boolean "structure_locked", default: false, null: false
+    t.json "tags", default: [], null: false
     t.integer "takeout_bps"
     t.integer "taker_fee_bps"
     t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_markets_on_category"
     t.index ["created_by_id"], name: "index_markets_on_created_by_id"
     t.index ["settled_by_id"], name: "index_markets_on_settled_by_id"
     t.index ["status"], name: "index_markets_on_status"
