@@ -1,14 +1,14 @@
 module Lmsr
   class LmsrPricingService
-    def initialize(b:, q_yes:, q_no:)
-      @b     = b.to_f
-      @q_yes = q_yes.to_f
-      @q_no  = q_no.to_f
+    def initialize(lmsr_b:, q_yes:, q_no:)
+      @lmsr_b = lmsr_b.to_f
+      @q_yes  = q_yes.to_f
+      @q_no   = q_no.to_f
     end
 
     # C(q) = b * ln(sum(exp(q_i / b)))
     def cost_function(q_yes: @q_yes, q_no: @q_no)
-      @b * Math.log(Math.exp(q_yes / @b) + Math.exp(q_no / @b))
+      @lmsr_b * Math.log(Math.exp(q_yes / @lmsr_b) + Math.exp(q_no / @lmsr_b))
     end
 
     def trade_cost(delta_yes: 0, delta_no: 0)
@@ -16,8 +16,8 @@ module Lmsr
     end
 
     def yes_probability
-      exp_yes = Math.exp(@q_yes / @b)
-      exp_no  = Math.exp(@q_no  / @b)
+      exp_yes = Math.exp(@q_yes / @lmsr_b)
+      exp_no  = Math.exp(@q_no  / @lmsr_b)
       (exp_yes / (exp_yes + exp_no) * 100).round(4)
     end
 

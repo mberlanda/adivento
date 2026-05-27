@@ -1,42 +1,47 @@
-require "test_helper"
+require 'test_helper'
 
-class Lmsr::LmsrTradeServiceTest < ActiveSupport::TestCase
-  setup do
-    @market = markets(:lmsr_market)
-    @market.update_columns(lmsr_b_parameter: Lmsr::LmsrPricingService.b_from_subsidy(100_000), lmsr_q_yes: 0, lmsr_q_no: 0)
-    @player = users(:player)
-    @player.wallet.update!(available_minor: 100_000, reserved_minor: 0)
-  end
-
-  test "buying YES contracts debits wallet and increments lmsr_q_yes" do
-    result = Lmsr::LmsrTradeService.call(market: @market, user: @player, side: "YES", quantity: 10)
-    assert result.success?
-    @market.reload
-    assert_equal 10, @market.lmsr_q_yes
-    assert @player.wallet.reload.available_minor < 100_000
-  end
-
-  test "LMSR_TRADE_STAKE ledger entry written on buy" do
-    assert_difference -> { LedgerEntry.where(entry_type: "LMSR_TRADE_STAKE").count }, 1 do
-      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: "YES", quantity: 10)
+module Lmsr
+  class LmsrTradeServiceTest < ActiveSupport::TestCase
+    setup do
+      @market = markets(:lmsr_market)
+      @market.update_columns(lmsr_b_parameter: Lmsr::LmsrPricingService.b_from_subsidy(100_000), lmsr_q_yes: 0, lmsr_q_no: 0)
+      @player = users(:player)
+      @player.wallet.update!(available_minor: 100_000, reserved_minor: 0)
     end
-  end
 
-  test "LMSR_FEE ledger entry written when spread_fee_bps > 0" do
-    assert_difference -> { LedgerEntry.where(entry_type: "LMSR_FEE").count }, 1 do
-      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: "YES", quantity: 10)
+    test 'buying YES contracts debits wallet and increments lmsr_q_yes' do
+      result = Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+
+      assert_predicate result, :success?
+      @market.reload
+
+      assert_equal 10, @market.lmsr_q_yes
+      assert_operator @player.wallet.reload.available_minor, :<, 100_000
     end
-  end
 
-  test "trade rejected if insufficient wallet funds" do
-    @player.wallet.update!(available_minor: 1)
-    result = Lmsr::LmsrTradeService.call(market: @market, user: @player, side: "YES", quantity: 1000)
-    assert_not result.success?
-  end
+    test 'LMSR_TRADE_STAKE ledger entry written on buy' do
+      assert_difference -> { LedgerEntry.where(entry_type: 'LMSR_TRADE_STAKE').count }, 1 do
+        Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+      end
+    end
 
-  test "audit event written on trade" do
-    assert_difference -> { AuditEvent.where(action: "lmsr_trade.place").count }, 1 do
-      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: "YES", quantity: 10)
+    test 'LMSR_FEE ledger entry written when spread_fee_bps > 0' do
+      assert_difference -> { LedgerEntry.where(entry_type: 'LMSR_FEE').count }, 1 do
+        Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+      end
+    end
+
+    test 'trade rejected if insufficient wallet funds' do
+      @player.wallet.update!(available_minor: 1)
+      result = Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 1000)
+
+      assert_not result.success?
+    end
+
+    test 'audit event written on trade' do
+      assert_difference -> { AuditEvent.where(action: 'lmsr_trade.place').count }, 1 do
+        Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+      end
     end
   end
 end
