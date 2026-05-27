@@ -8,7 +8,13 @@ Rails.application.routes.draw do
   delete '/signout', to: 'web/sessions#destroy'
 
   namespace :web do
-    resources :markets, only: %i[index show]
+    resources :markets, only: %i[index show] do
+      resources :orders, only: [:create]
+      resources :lmsr_trades, only: [:create]
+      resources :parimutuel_bets, only: [:create]
+      get :order_book, to: 'order_books#show'
+    end
+    resources :orders, only: [:destroy]
 
     resources :betslips, only: [] do
       collection do
@@ -74,7 +80,10 @@ Rails.application.routes.draw do
       post :settle, on: :member
       get :risk, on: :member
       resources :legs, only: [:create], controller: 'market_legs'
+      resources :orders, only: [:create]
     end
+
+    resources :orders, only: [:destroy]
 
     resources :faucet_requests, only: [:index] do
       post :approve, on: :member
