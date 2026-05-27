@@ -14,12 +14,7 @@ _(none currently)_
 
 ## 🟡 Ready for Autonomous Work
 
-### PR #18 merge pending
-- **Status:** CI running (unit tests ✅, E2E pending for latest commit)
-- **Action:** Once CI green, check Copilot comments on PR #18, address all high+medium, then merge and update INDEX.md In Progress → Done
-- **Files:** `feat/ux-improvements` branch, PR #18
-
-### F-007: Leaderboard ✅ DONE (PR #18)
+### F-007: Leaderboard ✅ DONE (PR #18 merged)
 - Public `/web/leaderboard` page, ranked by net P&L
 - Nav link, unit tests, E2E tests
 - Commit: `d311fa3`
@@ -60,10 +55,10 @@ _(none currently)_
 | F-001 Market taxonomy | 2026-05-27 | PRs #13–15 |
 | F-002 Full-text search | 2026-05-27 | PR #16 |
 | F-005 User profile | 2026-05-27 | PR #17 |
-| F-003 Market detail enrichment | 2026-05-28 | PR #18 (pending merge) |
-| F-007 Leaderboard | 2026-05-28 | PR #18 (pending merge) |
-| Quick-bet form (fixed-odds) | 2026-05-28 | PR #18 (pending merge) |
-| UX polish + rich seeds | 2026-05-28 | PR #18 (pending merge) |
+| F-003 Market detail enrichment | 2026-05-28 | PR #18 merged `3dd6be1` |
+| F-007 Leaderboard | 2026-05-28 | PR #18 merged `3dd6be1` |
+| Quick-bet form (all mechanisms) | 2026-05-28 | PR #18 merged `3dd6be1` |
+| UX polish + rich seeds | 2026-05-28 | PR #18 merged `3dd6be1` |
 | Faucet controller unit tests | 2026-05-28 | PR #18 |
 | Profile + F-003 E2E tests | 2026-05-28 | PR #18 |
 | CLOB order book | 2026-05-27 | PRs #10–12 |

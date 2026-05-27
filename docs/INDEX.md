@@ -123,13 +123,11 @@ Plan approved?
 - **Betting forms on market show** — quick-bet panel for all 4 mechanism types (fixed_odds/CLOB/LMSR/parimutuel); signed-in users get form, guests get sign-in prompt (PR #18)
 - **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
 
-### 🔄 In Progress
-- PR #18 — UX/seeds/F-003 (CI running, awaiting merge)
-
 ### ⏳ Next
 - F-006: Market creation UX improvements (backoffice form refinement)
-- F-007: Leaderboard page
 - PLAN-D: Playwright E2E — additional coverage
+- Faucet admin approval E2E test
+- CLOB / LMSR / parimutuel order forms review (quick-bet panels added in PR #18, verify end-to-end)
 
 ### Plans + Reviews
 
