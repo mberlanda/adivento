@@ -14,6 +14,21 @@
   <% if @market.settled? %>
     <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
   <% end %>
+  <% if @market.close_at.present? %>
+    <p>Closes: <strong><%= @market.close_at.strftime('%Y-%m-%d %H:%M UTC') %></strong>
+      <% if @market.open? && @market.close_at > Time.current %>
+        <span style="color:#f0bc5c;">(in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
+      <% elsif @market.open? %>
+        <span style="color:#f44336;">(closed for new bets)</span>
+      <% end %>
+    </p>
+  <% end %>
+  <% if @market.resolution_criteria.present? %>
+    <p><strong>Resolution criteria:</strong><br><span style="color:#9fb2b8;font-size:0.92em;"><%= @market.resolution_criteria %></span></p>
+  <% end %>
+  <% if @market.resolution_source.present? %>
+    <p><strong>Resolution source:</strong> <span style="color:#9fb2b8;"><%= @market.resolution_source %></span></p>
+  <% end %>
 
   <% if @market.draft? %>
     <%= form_with url: open_backoffice_market_path(@market), method: :post,

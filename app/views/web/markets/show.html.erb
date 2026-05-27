@@ -117,14 +117,38 @@
   </div>
 </section>
 
+<% if @market.resolution_criteria.present? || @market.close_at.present? || @market.settled_outcome.present? %>
+  <section class="card" style="margin-bottom:16px;" data-testid="market-resolution-panel">
+    <h3 style="margin-top:0;">Resolution Details</h3>
+    <% if @market.close_at.present? %>
+      <div class="stat-card" style="margin-bottom:10px;">
+        <div class="stat-label">Closes</div>
+        <div style="font-size:0.95rem;font-weight:600;color:var(--ink);" data-testid="market-close-at">
+          <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
+          <% if @market.open? && @market.close_at > Time.current %>
+            <span class="muted" style="font-weight:400;"> (in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <% if @market.resolution_criteria.present? %>
+      <p style="margin:0 0 8px;font-size:0.88rem;"><strong>Resolution criteria</strong></p>
+      <p class="muted" style="font-size:0.88rem;margin:0 0 10px;" data-testid="market-resolution-criteria"><%= @market.resolution_criteria %></p>
+    <% end %>
+    <% if @market.resolution_source.present? %>
+      <p style="margin:0;font-size:0.88rem;" class="muted">Source: <strong style="color:var(--ink);" data-testid="market-resolution-source"><%= @market.resolution_source %></strong></p>
+    <% end %>
+    <% if @market.settled_outcome.present? %>
+      <div style="background:#e6f7f1;border:1px solid #b8e6d6;border-radius:8px;padding:12px;margin-top:10px;">
+        <strong>Settled outcome: <%= @market.settled_outcome %></strong>
+      </div>
+    <% end %>
+  </section>
+<% end %>
+
 <section class="card" style="margin-bottom:16px;" data-testid="market-trust-panel">
   <h3 style="margin-top:0;">About this market</h3>
   <p class="muted" style="font-size:0.85rem;">Created by <%= @market.created_by.email.split('@').first %></p>
-  <% if @market.settled_outcome.present? %>
-    <div style="background:#e6f7f1;border:1px solid #b8e6d6;border-radius:8px;padding:12px;margin-top:8px;">
-      <strong>Settled outcome: <%= @market.settled_outcome %></strong>
-    </div>
-  <% end %>
   <p class="muted" style="font-size:0.82rem;margin-top:8px;">
     Live SSE stream: <a href="/sse/markets/<%= @market.id %>">/sse/markets/<%= @market.id %></a>
   </p>
