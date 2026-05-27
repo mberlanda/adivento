@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_100002) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_100005) do
   create_table "audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -163,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100002) do
     t.bigint "user_id", null: false
     t.index ["market_id", "side", "price_cents", "status"], name: "index_orders_book"
     t.index ["market_id"], name: "index_orders_on_market_id"
+    t.index ["market_leg_id"], name: "index_orders_on_market_leg_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
@@ -173,6 +171,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100002) do
     t.string "key", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_permissions_on_key", unique: true
+  end
+
+  create_table "price_snapshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "market_id", null: false
+    t.string "mechanism_type", null: false
+    t.datetime "recorded_at", null: false
+    t.json "snapshot_data", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["market_id", "recorded_at"], name: "index_price_snapshots_on_market_id_and_recorded_at"
   end
 
   create_table "role_permissions", force: :cascade do |t|
@@ -236,6 +244,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_100002) do
   add_foreign_key "orders", "market_legs"
   add_foreign_key "orders", "markets"
   add_foreign_key "orders", "users"
+  add_foreign_key "price_snapshots", "markets"
   add_foreign_key "role_permissions", "permissions"
   add_foreign_key "user_grants", "permissions"
   add_foreign_key "user_grants", "users"

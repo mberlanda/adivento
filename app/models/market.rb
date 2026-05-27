@@ -21,17 +21,17 @@ class Market < ApplicationRecord
 
   before_save :compute_lmsr_b_parameter, if: -> { lmsr? && will_save_change_to_status? && open? }
 
-  def fixed_odds? = mechanism_type == "fixed_odds"
-  def clob?       = mechanism_type == "clob"
-  def lmsr?       = mechanism_type == "lmsr"
-  def parimutuel? = mechanism_type == "parimutuel"
+  def fixed_odds? = mechanism_type == 'fixed_odds'
+  def clob?       = mechanism_type == 'clob'
+  def lmsr?       = mechanism_type == 'lmsr'
+  def parimutuel? = mechanism_type == 'parimutuel'
 
   def pricing_engine
     case mechanism_type
-    when "fixed_odds" then FixedOddsPricingEngine.new(self)
-    when "clob"       then ClobPricingEngine.new(self)
-    when "lmsr"       then LmsrPricingEngine.new(self)
-    when "parimutuel" then ParimutuelPricingEngine.new(self)
+    when 'fixed_odds' then FixedOddsPricingEngine.new(self)
+    when 'clob'       then ClobPricingEngine.new(self)
+    when 'lmsr'       then LmsrPricingEngine.new(self)
+    when 'parimutuel' then ParimutuelPricingEngine.new(self)
     end
   end
 
@@ -44,8 +44,8 @@ class Market < ApplicationRecord
     def initialize(market) = @market = market
 
     def order_book_summary
-      bids = @market.orders.where(side: "YES", status: %w[open partial]).order(price_cents: :desc)
-      asks = @market.orders.where(side: "NO",  status: %w[open partial]).order(price_cents: :desc)
+      bids = @market.orders.where(side: 'YES', status: %w[open partial]).order(price_cents: :desc)
+      asks = @market.orders.where(side: 'NO',  status: %w[open partial]).order(price_cents: :desc)
       { bid: bids.first&.price_cents, ask: asks.first&.price_cents }
     end
   end
@@ -56,6 +56,7 @@ class Market < ApplicationRecord
     def yes_probability
       b = @market.lmsr_b_parameter.to_f
       return 50.0 if b.zero?
+
       q_yes = @market.lmsr_q_yes.to_f
       q_no  = @market.lmsr_q_no.to_f
       exp_yes = Math.exp(q_yes / b)
@@ -72,6 +73,7 @@ class Market < ApplicationRecord
     def yes_probability
       total = @market.parimutuel_pool_yes_minor + @market.parimutuel_pool_no_minor
       return 50.0 if total.zero?
+
       (@market.parimutuel_pool_yes_minor.to_f / total * 100).round(2)
     end
 
@@ -87,26 +89,28 @@ class Market < ApplicationRecord
   end
 
   def mechanism_type_immutable_when_open
-    return unless persisted? && !status_changed? && mechanism_type_changed?
-    return if draft?
-    errors.add(:mechanism_type, "cannot be changed after market is open")
+    return unless persisted? && will_save_change_to_mechanism_type?
+    return if mechanism_type_was.nil? || status_in_database == Market.statuses[:draft]
+
+    errors.add(:mechanism_type, 'cannot be changed after market is open')
   end
 
   def mechanism_fee_config_present
     case mechanism_type
-    when "clob"
-      errors.add(:taker_fee_bps, "must be present for CLOB markets") if taker_fee_bps.nil?
-      errors.add(:taker_fee_bps, "must be between 0 and 200") unless taker_fee_bps.nil? || taker_fee_bps.between?(0, 200)
-    when "lmsr"
-      errors.add(:liquidity_subsidy_minor, "must be positive for LMSR markets") unless liquidity_subsidy_minor.to_i > 0
-      errors.add(:spread_fee_bps, "must be between 0 and 500") unless spread_fee_bps.nil? || spread_fee_bps.between?(0, 500)
-    when "parimutuel"
-      errors.add(:takeout_bps, "must be between 1000 and 3000") unless takeout_bps.to_i.between?(1000, 3000)
+    when 'clob'
+      errors.add(:taker_fee_bps, 'must be present for CLOB markets') if taker_fee_bps.nil?
+      errors.add(:taker_fee_bps, 'must be between 0 and 200') unless taker_fee_bps.nil? || taker_fee_bps.between?(0, 200)
+    when 'lmsr'
+      errors.add(:liquidity_subsidy_minor, 'must be positive for LMSR markets') unless liquidity_subsidy_minor.to_i.positive?
+      errors.add(:spread_fee_bps, 'must be between 0 and 500') unless spread_fee_bps.nil? || spread_fee_bps.between?(0, 500)
+    when 'parimutuel'
+      errors.add(:takeout_bps, 'must be between 1000 and 3000') unless takeout_bps.to_i.between?(1000, 3000)
     end
   end
 
   def compute_lmsr_b_parameter
     return if liquidity_subsidy_minor.nil? || liquidity_subsidy_minor <= 0
+
     self.lmsr_b_parameter = liquidity_subsidy_minor.to_f / (Math.log(2) * 100)
   end
 end

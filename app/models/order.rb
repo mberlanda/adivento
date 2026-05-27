@@ -7,9 +7,10 @@ class Order < ApplicationRecord
   enum :time_in_force, { gtc: 0, ioc: 1, fok: 2 }
 
   validates :side, inclusion: { in: %w[YES NO] }
-  validates :price_cents, numericality: { in: 1..99 }
+  validates :price_cents, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 99, only_integer: true }
   validates :quantity, numericality: { greater_than: 0, only_integer: true }
   validates :filled_quantity, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+  validates :cancelled_quantity, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validate :filled_plus_cancelled_lte_quantity
 
   def unfilled_quantity = quantity - filled_quantity - cancelled_quantity
@@ -19,8 +20,9 @@ class Order < ApplicationRecord
 
   def filled_plus_cancelled_lte_quantity
     return unless filled_quantity && cancelled_quantity && quantity
-    if filled_quantity + cancelled_quantity > quantity
-      errors.add(:base, "filled_quantity + cancelled_quantity cannot exceed quantity")
-    end
+
+    return unless filled_quantity + cancelled_quantity > quantity
+
+    errors.add(:base, 'filled_quantity + cancelled_quantity cannot exceed quantity')
   end
 end
