@@ -1,7 +1,7 @@
 module Backoffice
   class MarketsController < BaseController
     before_action -> { require_permission!('market.read') }
-    before_action :set_market, only: %i[show open settle]
+    before_action :set_market, only: %i[show open settle update]
 
     def index
       @markets = Market.includes(:market_legs, :created_by).order(created_at: :desc)
@@ -38,6 +38,24 @@ module Backoffice
         @markets = Market.includes(:market_legs, :created_by).order(created_at: :desc)
         flash.now[:alert] = market.errors.full_messages.join(', ')
         render :index, status: :unprocessable_content
+      end
+    end
+
+    def update
+      require_permission!('market.update')
+      return if performed?
+
+      if @market.update(market_update_params)
+        HotStorage::MarketSnapshotProjector.project!(market: @market.reload, reason: 'market.update')
+        AuditEvent.create!(
+          actor: current_user, action: 'market.update',
+          target_type: 'Market', target_id: @market.id, metadata: {}
+        )
+        redirect_to backoffice_market_path(@market), notice: 'Market updated'
+      else
+        flash.now[:alert] = @market.errors.full_messages.join(', ')
+        @bets = @market.bets.includes(:user, :market_leg).order(created_at: :desc)
+        render :show, status: :unprocessable_content
       end
     end
 
@@ -79,10 +97,20 @@ module Backoffice
       @market = Market.includes(:market_legs).find(params.expect(:id))
     end
 
+    def market_update_params
+      params.permit(:close_at, :resolution_criteria, :resolution_source, :category, :tags_input).tap do |p|
+        if p[:tags_input]
+          tags = p.delete(:tags_input).to_s.split(',').map(&:strip).reject(&:empty?)
+          p[:tags] = tags
+        end
+      end
+    end
+
     def market_create_params
       permitted = params.permit(:question, :description, :mechanism_type, :fee_bps,
                                 :liability_cap_minor, :taker_fee_bps, :liquidity_subsidy_minor,
-                                :spread_fee_bps, :takeout_bps, :category, :tags_input)
+                                :spread_fee_bps, :takeout_bps, :category, :tags_input,
+                                :close_at, :resolution_criteria, :resolution_source)
       if permitted[:tags_input]
         permitted = permitted.except(:tags_input).merge(
           tags: permitted[:tags_input].to_s.split(',').map(&:strip).reject(&:empty?)

@@ -13,6 +13,9 @@
             data: { testid: "market-category" } %>
     </p>
     <p><label>Tags (comma-separated, optional)</label><br><%= text_field_tag :tags_input, nil, placeholder: "nba, fed, ai", data: { testid: "market-tags" } %></p>
+    <p><label>Close date/time (optional)</label><br><%= datetime_local_field_tag :close_at, nil, data: { testid: "market-close-at" } %></p>
+    <p><label>Resolution criteria <small>(what constitutes a YES outcome?)</small></label><br><%= text_area_tag :resolution_criteria, nil, rows: 3, placeholder: "e.g. YES resolves if the Federal Reserve announces a rate reduction at this meeting.", data: { testid: "market-resolution-criteria" } %></p>
+    <p><label>Resolution source <small>(authoritative source for outcome)</small></label><br><%= text_field_tag :resolution_source, nil, placeholder: "e.g. Federal Reserve official statement", data: { testid: "market-resolution-source" } %></p>
     <p>
       <label>Market Mechanism</label><br>
       <%= select_tag :mechanism_type,

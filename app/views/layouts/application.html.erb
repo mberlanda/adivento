@@ -4,40 +4,67 @@
     <title>Adivento Markets</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
-      :root { --bg: #f6f4ec; --panel: #ffffff; --ink: #18252f; --accent: #0e7c66; --muted: #5f6f79; }
-      body { margin: 0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 20% -20%, #d8efe6 0%, var(--bg) 45%); color: var(--ink); }
-      header { display:flex; justify-content:space-between; align-items:center; padding: 16px 24px; background: rgba(255,255,255,.85); border-bottom: 1px solid #d9e2df; position: sticky; top: 0; backdrop-filter: blur(4px); }
+      :root { --bg: #f6f4ec; --panel: #ffffff; --ink: #18252f; --accent: #0e7c66; --muted: #5f6f79; --border: #d9e2df; }
+      body { margin: 0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 20% -20%, #d8efe6 0%, var(--bg) 45%); color: var(--ink); min-height: 100vh; }
+      header { display:flex; justify-content:space-between; align-items:center; padding: 12px 24px; background: rgba(255,255,255,.9); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(6px); }
+      .header-brand { display:flex; align-items:center; gap: 8px; }
+      .header-brand strong { font-size: 1.1rem; }
+      .header-nav { display:flex; align-items:center; gap: 6px; font-size: 0.95rem; }
+      .header-nav a, .nav-button { color: var(--ink); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: background 0.15s; }
+      .header-nav a:hover, .nav-button:hover { background: #ecf7f3; color: var(--accent); }
+      .header-nav .balance-chip { background: #ecf7f3; color: var(--accent); font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 0.82rem; }
       a { color: var(--accent); text-decoration: none; }
-      .shell { max-width: 1080px; margin: 0 auto; padding: 24px; }
-      .cards { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-      .card { background: var(--panel); border: 1px solid #d9e2df; border-radius: 16px; padding: 16px; box-shadow: 0 10px 20px rgba(0,0,0,.04); }
-      .muted { color: var(--muted); font-size: 0.92rem; }
-      .badge { display:inline-block; padding:4px 10px; border-radius:999px; background:#ecf7f3; color:#0a5e4e; font-size:.8rem; margin-right:6px; }
-      .flash { margin: 12px 0; padding: 10px 12px; border-radius: 10px; }
-      .notice { background: #e6f7f1; }
-      .alert { background: #fdecec; }
-      input, select, textarea, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #b8c8c3; }
-      button { background: #0e7c66; color: white; border: 0; cursor: pointer; }
+      .shell { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+      .cards { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: box-shadow 0.15s; }
+      .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.09); }
+      .card h3 { margin: 8px 0 6px; font-size: 1rem; line-height: 1.4; }
+      .muted { color: var(--muted); font-size: 0.88rem; }
+      .badge { display:inline-block; padding:3px 8px; border-radius:999px; background:#ecf7f3; color:#0a5e4e; font-size:.78rem; margin-right:4px; font-weight: 500; }
+      .badge-status { background: #f0f4f7; color: #3a5060; }
+      .badge-tag { background: #f5f0e8; color: #7a5c30; }
+      .flash { margin: 12px 0; padding: 10px 14px; border-radius: 10px; font-size: 0.93rem; }
+      .notice { background: #e6f7f1; border: 1px solid #b8e6d6; color: #0a4a35; }
+      .alert { background: #fdecea; border: 1px solid #f5c0ba; color: #7a1f1a; }
+      input, select, textarea { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); color: var(--ink); font: inherit; width: 100%; box-sizing: border-box; }
+      input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+      button, input[type=submit] { padding: 8px 16px; border-radius: 8px; border: 0; background: var(--accent); color: white; font: inherit; font-weight: 600; cursor: pointer; width: auto; }
+      button:hover, input[type=submit]:hover { background: #0a6a57; }
       form.inline { display: inline; }
-      nav a, .nav-button { color: var(--accent); text-decoration: none; font: inherit; }
-      .nav-button { background: transparent; border: 0; padding: 0; cursor: pointer; }
+      .nav-button { background: transparent; border: 0; padding: 6px 12px; cursor: pointer; font: inherit; }
+      .stat-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 12px 0; }
+      .stat-card { background: #f4f9f7; border: 1px solid #d0e8de; border-radius: 10px; padding: 10px 14px; }
+      .stat-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .stat-value { font-size: 1.25rem; font-weight: 700; color: var(--ink); margin-top: 2px; }
+      .pill { display:inline-flex; align-items:center; gap:4px; padding: 4px 12px; border-radius: 999px; font-size: .85rem; text-decoration: none; }
+      .pill-outline { border: 1px solid var(--border); color: var(--muted); }
+      .pill-active { background: var(--accent); color: white; }
     </style>
   </head>
   <body>
     <header>
-      <strong><a href="/" data-testid="nav-home">Adivento</a></strong>
-      <nav data-testid="top-nav">
+      <div class="header-brand">
+        <strong><a href="/" data-testid="nav-home" style="color:var(--ink);">Adivento</a></strong>
+      </div>
+      <nav class="header-nav" data-testid="top-nav">
         <% if nav_action_available?("navigation.markets") %>
           <a href="<%= nav_action_path("navigation.markets") %>" data-testid="nav-markets">Markets</a>
         <% end %>
+        <a href="<%= web_leaderboard_path %>" data-testid="nav-leaderboard">Leaderboard</a>
         <% if nav_action_available?("navigation.backoffice") %>
-          &nbsp;|&nbsp;<a href="<%= nav_action_path("navigation.backoffice") %>" data-testid="nav-backoffice">Backoffice</a>
+          <a href="<%= nav_action_path("navigation.backoffice") %>" data-testid="nav-backoffice">Backoffice</a>
+        <% end %>
+        <% if nav_action_available?("navigation.profile") %>
+          <a href="<%= nav_action_path("navigation.profile") %>" data-testid="nav-profile">My Profile</a>
+          <% nav_user = current_nav_user %>
+          <% if nav_user&.wallet %>
+            <span class="balance-chip" data-testid="nav-balance"><%= number_with_delimiter(nav_user.wallet.available_minor) %> ADIV</span>
+          <% end %>
         <% end %>
         <% if nav_action_available?("navigation.sign_out") %>
-          &nbsp;|&nbsp;
           <%= button_to "Sign out", nav_action_path("navigation.sign_out"), method: :delete, form_class: "inline", class: "nav-button", form: { data: { testid: "signout-form" } }, data: { testid: "nav-signout" } %>
         <% elsif nav_action_available?("navigation.sign_in") %>
-          &nbsp;|&nbsp;<a href="<%= nav_action_path("navigation.sign_in") %>" data-testid="nav-signin">Sign in</a>
+          <a href="<%= nav_action_path("navigation.sign_in") %>" data-testid="nav-signin">Sign in</a>
         <% end %>
       </nav>
     </header>

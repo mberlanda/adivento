@@ -200,4 +200,26 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
   end
+
+  test 'admin can update market details via PATCH' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+    close_time = 1.week.from_now.strftime('%Y-%m-%dT%H:%M')
+
+    patch "/backoffice/markets/#{market.id}", params: {
+      close_at: close_time,
+      resolution_criteria: 'Updated resolution criteria',
+      resolution_source: 'Official source',
+      category: 'sports',
+      tags_input: 'nba, finals'
+    }
+
+    assert_response :redirect
+    market.reload
+
+    assert_equal 'Updated resolution criteria', market.resolution_criteria
+    assert_equal 'Official source', market.resolution_source
+    assert_equal 'sports', market.category
+    assert_includes market.tags, 'nba'
+  end
 end

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   namespace :web do
     resources :markets, only: %i[index show] do
+      resources :bets, only: [:create]
       resources :orders, only: [:create]
       resources :lmsr_trades, only: [:create]
       resources :parimutuel_bets, only: [:create]
@@ -25,6 +26,8 @@ Rails.application.routes.draw do
     resources :betslip_executions, only: [:show], path: 'betslips/executions'
 
     get :profile, to: 'profile#show'
+    get :leaderboard, to: 'leaderboard#index'
+    resources :faucet_requests, only: [:create]
 
     resources :positions, only: [:index] do
       collection do
@@ -41,7 +44,7 @@ Rails.application.routes.draw do
     resources :templates, only: %i[index create edit update destroy] do
       post :create_market, on: :member
     end
-    resources :markets, only: %i[index show create] do
+    resources :markets, only: %i[index show create update] do
       post :open, on: :member
       post :settle, on: :member
     end

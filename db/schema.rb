@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_200001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_27_221019) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,6 +123,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_200001) do
 
   create_table "markets", force: :cascade do |t|
     t.string "category", default: "other", null: false
+    t.datetime "close_at"
     t.datetime "created_at", null: false
     t.integer "created_by_id", null: false
     t.text "description", null: false
@@ -137,6 +138,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_200001) do
     t.bigint "parimutuel_pool_no_minor", default: 0, null: false
     t.bigint "parimutuel_pool_yes_minor", default: 0, null: false
     t.string "question", null: false
+    t.text "resolution_criteria"
+    t.string "resolution_source"
     t.integer "settled_by_id"
     t.string "settled_outcome"
     t.integer "spread_fee_bps"

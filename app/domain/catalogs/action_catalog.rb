@@ -10,6 +10,8 @@ module Domain
           audience: 'guest' },
         { key: 'navigation.sign_out', surface: 'navigation', path: '/signout', method: 'delete', permission_key: nil,
           audience: 'signed_in' },
+        { key: 'navigation.profile', surface: 'navigation', path: '/web/profile', method: 'get', permission_key: nil,
+          audience: 'signed_in' },
         { key: 'capability.bet.place', surface: 'capability', path: '/markets/:market_id/bets', method: 'post',
           permission_key: 'bet.place', audience: 'signed_in' },
         { key: 'capability.risk.read', surface: 'capability', path: '/admin/markets/:id/risk', method: 'get',

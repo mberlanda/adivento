@@ -14,6 +14,21 @@
   <% if @market.settled? %>
     <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
   <% end %>
+  <% if @market.close_at.present? %>
+    <p>Closes: <strong><%= @market.close_at.strftime('%Y-%m-%d %H:%M UTC') %></strong>
+      <% if @market.open? && @market.close_at > Time.current %>
+        <span style="color:#f0bc5c;">(in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
+      <% elsif @market.open? %>
+        <span style="color:#f44336;">(closed for new bets)</span>
+      <% end %>
+    </p>
+  <% end %>
+  <% if @market.resolution_criteria.present? %>
+    <p><strong>Resolution criteria:</strong><br><span style="color:#9fb2b8;font-size:0.92em;"><%= @market.resolution_criteria %></span></p>
+  <% end %>
+  <% if @market.resolution_source.present? %>
+    <p><strong>Resolution source:</strong> <span style="color:#9fb2b8;"><%= @market.resolution_source %></span></p>
+  <% end %>
 
   <% if @market.draft? %>
     <%= form_with url: open_backoffice_market_path(@market), method: :post,
@@ -81,6 +96,37 @@
     </table>
   <% else %>
     <p style="color:#9fb2b8;">No bets placed yet.</p>
+  <% end %>
+</div>
+
+<div class="panel">
+  <h3>Edit Details</h3>
+  <%= form_with url: backoffice_market_path(@market), method: :patch,
+        html: { data: { testid: 'edit-market-form' } } do |f| %>
+    <p>
+      <label>Category</label><br>
+      <%= select_tag :category,
+            options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, @market.category),
+            data: { testid: 'edit-market-category' } %>
+    </p>
+    <p><label>Tags (comma-separated)</label><br>
+      <%= text_field_tag :tags_input, @market.tags.join(', '),
+            data: { testid: 'edit-market-tags' } %>
+    </p>
+    <p><label>Close date/time</label><br>
+      <%= datetime_local_field_tag :close_at,
+            (@market.close_at&.strftime('%Y-%m-%dT%H:%M') || ''),
+            data: { testid: 'edit-market-close-at' } %>
+    </p>
+    <p><label>Resolution criteria</label><br>
+      <%= text_area_tag :resolution_criteria, @market.resolution_criteria,
+            rows: 3, data: { testid: 'edit-market-resolution-criteria' } %>
+    </p>
+    <p><label>Resolution source</label><br>
+      <%= text_field_tag :resolution_source, @market.resolution_source,
+            data: { testid: 'edit-market-resolution-source' } %>
+    </p>
+    <%= f.submit 'Save Changes', data: { testid: 'edit-market-submit' } %>
   <% end %>
 </div>
 
