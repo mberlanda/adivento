@@ -11,6 +11,10 @@
 
 set -euo pipefail
 
+# Force the compose project name so docker-compose.e2e.yml's hardcoded
+# `adivento_default` external network resolves correctly in all working directories.
+export COMPOSE_PROJECT_NAME=adivento
+
 BUILD_FLAG="--build"
 if [[ "${1:-}" == "--no-build" ]]; then
   BUILD_FLAG=""
