@@ -51,25 +51,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Start application stack
-        run: docker compose up -d --build
-
-      - name: Wait for web service health
-        run: |
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:3000/up && exit 0
-            echo "Attempt $i/30 — retrying in 5s..."
-            sleep 5
-          done
-          docker compose logs web
-          exit 1
-
-      - name: Run Playwright E2E tests
-        run: |
-          docker compose \
-            -f docker-compose.yml \
-            -f e2e/playwright/docker-compose.e2e.yml \
-            run --build --rm ui-tests
+      - name: Run E2E suite
+        run: scripts/e2e.sh
 
       - name: Upload Playwright report
         if: always()
@@ -78,7 +61,3 @@ jobs:
           name: playwright-report
           path: e2e/playwright/playwright-report/
           if-no-files-found: ignore
-
-      - name: Tear down stack
-        if: always()
-        run: docker compose down -v
