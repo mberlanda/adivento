@@ -18,7 +18,20 @@ async function createMarketViaAdminApi(baseURL, token, attrs) {
 
   const response = await context.post('/admin/markets', { data: attrs });
   expect(response.ok()).toBeTruthy();
-  return { context, payload: await response.json() };
+  const created = await response.json();
+
+  // Open the market so bets can be placed
+  const openResponse = await context.put(`/admin/markets/${created.id}`, {
+    data: { status: 'open' },
+  });
+  expect(openResponse.ok()).toBeTruthy();
+
+  // Fetch full market details (includes leg IDs)
+  const showResponse = await context.get(`/admin/markets/${created.id}`);
+  expect(showResponse.ok()).toBeTruthy();
+  const payload = await showResponse.json();
+
+  return { context, payload };
 }
 
 module.exports = {

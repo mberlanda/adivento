@@ -1,4 +1,4 @@
-<h1 data-testid="backoffice-market-title"><%= @market.question %></h1>
+<h1 data-testid="market-title"><%= @market.question %></h1>
 <p style="color:#9fb2b8;"><%= @market.description %></p>
 
 <div class="panel">
@@ -43,7 +43,7 @@
   <h3>Lines / Legs</h3>
   <table>
     <thead><tr><th>Label</th><th>Odds (minor)</th><th>Active</th></tr></thead>
-    <tbody>
+    <tbody data-testid="market-legs-list">
       <% @market.market_legs.each do |leg| %>
         <tr data-testid="leg-row-<%= leg.id %>">
           <td><strong><%= leg.label %></strong></td>
