@@ -160,6 +160,29 @@
           </div>
         <% end %>
       </section>
+    <% elsif @market.clob? %>
+      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <h3 style="margin-top:0;">Place Limit Order</h3>
+        <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">CLOB — set your price and quantity. Order stays open until filled or cancelled.</p>
+        <%= form_with url: web_market_orders_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <% [['YES (Buy)', 'yes'], ['NO (Sell)', 'no']].each do |label, val| %>
+              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                <strong style="margin-left:4px;"><%= label %></strong>
+              </label>
+            <% end %>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <label style="font-size:0.88rem;white-space:nowrap;">Price (¢):</label>
+            <%= number_field_tag :price_cents, 50, min: 1, max: 99, style: 'width:80px;', required: true,
+                  data: { testid: 'bet-stake' } %>
+            <label style="font-size:0.88rem;white-space:nowrap;">Qty:</label>
+            <%= number_field_tag :quantity, 10, min: 1, style: 'width:80px;', required: true %>
+            <%= f.submit 'Place Order', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
+          </div>
+        <% end %>
+      </section>
     <% elsif @market.lmsr? %>
       <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
         <h3 style="margin-top:0;">Buy Shares</h3>
