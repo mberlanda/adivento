@@ -2,6 +2,9 @@ open_market:
   question: Will it rain tomorrow?
   description: Weather market
   status: 1
+  mechanism_type: fixed_odds
+  fee_bps: 100
+  liability_cap_minor: 100000
   structure_locked: false
   created_by: admin
 
@@ -9,5 +12,47 @@ draft_market:
   question: Will Team A win?
   description: Sports market
   status: 0
+  mechanism_type: fixed_odds
+  fee_bps: 100
+  liability_cap_minor: 100000
+  structure_locked: false
+  created_by: admin
+
+clob_market:
+  question: Will the CLOB market resolve YES?
+  description: CLOB order book market
+  status: 1
+  mechanism_type: clob
+  taker_fee_bps: 70
+  fee_bps: 0
+  liability_cap_minor: 100000
+  structure_locked: false
+  created_by: admin
+
+lmsr_market:
+  question: Will the LMSR market resolve YES?
+  description: LMSR automated market maker
+  status: 1
+  mechanism_type: lmsr
+  liquidity_subsidy_minor: 100000
+  spread_fee_bps: 100
+  lmsr_b_parameter: 1443.07
+  lmsr_q_yes: 0
+  lmsr_q_no: 0
+  fee_bps: 0
+  liability_cap_minor: 100000
+  structure_locked: false
+  created_by: admin
+
+parimutuel_market:
+  question: Will the parimutuel market resolve YES?
+  description: Parimutuel pool market
+  status: 1
+  mechanism_type: parimutuel
+  takeout_bps: 1500
+  parimutuel_pool_yes_minor: 0
+  parimutuel_pool_no_minor: 0
+  fee_bps: 0
+  liability_cap_minor: 100000
   structure_locked: false
   created_by: admin

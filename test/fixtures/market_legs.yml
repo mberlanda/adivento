@@ -9,3 +9,39 @@ no_leg:
   label: "NO"
   odds_minor: 5000
   active: true
+
+clob_yes_leg:
+  market: clob_market
+  label: "YES"
+  odds_minor: 5000
+  active: true
+
+clob_no_leg:
+  market: clob_market
+  label: "NO"
+  odds_minor: 5000
+  active: true
+
+lmsr_yes_leg:
+  market: lmsr_market
+  label: "YES"
+  odds_minor: 5000
+  active: true
+
+lmsr_no_leg:
+  market: lmsr_market
+  label: "NO"
+  odds_minor: 5000
+  active: true
+
+parimutuel_yes_leg:
+  market: parimutuel_market
+  label: "YES"
+  odds_minor: 5000
+  active: true
+
+parimutuel_no_leg:
+  market: parimutuel_market
+  label: "NO"
+  odds_minor: 5000
+  active: true
