@@ -4,6 +4,21 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-006 backoffice market create form UX (PR #21 merged)
+
+**PR:** #21 (`feat/f006-market-create-ux`) — squash-merged to main as `528e7ba`
+
+### F-006: Backoffice market creation UX
+- Grouped 14-field form into 3 fieldsets: Basic Information, Metadata & Resolution, Trading Mechanism
+- Added live question preview box (JS `input` event listener)
+- Improved help text on mechanism-specific fields (liability cap, taker fee, subsidy, takeout)
+- Required field indicators on question, description, mechanism
+- Added `backoffice-faucet.spec.js` E2E tests (PR #19 `d9aa8b8`)
+- Fixed duplicate flash rendering in backoffice faucet view (PR #19)
+- Plan: `docs/superpowers/plans/2026-05-28-f006-backoffice-market-create-ux.md`
+
+---
+
 ## 2026-05-28 — UX polish, rich seeds, F-003, F-007, quick-bet, leaderboard ORDER BY fix (PR #18 merged)
 
 **PR:** #18 (`feat/ux-improvements`) — squash-merged to main as `3dd6be1`

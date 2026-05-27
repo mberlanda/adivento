@@ -122,12 +122,11 @@ Plan approved?
 - **F-007: Public leaderboard** — ranked by net P&L, public page, nav link (PR #18)
 - **Betting forms on market show** — quick-bet panel for all 4 mechanism types (fixed_odds/CLOB/LMSR/parimutuel); signed-in users get form, guests get sign-in prompt (PR #18)
 - **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
+- **F-006: Backoffice market create UX** — fieldset grouping, live preview, improved help text (PR #21, `528e7ba`)
 
 ### ⏳ Next
-- F-006: Market creation UX improvements (backoffice form refinement)
 - PLAN-D: Playwright E2E — additional coverage
-- Faucet admin approval E2E test
-- CLOB / LMSR / parimutuel order forms review (quick-bet panels added in PR #18, verify end-to-end)
+- CLOB / LMSR / parimutuel order forms end-to-end verification
 
 ### Plans + Reviews
 

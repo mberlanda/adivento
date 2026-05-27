@@ -14,9 +14,7 @@ _(none currently)_
 
 ## 🟡 Ready for Autonomous Work
 
-### F-006: Market creation UX (backoffice)
-- **Status:** Not started
-- **Action:** Backoffice market create form is functional but long. Could add: live mechanism preview, better field grouping, form validation feedback. Medium complexity.
+_(none currently — see Next in INDEX.md)_
 
 ---
 
@@ -34,6 +32,7 @@ _(none currently)_
 | Faucet controller unit tests | 2026-05-28 | PR #18 |
 | Profile + F-003 E2E tests | 2026-05-28 | PR #18 |
 | Faucet admin approval E2E tests | 2026-05-28 | PR #19 merged `d9aa8b8` |
+| F-006 Market create UX | 2026-05-28 | PR #21 merged `528e7ba` |
 | CLOB order book | 2026-05-27 | PRs #10–12 |
 | Pluggable mechanisms | 2026-05-27 | PRs #5–10 |
 
