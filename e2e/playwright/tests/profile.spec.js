@@ -41,12 +41,8 @@ test.describe('User profile page', () => {
     const amountInput = details.locator('input[name="amount_minor"]');
     await amountInput.fill('5000');
 
-    const [response] = await Promise.all([
-      page.waitForNavigation(),
-      details.locator('button[type="submit"]').click(),
-    ]);
-
-    await expect(page).toHaveURL(/web\/profile/);
+    await details.locator('button[type="submit"]').click();
+    await page.waitForURL(/web\/profile/);
     await expect(page.locator('.notice')).toContainText('Token request submitted');
   });
 

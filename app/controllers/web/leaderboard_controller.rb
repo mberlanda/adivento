@@ -30,7 +30,10 @@ module Web
           "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_win]} " \
           'THEN bets.potential_payout_minor ELSE 0 END) AS total_returned'
         )
-        .order(Arel.sql('total_returned - total_staked DESC'))
+        .order(Arel.sql(
+                 "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_win]} " \
+                 'THEN bets.potential_payout_minor ELSE 0 END) - SUM(bets.net_stake_minor) DESC'
+               ))
         .limit(50)
     end
   end
