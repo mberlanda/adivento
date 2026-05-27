@@ -63,4 +63,74 @@ test.describe('Quick-bet form on market show page', () => {
     await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
     await expect(page.locator('.notice')).toContainText('Bet placed on YES');
   });
+
+  test('player places a CLOB limit order via quick-bet form', async ({ page, baseURL }) => {
+    const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const { payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
+      question: `CLOB quick-bet E2E ${Date.now()}`,
+      description: 'CLOB order test',
+      mechanism_type: 'clob',
+      taker_fee_bps: 70,
+      liability_cap_minor: 500000,
+    });
+
+    await signInUi(page, USERS.player.email, USERS.player.password);
+    await page.goto(`/web/markets/${market.id}`);
+
+    await expect(page.getByTestId('quick-bet-panel')).toBeVisible();
+
+    await page.getByTestId('bet-leg-yes').check();
+    await page.getByTestId('bet-stake').fill('50');
+    await page.getByTestId('bet-submit').click();
+
+    await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
+    await expect(page.locator('.notice')).toContainText('Order placed on YES');
+  });
+
+  test('player places an LMSR trade via quick-bet form', async ({ page, baseURL }) => {
+    const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const { payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
+      question: `LMSR quick-bet E2E ${Date.now()}`,
+      description: 'LMSR trade test',
+      mechanism_type: 'lmsr',
+      liquidity_subsidy_minor: 100000,
+      spread_fee_bps: 100,
+      liability_cap_minor: 500000,
+    });
+
+    await signInUi(page, USERS.player.email, USERS.player.password);
+    await page.goto(`/web/markets/${market.id}`);
+
+    await expect(page.getByTestId('quick-bet-panel')).toBeVisible();
+
+    await page.getByTestId('bet-leg-yes').check();
+    await page.getByTestId('bet-stake').fill('5');
+    await page.getByTestId('bet-submit').click();
+
+    await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
+    await expect(page.locator('.notice')).toContainText('Trade placed on YES');
+  });
+
+  test('player places a parimutuel pool bet via quick-bet form', async ({ page, baseURL }) => {
+    const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const { payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
+      question: `Parimutuel quick-bet E2E ${Date.now()}`,
+      description: 'Parimutuel bet test',
+      mechanism_type: 'parimutuel',
+      takeout_bps: 1500,
+      liability_cap_minor: 500000,
+    });
+
+    await signInUi(page, USERS.player.email, USERS.player.password);
+    await page.goto(`/web/markets/${market.id}`);
+
+    await expect(page.getByTestId('quick-bet-panel')).toBeVisible();
+
+    await page.getByTestId('bet-leg-yes').check();
+    await page.getByTestId('bet-stake').fill('100');
+    await page.getByTestId('bet-submit').click();
+
+    await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
+    await expect(page.locator('.notice')).toContainText('Stake placed on YES');
+  });
 });
