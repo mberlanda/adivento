@@ -50,6 +50,7 @@
         <% if nav_action_available?("navigation.markets") %>
           <a href="<%= nav_action_path("navigation.markets") %>" data-testid="nav-markets">Markets</a>
         <% end %>
+        <a href="<%= web_leaderboard_path %>" data-testid="nav-leaderboard">Leaderboard</a>
         <% if nav_action_available?("navigation.backoffice") %>
           <a href="<%= nav_action_path("navigation.backoffice") %>" data-testid="nav-backoffice">Backoffice</a>
         <% end %>
