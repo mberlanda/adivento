@@ -4,10 +4,10 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
-## 2026-05-28 — UX polish, rich seeds, F-003 market detail enrichment, F-005 profile, F-002 search (PR #18)
+## 2026-05-28 — UX polish, rich seeds, F-003, F-007, quick-bet, leaderboard ORDER BY fix (PR #18 merged)
 
-**PR:** #18 (`feat/ux-improvements`)
-**Commits on branch:** `ca23ea2`, `0d6dff8`, `b088d44`, `250e730`, `d629162`, `2d1f120`
+**PR:** #18 (`feat/ux-improvements`) — squash-merged to main as `3dd6be1`
+**Fixes in this session:** leaderboard ORDER BY PostgreSQL alias bug (`1899cc4`), profile E2E faucet selector (`102624e`)
 
 ### F-001: Market taxonomy (PRs #13–15)
 - Migration: `category` string enum + `tags` jsonb on `markets`
