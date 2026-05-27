@@ -80,8 +80,15 @@ module Backoffice
     end
 
     def market_create_params
-      params.permit(:question, :description, :mechanism_type, :fee_bps, :liability_cap_minor,
-                    :taker_fee_bps, :liquidity_subsidy_minor, :spread_fee_bps, :takeout_bps)
+      permitted = params.permit(:question, :description, :mechanism_type, :fee_bps,
+                                :liability_cap_minor, :taker_fee_bps, :liquidity_subsidy_minor,
+                                :spread_fee_bps, :takeout_bps, :category, :tags_input)
+      if permitted[:tags_input]
+        permitted = permitted.except(:tags_input).merge(
+          tags: permitted[:tags_input].to_s.split(',').map(&:strip).reject(&:empty?)
+        )
+      end
+      permitted
     end
   end
 end
