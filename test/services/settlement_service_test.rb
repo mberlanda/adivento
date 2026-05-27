@@ -121,4 +121,16 @@ class SettlementServiceTest < ActiveSupport::TestCase
 
     assert_predicate @loser_bet, :voided?
   end
+
+  test 'SettlementService delegates to ClobSettlementHandler for clob markets' do
+    @market.update_columns(mechanism_type: 'clob', taker_fee_bps: 70)
+    @market.bets.delete_all
+    @market.orders.delete_all
+    assert_nothing_raised do
+      SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor)
+    end
+    @market.reload
+
+    assert_predicate @market, :settled?
+  end
 end

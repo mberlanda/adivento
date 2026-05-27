@@ -4,6 +4,48 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-27 — Pluggable Market Mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds)
+
+**Commits:** `90728bd`–`b26bf56`
+
+### Architecture
+- `markets.mechanism_type` (existing string column) is the single branch point across all mechanism logic
+- Per-mechanism fee columns added (`taker_fee_bps`, `liquidity_subsidy_minor`, `spread_fee_bps`, `takeout_bps`)
+- LMSR state columns on markets row (`lmsr_b_parameter`, `lmsr_q_yes`, `lmsr_q_no`)
+- Parimutuel pool state on markets row (`parimutuel_pool_yes_minor`, `parimutuel_pool_no_minor`)
+- `Market#pricing_engine` factory returns mechanism-specific engine (value object)
+- No `ParimutuelBet` model in v1 — stakes tracked via `LedgerEntry(entry_type: "PARIMUTUEL_STAKE", metadata: {market_id:, side:})`
+
+### Key files
+- `app/models/market.rb` — MECHANISM_TYPES constant, mechanism validations, predicates (`clob?` etc.), inner engine classes, `lmsr_b_parameter` computed on draft→open
+- `app/models/order.rb` + migration — CLOB order book with status/TIF enums
+- `app/services/clob/order_matching_service.rb` — price-time priority, partial fills, FOK/IOC, taker fee
+- `app/services/lmsr/lmsr_pricing_service.rb` — LMSR cost function, `b_from_subsidy`
+- `app/services/lmsr/lmsr_trade_service.rb` — place LMSR trade, debit wallet, write ledger + audit
+- `app/services/parimutuel/parimutuel_pool_service.rb` — stake, pool update, implied odds
+- `app/services/parimutuel/parimutuel_settlement_service.rb` — takeout deduction, pro-rata payout via ledger entries
+- `app/services/settlement_service.rb` — routes to mechanism handlers; `settle_fixed_odds!` private for existing code
+- `app/services/settlement/clob_settlement_handler.rb` — cancel open orders, credit winning contracts
+- `app/services/settlement/lmsr_settlement_handler.rb` — v1 stub; individual payouts deferred (v2 needs position tracking)
+- `app/services/hot_storage/market_snapshot_projector.rb` — extended with CLOB/LMSR/parimutuel snapshot fields
+- `app/services/price_snapshot_recorder.rb` + job — periodic mechanism-appropriate snapshots
+- `app/controllers/admin/orders_controller.rb` — admin order placement/cancellation
+- `app/controllers/web/orders_controller.rb`, `order_books_controller.rb`, `lmsr_trades_controller.rb`, `parimutuel_bets_controller.rb`
+- Backoffice form: mechanism picker with conditional fee fields
+- Web market show: mechanism-appropriate price display
+
+### Test coverage
+- 216 tests, 0 failures, 91.87% line coverage
+- New test files: `test/services/clob/`, `test/services/lmsr/`, `test/services/parimutuel/`, `test/integration/clob_orders_test.rb`, `test/integration/lmsr_trades_test.rb`, `test/integration/parimutuel_bets_test.rb`, `test/integration/web_orders_test.rb`
+
+### Known v2 gaps (see FINDINGS.md)
+- LMSR subsidy exhaustion check (`lmsr_realized_loss_minor` column)
+- `ParimutuelBet` model for per-bettor history
+- LMSR individual settlement payouts (needs position tracking model)
+- Cross-mechanism leaderboard aggregation
+
+---
+
 ## 2026-05-26 — Betslip + Cashout, Binary Invariants, Faucet UI, Hot/Cold Storage, CI/CD
 
 **Commits:** `fb448ad`–`c686641`

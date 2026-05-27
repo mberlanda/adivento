@@ -6,9 +6,46 @@
     <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, data: { testid: "market-question" } %></p>
     <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, data: { testid: "market-description" } %></p>
     <p><label>Legs (comma separated, default: YES,NO)</label><br><%= text_field_tag :legs, "YES,NO", data: { testid: "market-legs" } %></p>
-    <p><label>Fee (basis points, 100 = 1%)</label><br><%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %></p>
-    <p><label>Liability Cap (minor units)</label><br><%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %></p>
-    <%= hidden_field_tag :mechanism_type, "fixed_odds" %>
+    <p>
+      <label>Market Mechanism</label><br>
+      <%= select_tag :mechanism_type,
+            options_for_select([
+              ["Fixed-odds (house underwriting)", "fixed_odds"],
+              ["CLOB (limit order book)", "clob"],
+              ["LMSR (automated market maker)", "lmsr"],
+              ["Parimutuel (pool-share)", "parimutuel"]
+            ], "fixed_odds"),
+            id: "mechanism_type_select",
+            data: { testid: "market-mechanism-type" } %>
+    </p>
+
+    <div id="fixed_odds_fields">
+      <p><label>Fee (basis points, 100 = 1%)</label><br><%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %></p>
+      <p><label>Liability Cap (minor units)</label><br><%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %></p>
+    </div>
+
+    <div id="clob_fields" style="display:none;">
+      <p><label>Taker fee (basis points, 0–200)</label><br><%= number_field_tag :taker_fee_bps, 70, min: 0, max: 200 %></p>
+    </div>
+
+    <div id="lmsr_fields" style="display:none;">
+      <p><label>Initial subsidy (ADIV minor units)</label><br><%= number_field_tag :liquidity_subsidy_minor, 100000, min: 1 %></p>
+      <p><label>Spread fee (basis points, 0–500)</label><br><%= number_field_tag :spread_fee_bps, 100, min: 0, max: 500 %></p>
+    </div>
+
+    <div id="parimutuel_fields" style="display:none;">
+      <p><label>Takeout (basis points, 1000–3000)</label><br><%= number_field_tag :takeout_bps, 1500, min: 1000, max: 3000 %></p>
+    </div>
+
+    <script>
+      document.getElementById('mechanism_type_select').addEventListener('change', function() {
+        ['fixed_odds', 'clob', 'lmsr', 'parimutuel'].forEach(function(m) {
+          document.getElementById(m + '_fields').style.display = 'none';
+        });
+        document.getElementById(this.value + '_fields').style.display = 'block';
+      });
+    </script>
+
     <p><%= submit_tag "Create market", data: { testid: "market-create-submit" } %></p>
   <% end %>
 </div>

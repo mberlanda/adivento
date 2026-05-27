@@ -80,7 +80,8 @@ module Backoffice
     end
 
     def market_create_params
-      params.permit(:question, :description, :mechanism_type, :fee_bps, :liability_cap_minor)
+      params.permit(:question, :description, :mechanism_type, :fee_bps, :liability_cap_minor,
+                    :taker_fee_bps, :liquidity_subsidy_minor, :spread_fee_bps, :takeout_bps)
     end
   end
 end

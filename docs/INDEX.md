@@ -71,7 +71,7 @@ Plan approved?
 | [10](adr/ADR-0010-binary-market-line-model.md) | Binary market line model (YES/NO, UP/DOWN) | ✅ accepted |
 | [11](adr/ADR-0011-betslip-and-cashout-contract.md) | Betslip + cashout quote-execute contract | ✅ accepted |
 | [12](adr/ADR-0012-hot-cold-storage-with-redis-projections.md) | Hot/cold storage: PG + Redis + SSE | ✅ accepted |
-| [13](adr/ADR-0013-pluggable-market-mechanisms.md) | Pluggable market mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds) | 📝 proposed |
+| [13](adr/ADR-0013-pluggable-market-mechanisms.md) | Pluggable market mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds) | ✅ accepted |
 
 ---
 
@@ -94,32 +94,32 @@ Plan approved?
 - **Binary line DB invariants** — exactly-2-legs enforced at model + DB trigger level
 - **Betslip + cashout** — BetslipQuote/Execution models, services, web controllers+routes `c686641`
 - **CI/CD** — GitHub Actions + scripts/validate.sh pre-commit hook + E2E job (Playwright/Chromium)
+- **Pluggable market mechanisms** (ADR-0013) — CLOB order book, LMSR AMM, Parimutuel pool, Fixed-odds `b26bf56`
+  - [x] DB: `taker_fee_bps`, `liquidity_subsidy_minor`, `spread_fee_bps`, `takeout_bps`, LMSR/parimutuel state columns, `Order` model + migration, `PriceSnapshot` model + migration
+  - [x] Market model: MECHANISM_TYPES validation, `pricing_engine` factory, `clob?`/`lmsr?`/`parimutuel?`/`fixed_odds?` predicates, `lmsr_b_parameter` computed on open
+  - [x] `Clob::OrderMatchingService` — price-time priority, partial fills, FOK/IOC/GTC, taker fee
+  - [x] Admin + web CLOB order endpoints + `Web::OrderBooksController`
+  - [x] `Lmsr::LmsrPricingService` (cost function, `b_from_subsidy`) + `Lmsr::LmsrTradeService`
+  - [x] `Parimutuel::ParimutuelPoolService` + `Parimutuel::ParimutuelSettlementService`
+  - [x] Settlement router — `SettlementService.settle!` branches on `mechanism_type`; `ClobSettlementHandler`, `LmsrSettlementHandler`
+  - [x] `PriceSnapshotRecorder` + `RecordPriceSnapshotJob`
+  - [x] Hot storage: `MarketSnapshotProjector` extended with CLOB/LMSR/parimutuel fields
+  - [x] SSE: projector called after CLOB, LMSR, and parimutuel trades
+  - [x] Backoffice UI: mechanism picker + conditional fee fields
+  - [x] Web UI: mechanism-appropriate price display
+  - 216 tests, 0 failures, 91.87% line coverage
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
 ### ⏳ Next
-- **Pluggable market mechanisms** (ADR-0013): CLOB order book, LMSR AMM, Parimutuel pool — see checklist below
-  - [ ] DB: add `taker_fee_bps`, `liquidity_subsidy_minor`, `spread_fee_bps`, `takeout_bps`, LMSR/parimutuel state columns to `markets`
-  - [ ] Market model: mechanism validations, `pricing_engine` factory, `clob?`/`lmsr?`/`parimutuel?` helpers
-  - [ ] `Order` model + migration (CLOB)
-  - [ ] `Clob::OrderMatchingService` (price-time priority, partial fills, fee)
-  - [ ] Admin + web CLOB order endpoints + `Web::OrderBooksController`
-  - [ ] `Lmsr::LmsrPricingService` + `Lmsr::LmsrTradeService`
-  - [ ] `Parimutuel::ParimutuelPoolService` + `Parimutuel::ParimutuelSettlementService`
-  - [ ] Settlement router branching on `mechanism_type`
-  - [ ] `PriceSnapshot` model + `RecordPriceSnapshotJob`
-  - [ ] Hot storage: `MarketSnapshotProjector` extended with mechanism fields
-  - [ ] SSE: projector called after each trade
-  - [ ] Backoffice UI: mechanism picker + conditional fee fields
-  - [ ] Web UI: mechanism-appropriate price display
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue
 
 ### Plans + Reviews
 
 | Feature | Plan | Review | Status |
 |---------|------|--------|--------|
-| Pluggable market mechanisms | [plan](superpowers/plans/2026-05-27-pluggable-market-mechanisms.md) | [review](superpowers/plans/2026-05-27-pluggable-market-mechanisms-review.md) | 📝 drafted |
+| Pluggable market mechanisms | [plan](superpowers/plans/2026-05-27-pluggable-market-mechanisms.md) | [review](superpowers/plans/2026-05-27-pluggable-market-mechanisms-review.md) | ✅ implemented |
 | Betslip + cashout | [plan](superpowers/plans/2026-05-26-betslip-cashout.md) | [review](superpowers/plans/2026-05-26-betslip-cashout-review.md) | ✅ implemented |
 | Hot/cold storage | [plan](superpowers/plans/2026-05-26-hot-cold-storage.md) | [review](superpowers/plans/2026-05-26-hot-cold-storage-review.md) | ✅ implemented |
 | Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
@@ -190,8 +190,11 @@ docs/
 | `users(:admin)` | admin | password123 | 100_000 |
 | `users(:moderator)` | moderator | password123 | 50_000 |
 | `users(:player)` | player | password123 | 1_000 |
-| `markets(:open_market)` | status open (1) | — | legs: YES/NO |
-| `markets(:draft_market)` | status draft (0) | — | no legs |
+| `markets(:open_market)` | status open (1), `fixed_odds` | — | legs: YES/NO |
+| `markets(:draft_market)` | status draft (0), `fixed_odds` | — | no legs |
+| `markets(:clob_market)` | status open (1), `clob`, `taker_fee_bps: 70` | — | legs: YES/NO |
+| `markets(:lmsr_market)` | status open (1), `lmsr`, `b=1443.07`, `subsidy=100k` | — | legs: YES/NO |
+| `markets(:parimutuel_market)` | status open (1), `parimutuel`, `takeout_bps: 1500` | — | legs: YES/NO |
 
 **Admin API auth in tests:** `auth_headers_for(users(:admin))` → returns `Authorization` + `Content-Type: application/json`. Always add `as: :json` to POST calls.
 

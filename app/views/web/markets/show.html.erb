@@ -19,6 +19,46 @@
   </ul>
 </section>
 
+<section class="card" style="margin-bottom: 16px;" data-testid="market-price-panel">
+  <h3>Current Price</h3>
+  <% case @market.mechanism_type %>
+  <% when "fixed_odds" %>
+    <% @market.market_legs.each do |leg| %>
+      <div class="leg-price">
+        <span class="leg-label"><%= leg.label %></span>
+        <span class="leg-odds"><%= (leg.odds_minor / 100.0).round(1) %>&cent;</span>
+      </div>
+    <% end %>
+
+  <% when "clob" %>
+    <div class="clob-display" data-testid="clob-price-display">
+      <% book = @market.pricing_engine.order_book_summary %>
+      <p>Best bid (YES): <%= book[:bid] ? "#{book[:bid]}¢" : "—" %></p>
+      <p>Best ask (NO):  <%= book[:ask] ? "#{book[:ask]}¢" : "—" %></p>
+      <% if book[:bid].nil? && book[:ask].nil? %>
+        <p class="notice">No open orders — spread unavailable.</p>
+      <% end %>
+    </div>
+
+  <% when "lmsr" %>
+    <div class="lmsr-display" data-testid="lmsr-price-display">
+      <% engine = @market.pricing_engine %>
+      <p>YES probability: <%= engine.yes_probability %>%</p>
+      <p>NO probability:  <%= engine.no_probability %>%</p>
+    </div>
+
+  <% when "parimutuel" %>
+    <div class="parimutuel-display" data-testid="parimutuel-price-display">
+      <% yes_pct = Parimutuel::ParimutuelPoolService.yes_probability(@market) %>
+      <% no_pct  = Parimutuel::ParimutuelPoolService.no_probability(@market) %>
+      <p class="notice">Parimutuel market — odds change as bets arrive.</p>
+      <p>YES: <%= yes_pct %>% &nbsp; NO: <%= no_pct %>%</p>
+      <p>Total pool: <%= @market.parimutuel_pool_yes_minor + @market.parimutuel_pool_no_minor %> ADIV minor</p>
+      <p>Takeout: <%= @market.takeout_bps.to_i / 100.0 %>%</p>
+    </div>
+  <% end %>
+</section>
+
 <section class="card">
   <h3>Live Events (SSE endpoint)</h3>
   <p><a href="/sse/markets/<%= @market.id %>">/sse/markets/<%= @market.id %></a></p>
