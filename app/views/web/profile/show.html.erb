@@ -26,7 +26,7 @@
 
   <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;" data-testid="bet-status-filter">
     <% [['all', nil], ['open', 'open'], ['won', 'settled_win'], ['lost', 'settled_loss'], ['voided', 'voided']].each do |label, val| %>
-      <% active = (params[:status].presence || nil) == val %>
+      <% active = @status_filter == val %>
       <%= link_to label.capitalize,
             web_profile_path(status: val),
             data: { testid: "filter-#{label}" },
@@ -48,13 +48,16 @@
       </thead>
       <tbody>
         <% @bets.each do |bet| %>
+          <% cashed_out = bet.voided? && @cashout_payouts.key?(bet.id) %>
+          <% display_payout = cashed_out ? @cashout_payouts[bet.id] : bet.potential_payout_minor %>
+          <% display_status = cashed_out ? 'Cashed out' : bet.status.humanize %>
           <% row_style = bet.settled_win? ? 'background:#0d2e1a;' : (bet.settled_loss? ? 'opacity:0.6;' : '') %>
           <tr data-testid="bet-row-<%= bet.id %>" style="<%= row_style %>">
             <td><%= link_to bet.market.question.truncate(50), web_market_path(bet.market), data: { testid: "bet-market-link-#{bet.id}" } %></td>
             <td><span class="badge"><%= bet.market_leg.label %></span></td>
             <td data-testid="bet-stake-<%= bet.id %>"><%= number_with_delimiter(bet.net_stake_minor) %></td>
-            <td data-testid="bet-payout-<%= bet.id %>"><%= number_with_delimiter(bet.potential_payout_minor) %></td>
-            <td><span class="badge" data-testid="bet-status-<%= bet.id %>"><%= bet.status.humanize %></span></td>
+            <td data-testid="bet-payout-<%= bet.id %>"><%= number_with_delimiter(display_payout) %></td>
+            <td><span class="badge" data-testid="bet-status-<%= bet.id %>"><%= display_status %></span></td>
             <td class="muted"><%= bet.created_at.strftime('%Y-%m-%d') %></td>
           </tr>
         <% end %>

@@ -2,13 +2,21 @@ module Web
   class ProfileController < BaseController
     def show
       @wallet = current_user.wallet
-      status_filter = params[:status].presence
+
+      raw_status = params[:status].presence
+      @status_filter = Bet.statuses.key?(raw_status.to_s) ? raw_status : nil
 
       @bets = Bet.includes(:market, :market_leg)
                  .where(user_id: current_user.id)
                  .order(created_at: :desc)
 
-      @bets = @bets.where(status: status_filter) if status_filter && Bet.statuses.key?(status_filter)
+      @bets = @bets.where(status: @status_filter) if @status_filter
+
+      cashout_entries = LedgerEntry.where(user: current_user, entry_type: 'BET_CASHOUT_PAYOUT')
+      @cashout_payouts = cashout_entries.each_with_object({}) do |e, h|
+        bet_id = e.metadata['bet_id']
+        h[bet_id] = e.amount_minor if bet_id
+      end
 
       settled = Bet.where(user_id: current_user.id, status: %i[settled_win settled_loss])
       won     = Bet.where(user_id: current_user.id, status: :settled_win)
