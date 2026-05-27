@@ -3,60 +3,151 @@
 <div class="panel">
   <h3>Create Market</h3>
   <%= form_with url: backoffice_markets_path, method: :post, html: { data: { testid: "create-market-form" } } do |f| %>
-    <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, data: { testid: "market-question" } %></p>
-    <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, data: { testid: "market-description" } %></p>
-    <p><label>Legs (comma separated, default: YES,NO)</label><br><%= text_field_tag :legs, "YES,NO", data: { testid: "market-legs" } %></p>
-    <p>
-      <label>Category</label><br>
-      <%= select_tag :category,
-            options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, "other"),
-            data: { testid: "market-category" } %>
-    </p>
-    <p><label>Tags (comma-separated, optional)</label><br><%= text_field_tag :tags_input, nil, placeholder: "nba, fed, ai", data: { testid: "market-tags" } %></p>
-    <p><label>Close date/time (optional)</label><br><%= datetime_local_field_tag :close_at, nil, data: { testid: "market-close-at" } %></p>
-    <p><label>Resolution criteria <small>(what constitutes a YES outcome?)</small></label><br><%= text_area_tag :resolution_criteria, nil, rows: 3, placeholder: "e.g. YES resolves if the Federal Reserve announces a rate reduction at this meeting.", data: { testid: "market-resolution-criteria" } %></p>
-    <p><label>Resolution source <small>(authoritative source for outcome)</small></label><br><%= text_field_tag :resolution_source, nil, placeholder: "e.g. Federal Reserve official statement", data: { testid: "market-resolution-source" } %></p>
-    <p>
-      <label>Market Mechanism</label><br>
-      <%= select_tag :mechanism_type,
-            options_for_select([
-              ["Fixed-odds (house underwriting)", "fixed_odds"],
-              ["CLOB (limit order book)", "clob"],
-              ["LMSR (automated market maker)", "lmsr"],
-              ["Parimutuel (pool-share)", "parimutuel"]
-            ], "fixed_odds"),
-            id: "mechanism_type_select",
-            data: { testid: "market-mechanism-type" } %>
-    </p>
 
-    <div id="fixed_odds_fields">
-      <p><label>Fee (basis points, 100 = 1%)</label><br><%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %></p>
-      <p><label>Liability Cap (minor units)</label><br><%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %></p>
-    </div>
+    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Basic Information</legend>
 
-    <div id="clob_fields" style="display:none;">
-      <p><label>Taker fee (basis points, 0–200)</label><br><%= number_field_tag :taker_fee_bps, 70, min: 0, max: 200 %></p>
-    </div>
+      <p>
+        <label>Question <span style="color:#f44336;">*</span></label><br>
+        <%= text_field_tag :question, nil, required: true,
+              placeholder: "Will X happen before Y?",
+              data: { testid: "market-question", preview_target: "question" } %>
+      </p>
+      <div data-testid="market-preview" style="margin-top:-8px;margin-bottom:8px;font-size:0.82rem;color:#9fb2b8;display:none;">
+        Preview: <em id="market-preview-text"></em>
+      </div>
 
-    <div id="lmsr_fields" style="display:none;">
-      <p><label>Initial subsidy (ADIV minor units)</label><br><%= number_field_tag :liquidity_subsidy_minor, 100000, min: 1 %></p>
-      <p><label>Spread fee (basis points, 0–500)</label><br><%= number_field_tag :spread_fee_bps, 100, min: 0, max: 500 %></p>
-    </div>
+      <p>
+        <label>Description <span style="color:#f44336;">*</span></label><br>
+        <%= text_area_tag :description, nil, required: true, rows: 2,
+              placeholder: "Context for the market question.",
+              data: { testid: "market-description" } %>
+      </p>
 
-    <div id="parimutuel_fields" style="display:none;">
-      <p><label>Takeout (basis points, 1000–3000)</label><br><%= number_field_tag :takeout_bps, 1500, min: 1000, max: 3000 %></p>
-    </div>
+      <p>
+        <label>Outcome legs <small style="color:#9fb2b8;">(comma-separated; default YES,NO)</small></label><br>
+        <%= text_field_tag :legs, "YES,NO", data: { testid: "market-legs" } %>
+      </p>
+    </fieldset>
 
-    <script>
-      document.getElementById('mechanism_type_select').addEventListener('change', function() {
-        ['fixed_odds', 'clob', 'lmsr', 'parimutuel'].forEach(function(m) {
-          document.getElementById(m + '_fields').style.display = 'none';
-        });
-        document.getElementById(this.value + '_fields').style.display = 'block';
-      });
-    </script>
+    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Metadata &amp; Resolution</legend>
+
+      <p>
+        <label>Category</label><br>
+        <%= select_tag :category,
+              options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, "other"),
+              data: { testid: "market-category" } %>
+      </p>
+
+      <p>
+        <label>Tags <small style="color:#9fb2b8;">(comma-separated, optional)</small></label><br>
+        <%= text_field_tag :tags_input, nil,
+              placeholder: "nba, fed, ai",
+              data: { testid: "market-tags" } %>
+      </p>
+
+      <p>
+        <label>Close date/time <small style="color:#9fb2b8;">(optional — when betting locks)</small></label><br>
+        <%= datetime_local_field_tag :close_at, nil, data: { testid: "market-close-at" } %>
+      </p>
+
+      <p>
+        <label>Resolution criteria <small style="color:#9fb2b8;">(what makes this resolve YES?)</small></label><br>
+        <%= text_area_tag :resolution_criteria, nil, rows: 2,
+              placeholder: "e.g. Resolves YES if the Federal Reserve announces a rate cut at this meeting.",
+              data: { testid: "market-resolution-criteria" } %>
+      </p>
+
+      <p>
+        <label>Resolution source <small style="color:#9fb2b8;">(authoritative reference)</small></label><br>
+        <%= text_field_tag :resolution_source, nil,
+              placeholder: "e.g. Federal Reserve official statement",
+              data: { testid: "market-resolution-source" } %>
+      </p>
+    </fieldset>
+
+    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Trading Mechanism</legend>
+
+      <p>
+        <label>Market mechanism <span style="color:#f44336;">*</span></label><br>
+        <%= select_tag :mechanism_type,
+              options_for_select([
+                ["Fixed-odds (house underwriting)", "fixed_odds"],
+                ["CLOB (limit order book)", "clob"],
+                ["LMSR (automated market maker)", "lmsr"],
+                ["Parimutuel (pool-share)", "parimutuel"]
+              ], "fixed_odds"),
+              id: "mechanism_type_select",
+              data: { testid: "market-mechanism-type" } %>
+      </p>
+
+      <div id="fixed_odds_fields">
+        <p>
+          <label>Fee <small style="color:#9fb2b8;">(basis points; 100 = 1%)</small></label><br>
+          <%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %>
+        </p>
+        <p>
+          <label>Liability cap <small style="color:#9fb2b8;">(ADIV minor units; max house payout)</small></label><br>
+          <%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %>
+        </p>
+      </div>
+
+      <div id="clob_fields" style="display:none;">
+        <p>
+          <label>Taker fee <small style="color:#9fb2b8;">(basis points; charged on taker side, 0–200)</small></label><br>
+          <%= number_field_tag :taker_fee_bps, 70, min: 0, max: 200 %>
+        </p>
+      </div>
+
+      <div id="lmsr_fields" style="display:none;">
+        <p>
+          <label>Initial subsidy <small style="color:#9fb2b8;">(ADIV minor units; seeded into pool at open)</small></label><br>
+          <%= number_field_tag :liquidity_subsidy_minor, 100000, min: 1 %>
+        </p>
+        <p>
+          <label>Spread fee <small style="color:#9fb2b8;">(basis points; 0–500)</small></label><br>
+          <%= number_field_tag :spread_fee_bps, 100, min: 0, max: 500 %>
+        </p>
+      </div>
+
+      <div id="parimutuel_fields" style="display:none;">
+        <p>
+          <label>Takeout <small style="color:#9fb2b8;">(basis points; 1500 = 15% vig, 1000–3000)</small></label><br>
+          <%= number_field_tag :takeout_bps, 1500, min: 1000, max: 3000 %>
+        </p>
+      </div>
+    </fieldset>
 
     <p><%= submit_tag "Create market", data: { testid: "market-create-submit" } %></p>
+
+    <script>
+      (function() {
+        var select = document.getElementById('mechanism_type_select');
+        select.addEventListener('change', function() {
+          ['fixed_odds', 'clob', 'lmsr', 'parimutuel'].forEach(function(m) {
+            document.getElementById(m + '_fields').style.display = 'none';
+          });
+          document.getElementById(this.value + '_fields').style.display = 'block';
+        });
+
+        var questionInput = document.querySelector('[data-preview-target="question"]');
+        var previewBox = document.querySelector('[data-testid="market-preview"]');
+        var previewText = document.getElementById('market-preview-text');
+        if (questionInput && previewBox && previewText) {
+          questionInput.addEventListener('input', function() {
+            var val = this.value.trim();
+            if (val) {
+              previewText.textContent = val;
+              previewBox.style.display = 'block';
+            } else {
+              previewBox.style.display = 'none';
+            }
+          });
+        }
+      })();
+    </script>
   <% end %>
 </div>
 
