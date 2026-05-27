@@ -24,6 +24,8 @@ Rails.application.routes.draw do
     end
     resources :betslip_executions, only: [:show], path: 'betslips/executions'
 
+    get :profile, to: 'profile#show'
+
     resources :positions, only: [:index] do
       collection do
         post :cashout_quotes

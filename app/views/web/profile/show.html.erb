@@ -1,0 +1,66 @@
+<h1 data-testid="profile-title">My Profile</h1>
+
+<section class="card" style="margin-bottom:16px;" data-testid="wallet-balance-panel">
+  <h3>Wallet Balance</h3>
+  <p data-testid="wallet-available">Available: <strong><%= number_with_delimiter(@wallet.available_minor) %> ADIV</strong></p>
+  <p data-testid="wallet-reserved">Reserved: <%= number_with_delimiter(@wallet.reserved_minor) %> ADIV</p>
+</section>
+
+<section class="card" style="margin-bottom:16px;" data-testid="pnl-panel">
+  <h3>P&amp;L Summary</h3>
+  <p>Open positions: <strong data-testid="pnl-open-count"><%= @pnl[:open_count] %></strong></p>
+  <p>Total staked: <strong data-testid="pnl-total-staked"><%= number_with_delimiter(@pnl[:total_staked]) %> ADIV</strong></p>
+  <p>Total returned: <strong data-testid="pnl-total-returned"><%= number_with_delimiter(@pnl[:total_returned]) %> ADIV</strong></p>
+  <p>Net P&amp;L:
+    <strong data-testid="pnl-net" style="color:<%= @pnl[:net_pnl] >= 0 ? '#4caf50' : '#f44336' %>;">
+      <%= @pnl[:net_pnl] >= 0 ? '+' : '' %><%= number_with_delimiter(@pnl[:net_pnl]) %> ADIV
+    </strong>
+  </p>
+  <p>Win rate: <strong data-testid="pnl-win-rate"><%= @pnl[:win_rate] ? "#{@pnl[:win_rate]}%" : "—" %></strong>
+     (<%= @pnl[:won_count] %> won / <%= @pnl[:lost_count] %> lost)
+  </p>
+</section>
+
+<section class="card" data-testid="bets-panel">
+  <h3>Bet History</h3>
+
+  <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;" data-testid="bet-status-filter">
+    <% [['all', nil], ['open', 'open'], ['won', 'settled_win'], ['lost', 'settled_loss'], ['voided', 'voided']].each do |label, val| %>
+      <% active = (params[:status].presence || nil) == val %>
+      <%= link_to label.capitalize,
+            web_profile_path(status: val),
+            data: { testid: "filter-#{label}" },
+            style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{active ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
+    <% end %>
+  </div>
+
+  <% if @bets.any? %>
+    <table data-testid="bets-table">
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Leg</th>
+          <th>Stake</th>
+          <th>Payout</th>
+          <th>Status</th>
+          <th>Placed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @bets.each do |bet| %>
+          <% row_style = bet.settled_win? ? 'background:#0d2e1a;' : (bet.settled_loss? ? 'opacity:0.6;' : '') %>
+          <tr data-testid="bet-row-<%= bet.id %>" style="<%= row_style %>">
+            <td><%= link_to bet.market.question.truncate(50), web_market_path(bet.market), data: { testid: "bet-market-link-#{bet.id}" } %></td>
+            <td><span class="badge"><%= bet.market_leg.label %></span></td>
+            <td data-testid="bet-stake-<%= bet.id %>"><%= number_with_delimiter(bet.net_stake_minor) %></td>
+            <td data-testid="bet-payout-<%= bet.id %>"><%= number_with_delimiter(bet.potential_payout_minor) %></td>
+            <td><span class="badge" data-testid="bet-status-<%= bet.id %>"><%= bet.status.humanize %></span></td>
+            <td class="muted"><%= bet.created_at.strftime('%Y-%m-%d') %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="muted" data-testid="bets-empty">No bets found.</p>
+  <% end %>
+</section>
