@@ -18,10 +18,14 @@ module Web
                    .sort.first(10)
                    .map { |price, qty| { price_cents: price, quantity: qty } }
 
+      spread = book[:bid] && book[:ask] ? (100 - book[:ask]) - book[:bid] : nil
+
       render json: {
         market_id: market.id,
         best_bid: book[:bid],
         best_ask: book[:ask],
+        last_trade_price: market.last_fill_price_cents,
+        spread: spread,
         bids: bids,
         asks: asks
       }

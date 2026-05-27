@@ -72,6 +72,7 @@ Plan approved?
 | [11](adr/ADR-0011-betslip-and-cashout-contract.md) | Betslip + cashout quote-execute contract | ✅ accepted |
 | [12](adr/ADR-0012-hot-cold-storage-with-redis-projections.md) | Hot/cold storage: PG + Redis + SSE | ✅ accepted |
 | [13](adr/ADR-0013-pluggable-market-mechanisms.md) | Pluggable market mechanisms (CLOB, LMSR, Parimutuel, Fixed-odds) | ✅ accepted |
+| [14](adr/ADR-0014-clob-order-book-migration.md) | CLOB order book migration (replace fixed-odds with CLOB as default) | ✅ accepted |
 
 ---
 
@@ -107,7 +108,7 @@ Plan approved?
   - [x] SSE: projector called after CLOB, LMSR, and parimutuel trades
   - [x] Backoffice UI: mechanism picker + conditional fee fields
   - [x] Web UI: mechanism-appropriate price display
-  - 216 tests, 0 failures, 91.87% line coverage
+  - 216 tests, 0 failures, 91.26% line coverage
 
 ### 🔄 In Progress
 - PLAN-D: Playwright E2E — blocked on Docker overlay2 filesystem issue

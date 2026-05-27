@@ -45,7 +45,7 @@ class Market < ApplicationRecord
 
     def order_book_summary
       bids = @market.orders.where(side: 'YES', status: %w[open partial]).order(price_cents: :desc)
-      asks = @market.orders.where(side: 'NO',  status: %w[open partial]).order(price_cents: :desc)
+      asks = @market.orders.where(side: 'NO',  status: %w[open partial]).order(price_cents: :asc)
       { bid: bids.first&.price_cents, ask: asks.first&.price_cents }
     end
   end

@@ -100,6 +100,36 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
     assert_includes ids, bet.id
   end
 
+  test 'positions index returns clob_positions for filled CLOB orders' do
+    clob_market = markets(:clob_market)
+    leg_yes = clob_market.market_legs.find_by!(label: 'YES')
+    Order.create!(
+      market: clob_market, market_leg: leg_yes, user: @user,
+      side: 'YES', price_cents: 55, quantity: 4, filled_quantity: 4,
+      status: :filled, time_in_force: :gtc
+    )
+
+    get '/web/positions'
+
+    assert_response :success
+    clob_pos = response.parsed_body['clob_positions']
+
+    assert_not_nil clob_pos
+    entry = clob_pos.find { |p| p['market_id'] == clob_market.id }
+
+    assert_not_nil entry, 'should include CLOB market position'
+    assert_equal 4, entry['yes_contracts']
+    assert_equal 0, entry['no_contracts']
+    assert_equal 55, entry['avg_yes_price_cents']
+  end
+
+  test 'positions index returns empty clob_positions when no CLOB fills' do
+    get '/web/positions'
+
+    assert_response :success
+    assert_equal [], response.parsed_body['clob_positions']
+  end
+
   test 'cashout quote then execute credits wallet and voids bet' do
     @market.update!(fee_bps: 100)
     @yes_leg.update!(odds_minor: 4000)
