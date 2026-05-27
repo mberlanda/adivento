@@ -1,5 +1,4 @@
 // permissions.spec.js — Table-driven role/permission access matrix tests.
-// All tests use the `request` fixture (no browser) for speed.
 //
 // Permission matrix (from role_permissions.yml):
 //   admin:     ALL permissions
@@ -7,26 +6,18 @@
 //              market.settle, wallet.faucet.review, template.manage
 //              (NOT market.create, market.update, bet.place)
 //   player:    bet.place only
+//
+// Backoffice HTML rows (useBearer: false, role set) use the `page` browser fixture —
+// CSRF protection on ActionController::Base requires a real browser form submission.
+// All other rows use the `request` API context with Bearer tokens.
 
 const { test, expect, request } = require('@playwright/test');
-const { USERS } = require('./helpers/common');
+const { USERS, signInUi } = require('./helpers/common');
 const { loginApi } = require('./helpers/api');
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-async function getSessionCookie(baseURL, email, password) {
-  const ctx = await request.newContext({ baseURL });
-  const resp = await ctx.post('/signin', {
-    data: { email, password },
-    maxRedirects: 0,
-  });
-  // Rails redirects on success; 302 means login succeeded
-  const cookie = resp.headers()['set-cookie'] || '';
-  await ctx.dispose();
-  return cookie;
-}
 
 async function getBearerToken(baseURL, email, password) {
   const { token } = await loginApi(baseURL, email, password);
@@ -266,35 +257,47 @@ const MATRIX = [
 // Tests
 // ---------------------------------------------------------------------------
 
+// Split matrix: HTML session tests need a real browser; API/bearer tests use request.
+const HTML_MATRIX = MATRIX.filter((r) => !r.useBearer && r.role !== null);
+const API_MATRIX = MATRIX.filter((r) => r.useBearer || r.role === null);
+
 test.describe('Role and permission access matrix', () => {
-  // Token/cookie cache per test run (populated lazily, keyed by role+type)
-  const cache = {};
+  // Bearer token cache per test run (populated lazily, keyed by role)
+  const tokenCache = {};
 
-  async function resolveAuth(baseURL, row) {
-    if (!row.role) return {};
-
-    const user = USERS[row.role];
-
-    if (row.useBearer) {
-      const cacheKey = `bearer:${row.role}`;
-      if (!cache[cacheKey]) {
-        cache[cacheKey] = await getBearerToken(baseURL, user.email, user.password);
-      }
-      return { headers: { Authorization: `Bearer ${cache[cacheKey]}` } };
-    } else {
-      const cacheKey = `cookie:${row.role}`;
-      if (!cache[cacheKey]) {
-        cache[cacheKey] = await getSessionCookie(baseURL, user.email, user.password);
-      }
-      return { headers: { Cookie: cache[cacheKey] } };
+  async function resolveBearer(baseURL, role) {
+    if (!role) return {};
+    if (!tokenCache[role]) {
+      const user = USERS[role];
+      tokenCache[role] = await getBearerToken(baseURL, user.email, user.password);
     }
+    return { headers: { Authorization: `Bearer ${tokenCache[role]}` } };
   }
 
-  for (const row of MATRIX) {
+  // Backoffice HTML tests: ActionController::Base uses CSRF protection, so we must
+  // sign in via the real browser (which handles the authenticity_token automatically).
+  for (const row of HTML_MATRIX) {
+    test(row.desc, async ({ page }) => {
+      const user = USERS[row.role];
+      await signInUi(page, user.email, user.password);
+
+      if (row.expectedStatus === 200) {
+        const response = await page.goto(row.path);
+        expect(response.status(), `${row.desc} — expected 200`).toBe(200);
+      } else {
+        // Player has no backoffice.access → render_forbidden redirects to root_path.
+        await page.goto(row.path);
+        expect(page.url(), `${row.desc} — expected redirect away from /backoffice`).not.toContain('/backoffice');
+      }
+    });
+  }
+
+  // API / bearer-token tests: no browser needed.
+  for (const row of API_MATRIX) {
     test(row.desc, async ({ baseURL }) => {
       const ctx = await request.newContext({ baseURL, maxRedirects: 0 });
       try {
-        const auth = await resolveAuth(baseURL, row);
+        const auth = await resolveBearer(baseURL, row.role);
         const opts = { ...auth };
         if (row.body) opts.data = row.body;
 
