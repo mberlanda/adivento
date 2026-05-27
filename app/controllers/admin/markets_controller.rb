@@ -80,7 +80,8 @@ module Admin
     def market_params
       params.permit(:question, :description, :status, :structure_locked,
                     :mechanism_type, :taker_fee_bps, :liquidity_subsidy_minor,
-                    :spread_fee_bps, :takeout_bps, :fee_bps, :liability_cap_minor)
+                    :spread_fee_bps, :takeout_bps, :fee_bps, :liability_cap_minor,
+                    :close_at, :resolution_criteria, :resolution_source)
     end
 
     def seed_default_legs(market)
