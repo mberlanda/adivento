@@ -108,7 +108,7 @@ test.describe('Quick-bet form on market show page', () => {
     await page.getByTestId('bet-submit').click();
 
     await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
-    await expect(page.locator('.notice')).toContainText('Trade placed on yes');
+    await expect(page.locator('.notice')).toContainText('Trade placed on YES');
   });
 
   test('player places a parimutuel pool bet via quick-bet form', async ({ page, baseURL }) => {
@@ -131,6 +131,6 @@ test.describe('Quick-bet form on market show page', () => {
     await page.getByTestId('bet-submit').click();
 
     await expect(page).toHaveURL(new RegExp(`/web/markets/${market.id}`));
-    await expect(page.locator('.notice')).toContainText('Stake placed on yes');
+    await expect(page.locator('.notice')).toContainText('Stake placed on YES');
   });
 });

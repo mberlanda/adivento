@@ -10,10 +10,11 @@ module Web
         end
       end
 
+      side = params[:side]&.upcase
       result = Parimutuel::ParimutuelPoolService.add_stake(
         market: market,
         user: current_user,
-        side: params[:side],
+        side: side,
         stake_minor: params[:stake_minor].to_i
       )
 
@@ -21,7 +22,7 @@ module Web
         if result.success?
           format.html do
             redirect_to web_market_path(market),
-                        notice: "Stake placed on #{params[:side]} pool for #{params[:stake_minor].to_i} ADIV"
+                        notice: "Stake placed on #{side} pool for #{params[:stake_minor].to_i} ADIV"
           end
           format.json { render json: { success: true }, status: :created }
         else

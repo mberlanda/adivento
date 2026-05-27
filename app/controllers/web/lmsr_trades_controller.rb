@@ -10,10 +10,11 @@ module Web
         end
       end
 
+      side = params[:side]&.upcase
       result = Lmsr::LmsrTradeService.call(
         market: market,
         user: current_user,
-        side: params[:side],
+        side: side,
         quantity: params[:quantity].to_i
       )
 
@@ -21,7 +22,7 @@ module Web
         if result.success?
           format.html do
             redirect_to web_market_path(market),
-                        notice: "Trade placed on #{params[:side]} for #{params[:quantity].to_i} shares. " \
+                        notice: "Trade placed on #{side} for #{params[:quantity].to_i} shares. " \
                                 "Cost: #{result.cost_minor} ADIV"
           end
           format.json { render json: { cost_minor: result.cost_minor, fee_minor: result.fee_minor }, status: :created }
