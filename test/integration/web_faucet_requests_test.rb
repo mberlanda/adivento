@@ -20,12 +20,14 @@ class WebFaucetRequestsTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to '/web/profile'
     follow_redirect!
+
     assert_select '.notice', /Token request submitted/
 
     req = FaucetRequest.last
+
     assert_equal @player, req.user
     assert_equal 5000, req.amount_minor
-    assert req.pending?
+    assert_predicate req, :pending?
   end
 
   test 'faucet create defaults to 10_000 when amount is zero' do
