@@ -1,11 +1,22 @@
 <h1>Explore Markets</h1>
 <p class="muted">Trending and active prediction markets. Guests see open/settled markets only.</p>
 
+<div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;" data-testid="category-filter">
+  <%= link_to "All", web_markets_path,
+        style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category.nil? ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
+  <% Market::CATEGORIES.each do |cat| %>
+    <%= link_to cat.capitalize, web_markets_path(category: cat),
+          data: { testid: "category-#{cat}" },
+          style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category == cat ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
+  <% end %>
+</div>
+
 <div class="cards" data-testid="markets-list">
   <% @markets.each do |market| %>
     <article class="card" data-testid="market-card-<%= market.id %>">
       <div>
         <span class="badge"><%= market.status %></span>
+        <span class="badge" style="background:#1a2e38;" data-testid="category-badge-<%= market.id %>"><%= market.category %></span>
         <% if market.settled_outcome.present? %><span class="badge">Settled: <%= market.settled_outcome %></span><% end %>
       </div>
       <h3><a href="<%= web_market_path(market) %>" data-testid="market-link-<%= market.id %>"><%= market.question %></a></h3>

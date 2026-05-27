@@ -4,11 +4,14 @@ module Web
     before_action :attach_current_user, only: %i[index show]
 
     def index
+      @selected_category = params[:category].presence
       @markets = if current_user
-                   Market.includes(:market_legs).order(created_at: :desc)
+                   Market.includes(:market_legs)
                  else
-                   Market.includes(:market_legs).where(status: %i[open settled]).order(created_at: :desc)
+                   Market.includes(:market_legs).where(status: %i[open settled])
                  end
+      @markets = @markets.where(category: @selected_category) if @selected_category
+      @markets = @markets.order(created_at: :desc)
     end
 
     def show
