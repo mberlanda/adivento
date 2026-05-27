@@ -1,43 +1,16 @@
 const { test, expect, request } = require('@playwright/test');
-const { loginApi, createMarketViaAdminApi } = require('./helpers/api');
+const {
+  USERS,
+  assertOk,
+  loginApi,
+  signInUi,
+  createMarketViaAdminApi,
+  attachConsoleForwarder,
+} = require('./helpers/common');
 
-// Forward browser console to Node stdout so it appears in CI logs
 test.beforeEach(async ({ page }) => {
-  page.on('console', (msg) => process.stdout.write(`[browser:${msg.type()}] ${msg.text()}\n`));
-  page.on('pageerror', (err) => process.stdout.write(`[browser:error] ${err.message}\n`));
-  page.on('requestfailed', (req) => process.stdout.write(`[browser:reqfail] ${req.method()} ${req.url()} — ${req.failure()?.errorText}\n`));
+  attachConsoleForwarder(page);
 });
-
-async function assertOk(response, label) {
-  if (!response.ok()) {
-    let body = '';
-    try { body = await response.text(); } catch (_) {}
-    throw new Error(`${label} failed with HTTP ${response.status()}: ${body.slice(0, 500)}`);
-  }
-}
-
-const USERS = {
-  admin: {
-    email: process.env.E2E_ADMIN_EMAIL || 'admin@adivento.local',
-    password: process.env.E2E_ADMIN_PASSWORD || 'password123',
-  },
-  moderator: {
-    email: process.env.E2E_MODERATOR_EMAIL || 'moderator@adivento.local',
-    password: process.env.E2E_MODERATOR_PASSWORD || 'password123',
-  },
-  player: {
-    email: process.env.E2E_PLAYER_EMAIL || 'player@adivento.local',
-    password: process.env.E2E_PLAYER_PASSWORD || 'password123',
-  },
-};
-
-async function signInUi(page, email, password) {
-  await page.goto('/signin');
-  await page.getByTestId('signin-email').fill(email);
-  await page.getByTestId('signin-password').fill(password);
-  await page.getByTestId('signin-submit').click();
-  await expect(page.getByTestId('top-nav')).toBeVisible();
-}
 
 test.describe('UI workflows with API-assisted operations', () => {
   test('moderator creates market from template in backoffice UI', async ({ page }) => {
@@ -144,7 +117,7 @@ test.describe('UI workflows with API-assisted operations', () => {
     await assertOk(voidResponse, 'void bet');
 
     // Verify SSE endpoint is reachable (stream stays open — don't read body)
-    const sseResponse = await api.get(`/sse/markets/${createdMarket.id}`, { timeout: 3000 }).catch(() => null);
+    await api.get(`/sse/markets/${createdMarket.id}`, { timeout: 3000 }).catch(() => null);
     // SSE endpoint either connects (ok) or times out — either way the UI should reflect the voided state
 
     await signInUi(page, USERS.player.email, USERS.player.password);
