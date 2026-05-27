@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
   build-essential \
+  curl \
   libpq-dev \
   nodejs \
   postgresql-client \

@@ -38,6 +38,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       JWT_SECRET: local-dev-secret
+      RAILS_EXTRA_HOSTS: web
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/up || exit 1"]
       interval: 5s
