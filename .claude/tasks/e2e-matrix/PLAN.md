@@ -9,4 +9,4 @@
 - [x] error-paths.spec.js (error path inventory — 18 scenarios)
 - [x] TEST_MATRIX.md (framework-agnostic reference)
 - [x] PR opened
-- [ ] Copilot review requested
+- [x] Copilot review requested (FAILED — not a collaborator; PR comment left, manual action needed)
