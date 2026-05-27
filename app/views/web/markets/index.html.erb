@@ -1,11 +1,23 @@
 <h1>Explore Markets</h1>
 <p class="muted">Trending and active prediction markets. Guests see open/settled markets only.</p>
 
+<form method="get" action="<%= web_markets_path %>" style="margin-bottom:16px;" data-testid="market-search-form">
+  <% if @selected_category %>
+    <%= hidden_field_tag :category, @selected_category %>
+  <% end %>
+  <input type="search" name="q" value="<%= @search_query %>"
+         placeholder="Search markets…" data-testid="market-search-input"
+         style="width:100%;max-width:480px;padding:8px 12px;background:#0f2530;border:1px solid #33434c;color:#c8d8e0;border-radius:4px;">
+  <% if @search_query.present? %>
+    <p class="muted" style="margin-top:6px;">Results for "<%= @search_query %>" <%= @selected_category ? "in #{@selected_category}" : "" %> — <%= link_to "Clear", web_markets_path(category: @selected_category) %></p>
+  <% end %>
+</form>
+
 <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;" data-testid="category-filter">
-  <%= link_to "All", web_markets_path,
+  <%= link_to "All", web_markets_path(q: @search_query),
         style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category.nil? ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
   <% Market::CATEGORIES.each do |cat| %>
-    <%= link_to cat.capitalize, web_markets_path(category: cat),
+    <%= link_to cat.capitalize, web_markets_path(category: cat, q: @search_query),
           data: { testid: "category-#{cat}" },
           style: "padding:4px 12px;border-radius:12px;text-decoration:none;#{@selected_category == cat ? 'background:#f0bc5c;color:#0a1920;' : 'background:#1a2e38;color:#c8d8e0;'}" %>
   <% end %>
