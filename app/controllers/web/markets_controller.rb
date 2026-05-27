@@ -5,12 +5,19 @@ module Web
 
     def index
       @selected_category = params[:category].presence
+      @search_query      = params[:q].presence
       @markets = if current_user
                    Market.includes(:market_legs)
                  else
                    Market.includes(:market_legs).where(status: %i[open settled])
                  end
       @markets = @markets.where(category: @selected_category) if @selected_category
+      if @search_query
+        term = "%#{@search_query}%"
+        @markets = @markets.where(
+          'question ILIKE :t OR description ILIKE :t OR category ILIKE :t', t: term
+        )
+      end
       @markets = @markets.order(created_at: :desc)
     end
 
