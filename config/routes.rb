@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "up" => "rails/health#show", as: :rails_health_check
+
   root "web/markets#index"
 
   get "/signin", to: "web/sessions#new"
@@ -68,7 +70,7 @@ Rails.application.routes.draw do
       post :void, on: :member
     end
 
-    resources :markets, only: [:create, :update] do
+    resources :markets, only: [:show, :create, :update] do
       post :settle, on: :member
       get :risk, on: :member
       resources :legs, only: [:create], controller: "market_legs"

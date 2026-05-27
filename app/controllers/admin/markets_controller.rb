@@ -2,6 +2,16 @@ module Admin
   class MarketsController < BaseController
     before_action -> { require_permission!("market.read") }
 
+    def show
+      market = Market.includes(:market_legs).find(params[:id])
+      render json: {
+        id: market.id,
+        question: market.question,
+        status: market.status,
+        legs: market.market_legs.map { |l| { id: l.id, label: l.label, odds_minor: l.odds_minor } }
+      }
+    end
+
     def create
       require_permission!("market.create")
       return if performed?

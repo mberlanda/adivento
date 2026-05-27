@@ -241,6 +241,7 @@ DEPENDENCIES
   debug
   jwt (~> 2.9)
   listen (~> 3.9)
+  logger (~> 1.7)
   pg (~> 1.5)
   puma (~> 6.4)
   rails (~> 8.1.3)
