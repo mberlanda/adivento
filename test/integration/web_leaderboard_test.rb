@@ -8,8 +8,8 @@ class WebLeaderboardTest < ActionDispatch::IntegrationTest
     assert_select '[data-testid="leaderboard-title"]', 'Leaderboard'
   end
 
-  test 'leaderboard shows empty state when no settled bets' do
-    Bet.where(status: %i[settled_win settled_loss]).delete_all
+  test 'leaderboard shows empty state when no activity ledger entries' do
+    LedgerEntry.where(entry_type: Web::LeaderboardController::STAKE_TYPES + Web::LeaderboardController::RETURN_TYPES).delete_all
 
     get '/web/leaderboard'
 
@@ -17,13 +17,12 @@ class WebLeaderboardTest < ActionDispatch::IntegrationTest
     assert_select '[data-testid="leaderboard-empty"]'
   end
 
-  test 'leaderboard shows settled player ranked by net pnl' do
+  test 'leaderboard shows player ranked by net pnl from fixed-odds ledger entries' do
     player = users(:player)
-    won_bet = Bet.create!(
-      user: player, market: markets(:open_market), market_leg: market_legs(:yes_leg),
-      stake_minor: 100, fee_minor: 1, net_stake_minor: 99,
-      odds_minor: 5000, potential_payout_minor: 200, status: :settled_win
-    )
+    LedgerEntry.create!(user: player, actor: player, entry_type: 'BET_STAKE',
+                        amount_minor: 100, direction: 'debit', metadata: {})
+    LedgerEntry.create!(user: player, actor: player, entry_type: 'BET_WIN_PAYOUT',
+                        amount_minor: 200, direction: 'credit', metadata: {})
 
     get '/web/leaderboard'
 
@@ -31,7 +30,19 @@ class WebLeaderboardTest < ActionDispatch::IntegrationTest
     assert_select '[data-testid="leaderboard-table"]'
     assert_select "[data-testid='leaderboard-player-#{player.id}']", player.email.split('@').first
     assert_select "[data-testid='leaderboard-pnl-#{player.id}']", /ADIV/
-    won_bet.destroy
+  end
+
+  test 'leaderboard includes CLOB and parimutuel players from ledger entries' do
+    clob_player = users(:moderator)
+    LedgerEntry.create!(user: clob_player, actor: clob_player, entry_type: 'ORDER_FILL_STAKE',
+                        amount_minor: 500, direction: 'debit', metadata: {})
+    LedgerEntry.create!(user: clob_player, actor: clob_player, entry_type: 'SETTLEMENT_WIN',
+                        amount_minor: 900, direction: 'credit', metadata: {})
+
+    get '/web/leaderboard'
+
+    assert_response :success
+    assert_select "[data-testid='leaderboard-player-#{clob_player.id}']"
   end
 
   test 'leaderboard is accessible while authenticated' do
