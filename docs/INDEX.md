@@ -124,9 +124,12 @@ Plan approved?
 - **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
 - **F-006: Backoffice market create UX** — fieldset grouping, live preview, improved help text (PR #21, `528e7ba`)
 - **E2E quick-bet coverage** — CLOB/LMSR/parimutuel form tests; fixed `side` upcase bug in LMSR+parimutuel controllers (PR #23, `6a61122`)
+- **E2E settlement coverage** — CLOB/LMSR/parimutuel settlement-scenario tests (settle YES + NO per mechanism, 10 tests total in `settlement-scenarios.spec.js`)
+- **E2E multi-player settlement** — 16 table-driven tests (4 scenarios × 4 mechanisms); isolated browser contexts per player; API-driven wallet setup; balance assertions after settlement (PR #25)
+- **E2E + Docker Compose production mode** — `docker-compose.e2e.yml` overlay runs Playwright against `RAILS_ENV=production`; Zeitwerk eager-load crash fixed (removed `module Domain` wrapper from catalog files); `package-lock.json` committed; stale E2E Docker files removed (PR #26, `490f215`)
 
 ### ⏳ Next
-- PLAN-D: Playwright E2E — additional coverage (settlement scenario for CLOB/LMSR/parimutuel)
+- **F-009: Automated market close** — [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) (prescriptive, ready to execute)
 
 ### Plans + Reviews
 
@@ -138,6 +141,8 @@ Plan approved?
 | Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
 | Faucet backoffice UI | [plan](superpowers/plans/2026-05-26-faucet-backoffice-ui.md) | [review](superpowers/plans/2026-05-26-faucet-backoffice-ui-review.md) | ✅ implemented |
 | Market taxonomy (F-001) | [plan](superpowers/plans/2026-05-27-market-taxonomy.md) | — | ✅ implemented |
+| Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
+| F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ⏳ planned |
 
 ---
 
