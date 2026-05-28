@@ -102,7 +102,7 @@ module Backoffice
     end
 
     def market_update_params
-      params.permit(:close_at, :resolution_criteria, :resolution_source, :category, :tags_input).tap do |p|
+      params.permit(:description, :close_at, :resolution_criteria, :resolution_source, :category, :tags_input).tap do |p|
         if p[:tags_input]
           tags = p.delete(:tags_input).to_s.split(',').map(&:strip).reject(&:empty?)
           p[:tags] = tags
