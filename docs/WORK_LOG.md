@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — Settlement E2E for CLOB/LMSR/parimutuel
+
+- Extended `settlement-scenarios.spec.js` with 6 new tests (2 per mechanism: settle YES + settle NO)
+- CLOB: places a GTC limit order via admin API (`/admin/markets/:id/orders` with `user_id`), then settles and verifies UI
+- LMSR/Parimutuel: signs in as player via UI, submits quick-bet form, then settles via admin API and verifies `market-trust-panel`
+- 10/10 tests pass on Chromium; existing fixed-odds suite untouched
+- Key files: `e2e/playwright/tests/settlement-scenarios.spec.js`
+
+---
+
 ## 2026-05-28 — CLOB/LMSR/parimutuel quick-bet E2E + side param fix (PR #23 merged)
 
 **PR:** #23 (`feat/e2e-mechanism-quickbet`) — squash-merged to main as `6a61122`
