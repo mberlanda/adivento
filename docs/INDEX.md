@@ -136,6 +136,7 @@ Plan approved?
 - **F-012 + F-013: Player positions + execution confirmation HTML views** — `GET /web/positions` and `GET /web/betslips/executions/:id` now render HTML alongside JSON; Positions nav link added
 - **F-015: Cross-mechanism leaderboard** — aggregates all ledger entry types (fixed-odds, CLOB, LMSR, parimutuel); removed fixed-odds-only bet count columns
 - **F-017: Market list pagination** — web (12/page) and backoffice (20/page) with Previous/Next controls
+- **F-016 / TD-003: LMSR subsidy exhaustion guard** — `lmsr_realized_loss_minor` column; market locked before pricing; outflow guard raises when net payout would exceed `liquidity_subsidy_minor`; side/quantity input validation (PR #30, `284928b`)
 
 ### ⏳ Next
 - See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)

@@ -36,9 +36,8 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 | Task | Notes |
 |------|-------|
-| F-016 / TD-003 LMSR subsidy exhaustion guard | Add `lmsr_realized_loss_minor` to markets + guard in `LmsrTradeService` |
-| TD-007 Backoffice open-market E2E | Single Playwright test; requires Docker E2E stack |
-| TD-011 Market edit form (backoffice) | Standard Rails edit/update form — decision on edit scope still open (see DD-007) |
+| TD-007 Backoffice open-market E2E | Single Playwright spec written (PR #31 open, awaiting review) |
+| TD-011 Market edit form (backoffice) | Edit form + update action exist; added description field; DD-007 resolved as Option B |
 
 ---
 
@@ -46,6 +45,7 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| F-016 / TD-003 LMSR subsidy exhaustion guard | 2026-05-28 | PR #30 `284928b` |
 | F-012 Player positions HTML view | 2026-05-28 | PR #29 |
 | F-013 Betslip execution confirmation HTML view | 2026-05-28 | PR #29 |
 | F-015 Cross-mechanism leaderboard P&L | 2026-05-28 | PR #29 |
@@ -80,7 +80,7 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 |----|------|---------|------------|
 | TD-001 | LMSR individual settlement payouts | High | DD-002 |
 | TD-002 | Parimutuel per-bettor model | Low | — |
-| TD-003 | LMSR subsidy exhaustion guard | Medium | — |
+| TD-003 | LMSR subsidy exhaustion guard | ✅ done | — |
 | TD-004 | CLOB cashout | Medium | DD-006 |
 | TD-005 | Cross-mechanism leaderboard P&L | ✅ done | — |
 | TD-006 | E2E browser matrix (Firefox/WebKit) | Low | — |
