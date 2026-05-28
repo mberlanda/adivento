@@ -129,7 +129,6 @@ Plan approved?
 - **E2E + Docker Compose production mode** — `docker-compose.e2e.yml` overlay runs Playwright against `RAILS_ENV=production`; Zeitwerk eager-load crash fixed (removed `module Domain` wrapper from catalog files); `package-lock.json` committed; stale E2E Docker files removed (PR #26, `490f215`)
 
 ### ⏳ Next
-- **Dockerise E2E suite** — [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) (prescriptive, ready to execute)
 - **F-009: Automated market close** — [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) (prescriptive, ready to execute)
 
 ### Plans + Reviews
@@ -142,7 +141,7 @@ Plan approved?
 | Binary line invariants | [plan](superpowers/plans/2026-05-26-binary-line-invariants.md) | [review](superpowers/plans/2026-05-26-binary-line-invariants-review.md) | ✅ implemented |
 | Faucet backoffice UI | [plan](superpowers/plans/2026-05-26-faucet-backoffice-ui.md) | [review](superpowers/plans/2026-05-26-faucet-backoffice-ui-review.md) | ✅ implemented |
 | Market taxonomy (F-001) | [plan](superpowers/plans/2026-05-27-market-taxonomy.md) | — | ✅ implemented |
-| Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ⏳ planned |
+| Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ⏳ planned |
 
 ---

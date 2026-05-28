@@ -16,7 +16,7 @@ Added `multi-player-settlement.spec.js` with 16 tests (4 scenarios × 4 mechanis
 - **Parimutuel edge cases**: "only winners" / "only losers" inject a fresh market-maker player for the opposite pool (prevents zero-winning-pool refund).
 - **CLOB**: NO orders placed first (resting makers), YES second (takers → immediate fill). Admin wallet topped up per test via `fundAdmin`. Liquidity balanced with admin orders.
 - **LMSR v1**: no individual payouts; asserts settled-outcome visibility on market page instead of balance direction.
-- **`webPost` context**: context intentionally not disposed before response; Playwright cleans up at test end.
+- **`webPost` context**: response fields (ok/status/text) buffered inside a try/finally; context disposed in finally before returning a plain object. This avoids resource leaks while still allowing callers to read failure bodies.
 - 16/16 pass (51 s on Chromium).
 - Key files: `e2e/playwright/tests/multi-player-settlement.spec.js`, `e2e/playwright/tests/helpers/api.js`
 

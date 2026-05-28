@@ -176,10 +176,9 @@ async function assertSettledOutcomeInUi(browser, baseURL, players, marketId, out
 }
 
 // ─── Fixed-odds ───────────────────────────────────────────────────────────────
-// Fixed-odds legs have a maximum odds_minor of 10 000 (1:1, break-even at best).
-// Winners receive a payout equal to their stake; losers receive nothing.
-// The winner assertion compares to balance-after-bet (payout received),
-// the loser assertion compares to balance-before-bet (stake not returned).
+// Default legs use odds_minor: 5000 (50% implied probability).
+// Assertions are relative: winners have a higher balance than after placing bets;
+// losers have a lower balance than before placing bets.
 
 test.describe('Fixed-odds multi-player settlement', () => {
   test.beforeEach(async ({ page }) => {

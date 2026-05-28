@@ -1,6 +1,6 @@
 # Dockerise E2E Suite — Implementation Plan
 
-**Goal:** Add a `docker-compose.e2e.yml` override file using the official `mcr.microsoft.com/playwright:v1.52.0-noble` image so that `docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright` runs the full Playwright suite reproducibly against the `web` service. No test logic changes. No changes to `docker-compose.yml`.
+**Goal:** Add a `docker-compose.e2e.yml` override file using the official `mcr.microsoft.com/playwright:v1.54.1-noble` image so that `docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright` runs the full Playwright suite reproducibly against the `web` service. No test logic changes. No changes to `docker-compose.yml`.
 
 **Architecture:** A separate `docker-compose.e2e.yml` override file (already created at `docker-compose.e2e.yml`) overrides the `web` service environment to `RAILS_ENV=production` and adds the `playwright` service. The `playwright` service mounts `./e2e/playwright` as a bind volume (so `node_modules` and report artefacts are shared with the host), sets `BASE_URL=http://web:3000` and `DOCKER=1`, and waits for the `web` healthcheck before starting. `RAILS_SERVE_STATIC_FILES=true` lets Rails serve assets without a reverse proxy. `SECRET_KEY_BASE` is set to a dummy value (E2E only — not a real secret). The `playwright.config.js` already reads `BASE_URL` and `DOCKER` from the environment — no test file changes needed.
 
@@ -51,11 +51,11 @@
 The file is already created. Review it, then commit.
 
 - [ ] **Step 2.1:** Read `docker-compose.e2e.yml` and confirm it contains:
-  - `playwright` service with image `mcr.microsoft.com/playwright:v1.52.0-noble`
+  - `playwright` service with image `mcr.microsoft.com/playwright:v1.54.1-noble`
   - `volumes: - ./e2e/playwright:/e2e`
   - `environment: BASE_URL: http://web:3000` and `DOCKER: "1"`
   - `depends_on: web: condition: service_healthy`
-  - `command: npx playwright test --reporter=list`
+  - `command: bash -c "npm ci && npx playwright test"` (reporters configured via `playwright.config.js`)
 
 - [ ] **Step 2.2:** Validate compose files parse cleanly:
   ```bash
@@ -118,7 +118,7 @@ The file is already created. Review it, then commit.
   ```
   ## 2026-05-28 — Dockerise E2E suite
 
-  Added `docker-compose.e2e.yml` with `playwright` service (mcr.microsoft.com/playwright:v1.52.0-noble).
+  Added `docker-compose.e2e.yml` with `playwright` service (mcr.microsoft.com/playwright:v1.54.1-noble).
   Mounts `./e2e/playwright`, sets BASE_URL=http://web:3000 and DOCKER=1.
   Service waits for `web` healthcheck before starting. Run with:
     docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright
@@ -142,7 +142,7 @@ The file is already created. Review it, then commit.
 2. **DO NOT** change any file under `e2e/playwright/tests/` — no test logic changes.
 3. **DO NOT** add `npm install` or `npx playwright install` to the container `command` — the bind-mounted volume provides `node_modules` from the host (must be installed locally first: `cd e2e/playwright && npm install`).
 4. **DO NOT** use `docker-compose.e2e.yml` standalone (`docker compose -f docker-compose.e2e.yml up`) — it is an overlay; always combine with the base file.
-5. **DO NOT** pin the `playwright` image to a version older than `v1.52.0-noble` — this must match the version in `e2e/playwright/package.json`.
+5. **DO NOT** pin the `playwright` image to a version older than `v1.54.1-noble` — this must match the version in `e2e/playwright/package.json`.
 6. **DO NOT** change `DOCKER: "1"` to any other value — `playwright.config.js` uses `!!process.env.DOCKER` to restrict to Chromium only and enable CI-style retries.
 7. **DO NOT** remove `depends_on: web: condition: service_healthy` — without it Playwright starts before Rails is ready and all tests fail with connection errors.
 8. **DO NOT** mount the entire repo root into the container — only `./e2e/playwright:/e2e` to keep the container image lean.
