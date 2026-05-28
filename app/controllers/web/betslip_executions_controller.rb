@@ -2,7 +2,7 @@ module Web
   class BetslipExecutionsController < BaseController
     def show
       @execution = BetslipExecution.where(user_id: current_user.id).find(params.expect(:id))
-      @bets = Bet.includes(:market, :market_leg).where(id: @execution.bet_ids)
+      @bets = Bet.includes(:market, :market_leg).where(id: @execution.bet_ids, user_id: current_user.id)
       respond_to do |format|
         format.html
         format.json do

@@ -2,13 +2,13 @@
   <h1>My Positions</h1>
 
   <% if @positions.empty? && @clob_positions.empty? %>
-    <div class="panel" style="color:#9fb2b8;" data-testid="no-positions">
+    <div class="card" style="color:#9fb2b8;" data-testid="no-positions">
       <p>No open positions.</p>
     </div>
   <% end %>
 
   <% if @positions.any? %>
-    <div class="panel">
+    <div class="card">
       <h3>Fixed-Odds & Parimutuel Bets</h3>
       <table>
         <thead>
@@ -25,9 +25,9 @@
             <tr data-testid="position-row-<%= p[:bet_id] %>">
               <td><%= link_to p[:market_question], web_market_path(p[:market_id]), style: 'color:#9fb2b8;' %></td>
               <td><strong><%= p[:leg_label] %></strong></td>
-              <td><%= p[:stake_minor] %></td>
-              <td><%= p[:potential_payout_minor] %></td>
-              <td><%= p[:odds_minor] %></td>
+              <td><%= number_with_delimiter(p[:stake_minor]) %> ADIV</td>
+              <td><%= number_with_delimiter(p[:potential_payout_minor]) %> ADIV</td>
+              <td><%= (p[:odds_minor] / 100.0).round(0) %>%</td>
             </tr>
           <% end %>
         </tbody>
@@ -36,7 +36,7 @@
   <% end %>
 
   <% if @clob_positions.any? %>
-    <div class="panel">
+    <div class="card">
       <h3>CLOB Positions</h3>
       <table>
         <thead>
@@ -44,7 +44,7 @@
             <th>Market</th>
             <th>YES contracts</th>
             <th>NO contracts</th>
-            <th>Avg YES price (¢)</th>
+            <th>Avg YES price</th>
             <th>Unrealised value</th>
           </tr>
         </thead>
@@ -54,8 +54,8 @@
               <td><%= link_to cp[:market_question], web_market_path(cp[:market_id]), style: 'color:#9fb2b8;' %></td>
               <td><%= cp[:yes_contracts] %></td>
               <td><%= cp[:no_contracts] %></td>
-              <td><%= cp[:avg_yes_price_cents] || '—' %></td>
-              <td><%= cp[:unrealised_value_minor] || '—' %></td>
+              <td><%= cp[:avg_yes_price_cents] ? "#{cp[:avg_yes_price_cents]}¢" : '—' %></td>
+              <td><%= cp[:unrealised_value_minor] ? "#{number_with_delimiter(cp[:unrealised_value_minor])} ADIV" : '—' %></td>
             </tr>
           <% end %>
         </tbody>
