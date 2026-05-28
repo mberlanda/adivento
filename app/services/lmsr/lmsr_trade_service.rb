@@ -15,6 +15,11 @@ module Lmsr
       ApplicationRecord.transaction do
         raise 'Market is not open' unless @market.open?
         raise 'Market is closed for new bets' if @market.close_at.present? && @market.close_at <= Time.current
+        raise 'Side must be YES or NO' unless %w[YES NO].include?(@side)
+        raise 'Quantity must be positive' unless @quantity.positive?
+
+        # Lock market first so pricing and subsidy guard use consistent, current values.
+        @market.lock!
 
         pricing = LmsrPricingService.new(
           lmsr_b: @market.lmsr_b_parameter,
@@ -30,8 +35,9 @@ module Lmsr
         fee_minor  = (@market.spread_fee_bps.to_i * raw_cost_minor.abs / 10_000.0).ceil
         total_cost = raw_cost_minor + fee_minor
 
-        # Outflow = what the market pays to the trader (raw_cost negative means market pays)
-        outflow = raw_cost_minor.negative? ? raw_cost_minor.abs : 0
+        # Outflow = net cash the market pays to the trader (total_cost negative means market pays).
+        # Uses total_cost (not raw_cost_minor) so fees already collected are not double-counted.
+        outflow = total_cost.negative? ? total_cost.abs : 0
         if outflow.positive?
           new_loss = @market.lmsr_realized_loss_minor + outflow
           if new_loss > @market.liquidity_subsidy_minor
@@ -59,7 +65,6 @@ module Lmsr
           )
         end
 
-        @market.lock!
         @market.update_columns(
           lmsr_q_yes: @market.lmsr_q_yes + delta_yes,
           lmsr_q_no: @market.lmsr_q_no + delta_no,
