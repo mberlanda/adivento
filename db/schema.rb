@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_27_221019) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_154331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -153,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_27_221019) do
     t.index ["created_by_id"], name: "index_markets_on_created_by_id"
     t.index ["settled_by_id"], name: "index_markets_on_settled_by_id"
     t.index ["status"], name: "index_markets_on_status"
+    t.check_constraint "status <> 4 OR close_at IS NOT NULL", name: "markets_closed_requires_close_at"
   end
 
   create_table "orders", force: :cascade do |t|
