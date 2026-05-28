@@ -43,5 +43,13 @@ module Lmsr
         Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
       end
     end
+
+    test 'lmsr_realized_loss_minor does not change on a standard buy trade' do
+      # LMSR is buy-only: trade_cost is always >= 0, so outflow never occurs during trading.
+      # The guard is in place for forward-compatibility if sell trades are ever added.
+      initial_loss = @market.lmsr_realized_loss_minor
+      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+      assert_equal initial_loss, @market.reload.lmsr_realized_loss_minor
+    end
   end
 end
