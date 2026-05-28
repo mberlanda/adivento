@@ -14,5 +14,6 @@
 /vendor/bundle
 /.DS_Store
 
-# Playwright test reports
+# Playwright test artifacts
 e2e/playwright/playwright-report/
+e2e/playwright/test-results/

@@ -1,7 +1,7 @@
 # Plan: F-006 Backoffice Market Creation UX
 
 **Date:** 2026-05-28  
-**Status:** autonomous (user offline)
+**Status:** ✅ implemented — PR #21 merged (`528e7ba`). Checkboxes below were not updated during execution but all steps are complete.
 
 ## Goal
 

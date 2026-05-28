@@ -4,6 +4,36 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — Wiki consolidation + task cleanup (PR #27)
+
+- Created `docs/wiki/` with 4 product-facing pages: product overview, market mechanisms, architecture, tech-debt-backlog (8 TD items + 5 design decisions with options)
+- Deleted 10 completed `.claude/tasks/` folders; updated `ATTENTION.md` to reference wiki backlog
+- Fixed stale ADR statuses: ADR-0011, ADR-0012, ADR-0013 all marked Accepted; duplicate `ADR-0013-clob-order-book-migration.md` deleted
+- `docs/plans/ITERATION_005_MASTER_TODO_TREE.md` updated: all 4 plans marked DONE
+- Added `.gitignore` entry for `e2e/playwright/test-results/` (had been committed accidentally)
+- Key files: `docs/wiki/`, `.claude/tasks/ATTENTION.md`, `docs/INDEX.md`, `.gitignore`
+
+---
+
+## 2026-05-28 — E2E production mode + Zeitwerk fix (PR #26, `490f215`)
+
+**PR:** #26 — squash-merged to main as `490f215`
+
+### Problem
+Rails eager-loading (`RAILS_ENV=production`) crashed on boot with `NameError: uninitialized constant Domain::Catalogs`. Zeitwerk autoloads `app/domain/` as a root; files must define `Catalogs::X`, not `Domain::Catalogs::X`. Development lazy-loading hid this for the entire project lifetime.
+
+### Changes
+- Removed `module Domain` wrapper from all 3 catalog files (`action_catalog.rb`, `permission_catalog.rb`, `market_template_catalog.rb`)
+- Updated 7 call sites: `available_actions_service.rb` + 3 seeds sync services dropped `Domain::` prefix and removed `require_dependency` calls
+- `docker-compose.e2e.yml` created: Compose overlay running Playwright against `RAILS_ENV=production`
+- `scripts/e2e.sh` rewritten: builds stack, waits for healthcheck, runs `docker compose run --rm playwright`, tears down with logs on failure
+- `.github/workflows/ci.yml` `e2e` job updated to call `scripts/e2e.sh`
+- `e2e/playwright/package-lock.json` committed (required by `npm ci`)
+- Stale `e2e/playwright/Dockerfile` and `e2e/playwright/docker-compose.e2e.yml` deleted
+- Key files: `app/domain/catalogs/`, `app/services/available_actions_service.rb`, `app/services/seeds/`, `docker-compose.e2e.yml`, `scripts/e2e.sh`
+
+---
+
 ## 2026-05-28 — Multi-player settlement E2E (table-driven, all 4 mechanisms)
 
 Added `multi-player-settlement.spec.js` with 16 tests (4 scenarios × 4 mechanisms).
