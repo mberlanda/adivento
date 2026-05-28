@@ -5,7 +5,10 @@ class CloseExpiredMarketsJob < ApplicationJob
     expired = Market.open.where.not(close_at: nil).where('close_at <= ?', Time.current)
 
     expired.find_each do |market|
-      market.update_columns(status: Market.statuses[:closed])
+      updated = Market.where(id: market.id, status: Market.statuses[:open])
+                      .update_all(status: Market.statuses[:closed])
+      next unless updated > 0
+
       AuditEvent.create!(
         action: 'market.close',
         actor: system_actor,

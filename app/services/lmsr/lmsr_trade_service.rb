@@ -14,6 +14,7 @@ module Lmsr
     def call
       ApplicationRecord.transaction do
         raise 'Market is not open' unless @market.open?
+        raise 'Market is closed for new bets' if @market.close_at.present? && @market.close_at <= Time.current
 
         pricing = LmsrPricingService.new(
           lmsr_b: @market.lmsr_b_parameter,

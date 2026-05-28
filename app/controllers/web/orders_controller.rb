@@ -17,6 +17,13 @@ module Web
         end
       end
 
+      if market.close_at.present? && market.close_at <= Time.current
+        return respond_to do |format|
+          format.html { redirect_to web_market_path(market), alert: 'Market is closed for new bets' }
+          format.json { render json: { error: 'Market is closed for new bets' }, status: :unprocessable_content }
+        end
+      end
+
       leg    = market.market_legs.find_by!(label: params.expect(:side).upcase)
       result = Clob::OrderMatchingService.call(
         market: market,
