@@ -133,6 +133,7 @@ Plan approved?
 - **E2E multi-player settlement** — 16 table-driven tests (4 scenarios × 4 mechanisms); isolated browser contexts per player; API-driven wallet setup; balance assertions after settlement (PR #25)
 - **E2E + Docker Compose production mode** — `docker-compose.e2e.yml` overlay runs Playwright against `RAILS_ENV=production`; Zeitwerk eager-load crash fixed (removed `module Domain` wrapper from catalog files); `package-lock.json` committed; stale E2E Docker files removed (PR #26, `490f215`)
 - **F-009: Automated market close** — `closed: 4` enum, DB check constraint, `CloseExpiredMarketsJob` (solid-queue every 5 min), `BetPlacementService` close_at guard, settlement accepts closed, backoffice/customer closed banners
+- **F-012 + F-013: Player positions + execution confirmation HTML views** — `GET /web/positions` and `GET /web/betslips/executions/:id` now render HTML alongside JSON; Positions nav link added
 
 ### ⏳ Next
 - See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)

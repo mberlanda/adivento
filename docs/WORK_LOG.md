@@ -4,6 +4,15 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-012 + F-013: Player positions and execution confirmation HTML views
+
+- **F-012:** `GET /web/positions` now renders HTML; view shows fixed-odds/parimutuel bets table + CLOB contract positions table; "Positions" nav link added for authenticated users
+- **F-013:** `GET /web/betslips/executions/:id` now renders HTML; view shows confirmation banner + bet summary table + total stake; 404 redirects to markets page
+- Key files: `app/controllers/web/positions_controller.rb`, `app/controllers/web/betslip_executions_controller.rb`, `app/views/web/positions/index.html.erb`, `app/views/web/betslip_executions/show.html.erb`
+- Tests: 268 runs, 0 failures, 90.91% coverage
+
+---
+
 ## 2026-05-28 — F-009: Post-review fixes (PR #28 merged)
 
 - Extended `close_at` guard to all four trade write paths: LMSR, parimutuel, CLOB (previously only fixed-odds `BetPlacementService`)
