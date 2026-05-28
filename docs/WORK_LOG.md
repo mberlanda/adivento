@@ -4,6 +4,21 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-009: Automated Market Close Enforcement
+
+- Migration: DB check constraint `markets_closed_requires_close_at` (status 4 requires non-null close_at)
+- Market enum: `closed: 4` added alongside draft/open/settled/cancelled
+- `BetPlacementService`: rejects bets when `close_at <= Time.current` (fires while market still `open`, before job runs)
+- `CloseExpiredMarketsJob`: queries `Market.open.where("close_at <= ?", now)`, transitions to `closed`, writes one `AuditEvent` per market
+- `config/recurring.yml`: job scheduled every 5 minutes via solid-queue built-in scheduler
+- `SettlementService` + backoffice controller: accept `open? || closed?` for settlement
+- Backoffice market show: "Closed — awaiting settlement" amber banner + settle form for closed markets
+- Customer market show: "This market is closed for new bets" amber notice
+- Key files: `app/jobs/close_expired_markets_job.rb`, `app/services/bet_placement_service.rb`, `app/services/settlement_service.rb`, `config/recurring.yml`
+- Tests: 261 runs, 0 failures, 91.02% line coverage
+
+---
+
 ## 2026-05-28 — Wiki consolidation + task cleanup (PR #27)
 
 - Created `docs/wiki/` with 4 product-facing pages: product overview, market mechanisms, architecture, tech-debt-backlog (8 TD items + 5 design decisions with options)

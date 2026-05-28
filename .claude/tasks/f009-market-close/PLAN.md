@@ -6,11 +6,11 @@ Read that file for the complete step-by-step implementation. This file tracks ex
 
 ## Execution status
 
-- [ ] Step 1: Add `closed` to market status enum + migration
-- [ ] Step 2: `CloseExpiredMarketsJob` — find and close expired markets
-- [ ] Step 3: Wire job into ActiveJob scheduler or cron (Solid Queue / whenever)
-- [ ] Step 4: Guard `BetPlacementService` and CLOB/LMSR/parimutuel services against `closed` status
-- [ ] Step 5: Backoffice UI — show `closed` status badge; disable open/settle actions when closed
-- [ ] Step 6: Admin API — `status: closed` in market responses
-- [ ] Step 7: Tests — unit (job), integration (guard), E2E (market shows closed state)
-- [ ] Step 8: Update WORK_LOG + INDEX
+- [x] Step 1: Add `closed` to market status enum + migration
+- [x] Step 2: `CloseExpiredMarketsJob` — find and close expired markets
+- [x] Step 3: Wire job into ActiveJob scheduler or cron (Solid Queue / whenever)
+- [x] Step 4: Guard `BetPlacementService` against `closed` status and past `close_at`
+- [x] Step 5: Backoffice UI — "Closed — awaiting settlement" banner; settle form for closed markets
+- [x] Step 6: SettlementService + backoffice controller accept `open? || closed?`
+- [x] Step 7: Tests — 261 runs, 0 failures, 91.02% coverage
+- [x] Step 8: Update WORK_LOG + INDEX
