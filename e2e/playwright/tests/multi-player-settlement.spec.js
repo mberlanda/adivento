@@ -102,15 +102,22 @@ async function settleMarket(baseURL, adminToken, marketId, outcome) {
 }
 
 // POST to a web endpoint with JWT Bearer auth (skips CSRF) and Accept: JSON.
-// Web::BaseController skips verify_authenticity_token when a Bearer token is present.
-// The context is NOT disposed here so assertOk can still read the response body.
-// Playwright cleans up open contexts at the end of each test.
+// Buffers ok/status/text before disposing the context so assertOk can read the
+// failure body without keeping the context alive.
 async function webPost(baseURL, token, path, formData) {
   const ctx = await request.newContext({ baseURL });
-  return ctx.post(path, {
-    form: formData,
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-  });
+  try {
+    const resp = await ctx.post(path, {
+      form: formData,
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    });
+    const ok = resp.ok();
+    const status = resp.status();
+    const text = ok ? '' : await resp.text();
+    return { ok: () => ok, status: () => status, text: async () => text };
+  } finally {
+    await ctx.dispose();
+  }
 }
 
 // For each player, open an isolated browser context, sign in, navigate to the
