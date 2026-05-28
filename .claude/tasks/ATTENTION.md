@@ -34,15 +34,11 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 ## 🟡 Ready for Autonomous Work
 
-| Task | Task folder | Plan | Notes |
-|------|-------------|------|-------|
-| F-009 Automated market close | `.claude/tasks/f009-market-close/` | `docs/superpowers/plans/2026-05-28-f009-automated-market-close.md` | Full plan ready |
-| TD-005 Cross-mechanism leaderboard P&L | `.claude/tasks/td005-leaderboard-pl/` | needs writing | Aggregate `ORDER_FILL_CREDIT` + parimutuel ledger entries |
-| TD-008 Player positions + execution HTML views | `.claude/tasks/td008-positions-views/` | needs writing | 2 HTML views + routes + E2E |
-| TD-003 LMSR subsidy exhaustion guard | — | — | Add `lmsr_realized_loss_minor` column + rejection in `LmsrTradeService` |
-| TD-007 Backoffice open-market E2E | — | — | One Playwright test, no plan needed |
-| F-010 Market close UX | — | — | Depends on F-009 merging first |
-| TD-011 Market edit form (backoffice) | — | — | Backoffice form to edit description/close_at/criteria |
+| Task | Notes |
+|------|-------|
+| F-016 / TD-003 LMSR subsidy exhaustion guard | Add `lmsr_realized_loss_minor` to markets + guard in `LmsrTradeService` |
+| TD-007 Backoffice open-market E2E | Single Playwright test; requires Docker E2E stack |
+| TD-011 Market edit form (backoffice) | Standard Rails edit/update form — decision on edit scope still open (see DD-007) |
 
 ---
 
@@ -50,6 +46,12 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| F-012 Player positions HTML view | 2026-05-28 | PR #29 |
+| F-013 Betslip execution confirmation HTML view | 2026-05-28 | PR #29 |
+| F-015 Cross-mechanism leaderboard P&L | 2026-05-28 | PR #29 |
+| F-017 Market list pagination | 2026-05-28 | PR #29 |
+| F-009 Automated market close | 2026-05-28 | PR #28 |
+| F-010 Market close UX | 2026-05-28 | PR #28 (shipped in F-009) |
 | Wiki consolidation + task cleanup | 2026-05-28 | PR #27 |
 | E2E Docker Compose + Zeitwerk production fix | 2026-05-28 | PR #26 `490f215` |
 | Multi-player settlement E2E (all 4 mechanisms) | 2026-05-28 | PR #25 `d0dbd5a` |
@@ -80,11 +82,11 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-002 | Parimutuel per-bettor model | Low | — |
 | TD-003 | LMSR subsidy exhaustion guard | Medium | — |
 | TD-004 | CLOB cashout | Medium | DD-006 |
-| TD-005 | Cross-mechanism leaderboard P&L | Low | — |
+| TD-005 | Cross-mechanism leaderboard P&L | ✅ done | — |
 | TD-006 | E2E browser matrix (Firefox/WebKit) | Low | — |
 | TD-007 | Backoffice open-market E2E | Low | — |
-| TD-008 | Player positions + execution HTML views | Medium | — |
+| TD-008 | Player positions + execution HTML views | ✅ done | — |
 | TD-009 | SQLite ILIKE + jsonb test fidelity gap | Medium | DD-004 |
 | TD-010 | Binary line trigger not tested in SQLite | Medium | DD-004 |
 | TD-011 | Market edit form (backoffice) | Low | — |
-| TD-012 | Market list pagination | Low | — |
+| TD-012 | Market list pagination | ✅ done | — |
