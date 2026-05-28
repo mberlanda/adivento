@@ -1,7 +1,7 @@
 # ADR-0013: Pluggable Market Mechanisms
 
 ## Status
-Proposed — partially supersedes ADR-0009 (fixed-odds remains valid as one of four options).
+Accepted — implemented in PR #5–10 (`b26bf56`). Partially supersedes ADR-0009 (fixed-odds remains valid as one of four options).
 
 ---
 

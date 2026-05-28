@@ -3,7 +3,11 @@
 **Load this file first in any new session.** Follow links only for details you need.
 
 ## Project in one paragraph
-Prediction markets POC: Rails 8 monolith, PostgreSQL, Redis. Two HTML surfaces — `backoffice/` (session auth, moderator+) for operators, `web/` (no auth) for customers. `admin/` namespace is a JSON API (JWT). Fixed-odds house underwriting with per-market liability caps. Fantasy wallet denominated in ADIV (minor units = cents).
+Prediction markets POC: Rails 8 monolith, PostgreSQL, Redis. Two HTML surfaces — `backoffice/` (session auth, moderator+) for operators, `web/` (no auth) for customers. `admin/` namespace is a JSON API (JWT). Four pluggable market mechanisms: fixed-odds, CLOB, LMSR, parimutuel. Fantasy wallet denominated in ADIV (minor units = cents).
+
+**Product wiki (start here for context):** `docs/wiki/` — product overview, mechanisms, architecture, tech-debt backlog.
+**Open design decisions + tech debt:** `docs/wiki/tech-debt-backlog.md`
+**Pending autonomous work:** `.claude/tasks/ATTENTION.md`
 
 ## Tech stack
 | Layer | Choice |
@@ -23,6 +27,7 @@ Use this to decide where to put — and where to look for — each type of docum
 
 | Folder | Contains | When to create | Format |
 |--------|----------|----------------|--------|
+| `docs/wiki/` | **Product wiki** (what + why, product perspective) | When you need to explain a feature or document tech debt/decisions | Plain markdown |
 | `docs/adr/` | Architecture decisions | When a decision affects multiple systems, is irreversible, or changes a cross-cutting constraint | `docs/templates/adr.md` |
 | `docs/specs/` | Functional specs (WHAT, not HOW) | After an ADR is accepted; before writing a plan | `docs/templates/spec.md` |
 | `docs/superpowers/plans/` | **Implementation plans** (HOW, step-by-step, executable) | After a spec is approved; this is the low-level design an agent executes | `docs/templates/plan.md` + `plan-review.md` |

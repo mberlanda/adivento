@@ -1,18 +1,16 @@
 # Iteration 005 Master Todo Tree
 
+<!-- LEGACY FORMAT — audit artifact only. Do NOT add new work here.
+   Current backlog: docs/wiki/tech-debt-backlog.md
+   Current status:  docs/INDEX.md -->
+
 Status: TODO · IN_PROGRESS · DONE · BLOCKED
 
-## Dependency Graph
-- PLAN-A Binary Market Lines and Settlement Invariants — depends on: none
-- PLAN-B Betslip and Cashout — depends on: PLAN-A
-- PLAN-C Hot/Cold Storage and SSE — depends on: PLAN-A
-- PLAN-D UI End-to-End — depends on: PLAN-A (partial)
-
-## Plan Status
+## Plan Status (all complete as of 2026-05-28)
 - PLAN-A: DONE (settlement engine complete 2026-05-26)
-- PLAN-B: TODO
-- PLAN-C: TODO
-- PLAN-D: BLOCKED (Docker overlay2)
+- PLAN-B: DONE (betslip + cashout, PR #3 `c686641`)
+- PLAN-C: DONE (hot/cold storage + SSE, PR #4)
+- PLAN-D: DONE (full E2E suite, PRs #23, #25, #26)
 
 ## Work Tree
 
@@ -21,44 +19,29 @@ Status: TODO · IN_PROGRESS · DONE · BLOCKED
 - A1.2 Plan review [DONE]
 - A1.3 Create spec [DONE]
 - A1.4 Spec review [DONE]
-- A1.5 DB invariants for bet→market_leg→market consistency [TODO - deferred]
+- A1.5 DB invariants for bet→market_leg→market consistency [DONE — DB trigger, PR #2]
 - A1.6 Settlement engine — bet status transitions + payout ledger [DONE 2026-05-26]
-- A1.7 Enforce binary line taxonomy at market/line creation [TODO - deferred]
+- A1.7 Enforce binary line taxonomy at market/line creation [DONE — PR #2]
 - A1.8 Integration + model + service tests [DONE]
 - A1.9 Full suite pass [DONE]
 
-Deferred: A1.5 and A1.7 (binary invariants) moved to follow-up; unblocks PLAN-B.
-
-### PLAN-B Betslip and Cashout [TODO]
+### PLAN-B Betslip and Cashout [DONE]
 - B1.1–B1.4 Planning [DONE]
-- B1.5 MVP quote and execute endpoints [TODO]
-- B1.6 Position projection model [TODO]
-- B1.7 Cashout quote/execute model [TODO]
-- B1.8 Idempotency and ledger postings [TODO]
-- B1.9 Tests + full suite [TODO]
+- B1.5 MVP quote and execute endpoints [DONE]
+- B1.6 Position projection model [DONE]
+- B1.7 Cashout quote/execute model [DONE]
+- B1.8 Idempotency and ledger postings [DONE]
+- B1.9 Tests + full suite [DONE]
 
-Spec: [ITERATION_005_BETSLIP_CASHOUT_SPEC.md](../specs/ITERATION_005_BETSLIP_CASHOUT_SPEC.md)
-Plan: [ITERATION_005_BETSLIP_CASHOUT_ARCHITECTURE_PLAN_V1.md](ITERATION_005_BETSLIP_CASHOUT_ARCHITECTURE_PLAN_V1.md)
-
-### PLAN-C Hot/Cold Storage [TODO]
+### PLAN-C Hot/Cold Storage [DONE]
 - C1.1–C1.4 Planning [DONE]
-- C1.5 Redis hot snapshot projection for volatile markets [TODO]
-- C1.6 Stream and SSE fanout path [TODO]
-- C1.7 Reconciliation job [TODO]
-- C1.8 Failure-mode and fallback tests [TODO]
-- C1.9 Full suite and close plan [TODO]
+- C1.5 Redis hot snapshot projection [DONE]
+- C1.6 Stream and SSE fanout path [DONE]
+- C1.7 Reconciliation job [DONE]
+- C1.8 Failure-mode and fallback tests [DONE]
+- C1.9 Full suite [DONE]
 
-Spec: [ITERATION_005_HOT_COLD_STORAGE_SPEC.md](../specs/ITERATION_005_HOT_COLD_STORAGE_SPEC.md)
-Plan: [ITERATION_005_HOT_COLD_STORAGE_ARCHITECTURE_V1.md](ITERATION_005_HOT_COLD_STORAGE_ARCHITECTURE_V1.md)
-
-### PLAN-D UI End-to-End [BLOCKED]
-- D1.1–D1.7 [DONE]
-- D1.8 Wire CI/stage execution docs [IN_PROGRESS]
-- D1.9 Execute UI suite against running app [BLOCKED]
-
-Blocker: Docker engine filesystem read-only during overlay2 rebuild.
-Resume: `docker compose up -d db web && bin/rails db:prepare && bin/rails db:seed` then `docker compose -f docker-compose.yml -f e2e/playwright/docker-compose.e2e.yml run --build --rm ui-tests`
-
-## Next Step
-Start PLAN-B. Write implementation plan using `superpowers:writing-plans` skill.
-Save to: `docs/superpowers/plans/YYYY-MM-DD-betslip-cashout.md`
+### PLAN-D UI End-to-End [DONE]
+- D1.1–D1.9 [DONE — Docker overlay2 blocker resolved via docker-compose.e2e.yml overlay]
+- Full suite: 84 Playwright tests, all passing in production mode (PR #26)
+- Multi-player settlement coverage: 16 tests (PR #25)

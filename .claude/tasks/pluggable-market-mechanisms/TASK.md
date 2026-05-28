@@ -1,3 +1,0 @@
-# Task: Pluggable Market Mechanisms
-
-Implement support for four market-making mechanisms (Fixed-odds, CLOB, LMSR, Parimutuel) as first-class choices per market, following ADR-0013, the spec at `docs/specs/2026-05-27-pluggable-market-mechanisms.md`, and the implementation plan at `docs/superpowers/plans/2026-05-27-pluggable-market-mechanisms.md`. The operator selects the mechanism at market creation; it is immutable once the market opens. Each mechanism has its own pricing engine, commission/takeout configuration, placement service, and settlement handler, while sharing the existing market lifecycle, RBAC, wallet/ledger, and SSE infrastructure. The existing `fixed_odds` code paths must not be modified.
