@@ -71,3 +71,18 @@
     <% end %>
   <% end %>
 </div>
+
+<% total_pages = (@total.to_f / @per_page).ceil %>
+<% if total_pages > 1 %>
+  <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;" data-testid="pagination">
+    <% if @page > 1 %>
+      <%= link_to "← Previous", web_markets_path(page: @page - 1, category: @selected_category, q: @search_query),
+            class: "pill pill-outline", data: { testid: "pagination-prev" } %>
+    <% end %>
+    <span style="color:var(--muted);line-height:2.2;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
+    <% if @page < total_pages %>
+      <%= link_to "Next →", web_markets_path(page: @page + 1, category: @selected_category, q: @search_query),
+            class: "pill pill-outline", data: { testid: "pagination-next" } %>
+    <% end %>
+  </div>
+<% end %>

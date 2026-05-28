@@ -4,7 +4,11 @@ module Backoffice
     before_action :set_market, only: %i[show open settle update]
 
     def index
-      @markets = Market.includes(:market_legs, :created_by).order(created_at: :desc)
+      @page     = [params[:page].to_i, 1].max
+      @per_page = 20
+      @total    = Market.count
+      @markets  = Market.includes(:market_legs, :created_by).order(created_at: :desc)
+                        .limit(@per_page).offset((@page - 1) * @per_page)
     end
 
     def show

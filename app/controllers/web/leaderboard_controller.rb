@@ -15,24 +15,26 @@ module Web
       @current_user = nil
     end
 
+    STAKE_TYPES  = %w[BET_STAKE LMSR_TRADE_STAKE PARIMUTUEL_STAKE ORDER_FILL_STAKE].freeze
+    RETURN_TYPES = %w[BET_WIN_PAYOUT BET_CASHOUT_PAYOUT SETTLEMENT_WIN ORDER_FILL_CREDIT].freeze
+
     def leaderboard_entries
-      Bet
-        .where(status: %i[settled_win settled_loss])
+      stake_sql  = STAKE_TYPES.map  { |t| "'#{t}'" }.join(',')
+      return_sql = RETURN_TYPES.map { |t| "'#{t}'" }.join(',')
+
+      LedgerEntry
+        .where(entry_type: STAKE_TYPES + RETURN_TYPES)
         .joins(:user)
         .group('users.id', 'users.email')
         .select(
-          'users.id AS user_id',
+          'users.id   AS user_id',
           'users.email AS email',
-          'COUNT(*) AS total_bets',
-          "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_win]} THEN 1 ELSE 0 END) AS won_bets",
-          "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_loss]} THEN 1 ELSE 0 END) AS lost_bets",
-          'SUM(bets.net_stake_minor) AS total_staked',
-          "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_win]} " \
-          'THEN bets.potential_payout_minor ELSE 0 END) AS total_returned'
+          "SUM(CASE WHEN ledger_entries.entry_type IN (#{stake_sql})  THEN ledger_entries.amount_minor ELSE 0 END) AS total_staked",
+          "SUM(CASE WHEN ledger_entries.entry_type IN (#{return_sql}) THEN ledger_entries.amount_minor ELSE 0 END) AS total_returned"
         )
         .order(Arel.sql(
-                 "SUM(CASE WHEN bets.status = #{Bet.statuses[:settled_win]} " \
-                 'THEN bets.potential_payout_minor ELSE 0 END) - SUM(bets.net_stake_minor) DESC'
+                 "SUM(CASE WHEN ledger_entries.entry_type IN (#{return_sql}) THEN ledger_entries.amount_minor ELSE 0 END) - " \
+                 "SUM(CASE WHEN ledger_entries.entry_type IN (#{stake_sql})  THEN ledger_entries.amount_minor ELSE 0 END) DESC"
                ))
         .limit(50)
     end

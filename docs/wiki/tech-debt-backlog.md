@@ -13,12 +13,12 @@ Update this file when a gap is closed or a decision is made.
 | F-009 | Automated market close (`CloseExpiredMarketsJob` + `closed` status) | ✅ done (PR #28) | — |
 | F-010 | Market close UX (player-facing "Betting closed" state on market page) | ✅ done (shipped in F-009/PR #28) | F-009 |
 | F-011 | LMSR individual settlement payouts | ⏳ backlog | DD-002 decision |
-| F-012 | Player positions HTML view (currently JSON-only) | ⏳ backlog | — |
-| F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ⏳ backlog | — |
+| F-012 | Player positions HTML view (currently JSON-only) | ✅ done (PR #29) | — |
+| F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ✅ done (PR #29) | — |
 | F-014 | Market edit form in backoffice | ⏳ backlog | DD-007 decision |
-| F-015 | Cross-mechanism leaderboard P&L aggregation | ⏳ backlog | — |
+| F-015 | Cross-mechanism leaderboard P&L aggregation | ✅ done (PR #29) | — |
 | F-016 | LMSR subsidy exhaustion guard | ⏳ backlog | — |
-| F-017 | Market list pagination (web + backoffice) | ⏳ backlog | — |
+| F-017 | Market list pagination (web + backoffice) | ✅ done (PR #29) | — |
 | F-018 | Switch test DB to PostgreSQL | ⏳ backlog | DD-004 decision |
 
 ---

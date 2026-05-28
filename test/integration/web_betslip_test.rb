@@ -34,7 +34,7 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
     assert_equal 'completed', body['status']
     assert_equal 2, body['bet_ids'].length
 
-    get "/web/betslips/executions/#{body['execution_id']}"
+    get "/web/betslips/executions/#{body['execution_id']}", as: :json
 
     assert_response :success
     assert_equal body['bet_ids'], response.parsed_body['bet_ids']
@@ -92,7 +92,7 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
       odds_minor: @yes_leg.odds_minor, potential_payout_minor: 500, status: :open
     )
 
-    get '/web/positions'
+    get '/web/positions', as: :json
 
     assert_response :success
     ids = response.parsed_body['positions'].pluck('bet_id')
@@ -109,7 +109,7 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
       status: :filled, time_in_force: :gtc
     )
 
-    get '/web/positions'
+    get '/web/positions', as: :json
 
     assert_response :success
     clob_pos = response.parsed_body['clob_positions']
@@ -124,7 +124,7 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
   end
 
   test 'positions index returns empty clob_positions when no CLOB fills' do
-    get '/web/positions'
+    get '/web/positions', as: :json
 
     assert_response :success
     assert_equal [], response.parsed_body['clob_positions']
@@ -181,7 +181,7 @@ class WebBetslipTest < ActionDispatch::IntegrationTest
     execution = BetslipExecution.create!(
       betslip_quote: quote, user: users(:moderator), bet_ids: [], status: :completed
     )
-    get "/web/betslips/executions/#{execution.id}"
+    get "/web/betslips/executions/#{execution.id}", as: :json
 
     assert_response :not_found
   end
