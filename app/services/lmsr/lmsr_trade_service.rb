@@ -30,6 +30,15 @@ module Lmsr
         fee_minor  = (@market.spread_fee_bps.to_i * raw_cost_minor.abs / 10_000.0).ceil
         total_cost = raw_cost_minor + fee_minor
 
+        # Outflow = what the market pays to the trader (raw_cost negative means market pays)
+        outflow = raw_cost_minor.negative? ? raw_cost_minor.abs : 0
+        if outflow.positive?
+          new_loss = @market.lmsr_realized_loss_minor + outflow
+          if new_loss > @market.liquidity_subsidy_minor
+            raise 'Liquidity subsidy exhausted — trade would exceed market subsidy cap'
+          end
+        end
+
         wallet = @user.wallet.lock!
         raise 'Insufficient funds' if total_cost.positive? && wallet.available_minor < total_cost
 
@@ -54,6 +63,7 @@ module Lmsr
         @market.update_columns(
           lmsr_q_yes: @market.lmsr_q_yes + delta_yes,
           lmsr_q_no: @market.lmsr_q_no + delta_no,
+          lmsr_realized_loss_minor: @market.lmsr_realized_loss_minor + outflow,
           updated_at: Time.current
         )
 
