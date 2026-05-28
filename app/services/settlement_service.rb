@@ -2,7 +2,7 @@ class SettlementService
   class InvalidSettlement < StandardError; end
 
   def self.settle!(market:, outcome:, actor:)
-    raise InvalidSettlement, 'Market must be open to settle' unless market.open?
+    raise InvalidSettlement, 'Market must be open or closed to settle' unless market.open? || market.closed?
 
     valid_labels = market.market_legs.pluck(:label)
     unless valid_labels.include?(outcome)

@@ -83,7 +83,7 @@ module Backoffice
 
       outcome = params[:outcome].to_s.upcase
 
-      return redirect_to backoffice_market_path(@market), alert: 'Market must be open to settle' unless @market.open?
+      return redirect_to backoffice_market_path(@market), alert: 'Market must be open or closed to settle' unless @market.open? || @market.closed?
 
       SettlementService.settle!(market: @market, outcome: outcome, actor: current_user)
       redirect_to backoffice_market_path(@market), notice: "Market settled: #{outcome}"
