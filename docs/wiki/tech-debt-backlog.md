@@ -6,6 +6,23 @@ Update this file when a gap is closed or a decision is made.
 
 ---
 
+## Upcoming features (prioritised)
+
+| ID | Feature | Status | Depends on |
+|----|---------|--------|-----------|
+| F-009 | Automated market close (`CloseExpiredMarketsJob` + `closed` status) | ⏳ plan ready | — |
+| F-010 | Market close UX (player-facing "Betting closed" state on market page) | ⏳ backlog | F-009 |
+| F-011 | LMSR individual settlement payouts | ⏳ backlog | DD-002 decision |
+| F-012 | Player positions HTML view (currently JSON-only) | ⏳ backlog | — |
+| F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ⏳ backlog | — |
+| F-014 | Market edit form in backoffice | ⏳ backlog | DD-007 decision |
+| F-015 | Cross-mechanism leaderboard P&L aggregation | ⏳ backlog | — |
+| F-016 | LMSR subsidy exhaustion guard | ⏳ backlog | — |
+| F-017 | Market list pagination (web + backoffice) | ⏳ backlog | — |
+| F-018 | Switch test DB to PostgreSQL | ⏳ backlog | DD-004 decision |
+
+---
+
 ## Active tech debt (implementation gaps)
 
 ### TD-001 · LMSR individual settlement payouts
@@ -83,6 +100,42 @@ Update this file when a gap is closed or a decision is made.
 **Status:** Not implemented (JSON-only endpoints).
 **Problem:** `GET /web/positions` and `GET /web/betslips/executions/:id` return JSON only. No HTML views exist. Players cannot see their positions or execution confirmations in a browser.
 **Impact:** Meaningful UX gap. The E2E suite tests these as API endpoints only.
+**Task:** `.claude/tasks/td008-positions-views/`
+
+---
+
+### TD-009 · SQLite ILIKE + jsonb test fidelity gap
+
+**Status:** Structural gap (not a bug yet, but hidden risk).
+**Problem:** Full-text search uses Arel `.matches` which generates `ILIKE` on PostgreSQL but `LIKE` on SQLite (case-sensitive on some platforms). The `tags` column is `jsonb` in PostgreSQL; in SQLite it is stored as text. Tests pass locally under SQLite but may not catch ILIKE case-sensitivity edge cases or jsonb operator errors.
+**Blocked by:** DD-004 (test DB decision).
+**Impact:** Low for current tests; would surface immediately if tags search logic gets more sophisticated.
+
+---
+
+### TD-010 · Binary line trigger not exercised in SQLite tests
+
+**Status:** Structural gap.
+**Problem:** The `enforce_max_two_market_legs` PostgreSQL BEFORE INSERT trigger is defined in a migration but SQLite ignores it. The Minitest suite tests the Rails-level validation (`MarketLeg` model guard + `Market#requires_two_legs_to_open`), but the DB-level trigger is only exercised in CI where PostgreSQL is used. A future Rails-level validation bypass would not be caught locally.
+**Blocked by:** DD-004.
+
+---
+
+### TD-011 · Market edit form (backoffice)
+
+**Status:** Not implemented.
+**Problem:** Operators cannot update a market's `description`, `close_at`, `resolution_criteria`, or `resolution_source` through the backoffice UI after creation. The admin JSON API (`PATCH /admin/markets/:id`) supports updates, but backoffice has no edit form.
+**Effort:** Low. Standard Rails edit/update pattern identical to the existing create form.
+**Impact:** Operators must use the API directly for any correction after creation.
+
+---
+
+### TD-012 · Market list pagination
+
+**Status:** Not implemented.
+**Problem:** `Web::MarketsController#index` and `Backoffice::MarketsController#index` load all markets without pagination. Seeds already generate 17 markets; in production this will grow.
+**Effort:** Low. Add `page`/`per_page` params and standard Rails pagination (kaminari or `limit`/`offset`).
+**Impact:** Performance and UX degrade with market volume; not urgent for POC.
 
 ---
 
@@ -153,3 +206,33 @@ For each: short options with trade-offs. These are inputs for the next product/a
 ### DD-005 · ADR-0013 duplicate / numbering conflict
 
 **Status:** ✅ Resolved (2026-05-28). Duplicate `ADR-0013-clob-order-book-migration.md` deleted; ADR-0013 and ADR-0011/ADR-0012 all marked Accepted.
+
+---
+
+### DD-006 · CLOB cashout mechanism
+
+**Question:** How should players exit CLOB positions before settlement?
+**Context:** `CashoutQuoteService`/`CashoutExecutionService` handle fixed-odds voids only. CLOB players hold contracts (YES/NO) that are only redeemable at settlement.
+
+| Option | Description | Trade-offs |
+|--------|-------------|-----------|
+| A: Sell limit order on book | Player posts a sell order; matched against buyers on the CLOB. | + Pure market mechanics; price reflects true demand. − Player may be stranded with no buyer; not a guaranteed exit. |
+| B: Operator buyback at mid-price | Platform creates a standing buyback offer at `(best_bid + best_ask) / 2`. | + Guaranteed exit at any time. − Operator takes mark-to-market risk; requires a funded buyback wallet. |
+| C: No cashout — hold to settlement | Current state. CLOB positions are illiquid until settlement. | + Zero implementation cost. − Player-unfriendly, especially for long-duration markets. |
+
+**Recommendation:** Option A for correctness (exchange semantics). Option C acceptable for short-lived POC markets.
+
+---
+
+### DD-007 · Market edit scope (what fields are updatable after open?)
+
+**Question:** Which market fields should the backoffice be able to edit, and at which lifecycle stages?
+**Context:** TD-011 proposes adding an edit form. The question is what can change after the market opens.
+
+| Option | Description | Trade-offs |
+|--------|-------------|-----------|
+| A: Edit any field while draft | Only pre-open edits. Once open, market is locked. | + Simplest invariant. − Operators can't fix typos in live market descriptions. |
+| B: Allow `description`, `close_at`, `resolution_criteria`, `resolution_source` while open | Metadata-only updates on live markets. Mechanism, legs, and fee fields locked once open. | + Practical for real operations. − Need to differentiate which fields are locked. |
+| C: Full edit at any status | All fields editable at any time. | + Maximum flexibility. − Risk of changing mechanism/odds on live markets mid-bet. |
+
+**Recommendation:** Option B. Financial fields (`mechanism_type`, `fee_bps`, `liability_cap_minor`, legs) should be immutable once a market is open; metadata is safe to update.

@@ -2,65 +2,89 @@
 
 Last updated: 2026-05-28
 
-This file is the single index of open items that either block autonomous work or need a product/priority decision from the user. Check this at the start of each session.
+This file is the single index of open items. Check it at the start of each session.
+Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.md`.
 
 ---
 
 ## 🔴 Blocked — Need User Input
 
-_(none currently)_
+### DD-002 · LMSR v2 settlement payout model
+**Blocks:** TD-001 (LMSR payouts currently non-functional for players)
+**Options:** See `docs/wiki/tech-debt-backlog.md` → DD-002
+- A: `lmsr_positions` table (recommended)
+- B: Replay ledger entries
+- C: Re-use `bets` table with `contracts` field
+
+### DD-004 · Test DB adapter (SQLite → PostgreSQL)
+**Blocks:** TD-009/TD-010 (trigger + jsonb gaps only caught in CI, not locally)
+**Options:** See `docs/wiki/tech-debt-backlog.md` → DD-004
+- A: Keep SQLite (current — fast, misses PG-specific behaviour)
+- B: Switch to PostgreSQL (recommended — matches production)
+- C: Dual adapter
+
+### DD-006 · CLOB cashout mechanism
+**Blocks:** TD-004 (CLOB players cannot exit before settlement)
+**Options:** See `docs/wiki/tech-debt-backlog.md` → TD-004
+- A: Sell limit order on book
+- B: Operator buyback at mid-price
+- C: No cashout — hold to settlement (current)
 
 ---
 
 ## 🟡 Ready for Autonomous Work
 
-- **F-009: Automated market close** — plan at `docs/superpowers/plans/2026-05-28-f009-automated-market-close.md`. Adds `CloseExpiredMarketsJob` + `closed` market status. No blocking decisions.
+| Task | Task folder | Plan | Notes |
+|------|-------------|------|-------|
+| F-009 Automated market close | `.claude/tasks/f009-market-close/` | `docs/superpowers/plans/2026-05-28-f009-automated-market-close.md` | Full plan ready |
+| TD-005 Cross-mechanism leaderboard P&L | `.claude/tasks/td005-leaderboard-pl/` | needs writing | Aggregate `ORDER_FILL_CREDIT` + parimutuel ledger entries |
+| TD-008 Player positions + execution HTML views | `.claude/tasks/td008-positions-views/` | needs writing | 2 HTML views + routes + E2E |
+| TD-003 LMSR subsidy exhaustion guard | — | — | Add `lmsr_realized_loss_minor` column + rejection in `LmsrTradeService` |
+| TD-007 Backoffice open-market E2E | — | — | One Playwright test, no plan needed |
+| F-010 Market close UX | — | — | Depends on F-009 merging first |
+| TD-011 Market edit form (backoffice) | — | — | Backoffice form to edit description/close_at/criteria |
 
 ---
 
 ## 🟢 Recently Completed
 
-| Task | Completed | Notes |
-|------|-----------|-------|
-| F-001 Market taxonomy | 2026-05-27 | PRs #13–15 |
-| F-002 Full-text search | 2026-05-27 | PR #16 |
-| F-005 User profile | 2026-05-27 | PR #17 |
+| Task | Completed | PR / Commit |
+|------|-----------|-------------|
+| Wiki consolidation + task cleanup | 2026-05-28 | PR #27 |
+| E2E Docker Compose + Zeitwerk production fix | 2026-05-28 | PR #26 `490f215` |
+| Multi-player settlement E2E (all 4 mechanisms) | 2026-05-28 | PR #25 `d0dbd5a` |
+| CLOB/LMSR/parimutuel quick-bet E2E + side fix | 2026-05-28 | PR #23 `6a61122` |
+| F-006 Market create UX | 2026-05-28 | PR #21 `528e7ba` |
 | F-003 Market detail enrichment | 2026-05-28 | PR #18 `3dd6be1` |
 | F-007 Leaderboard | 2026-05-28 | PR #18 `3dd6be1` |
 | Quick-bet form (all 4 mechanisms) | 2026-05-28 | PR #18 `3dd6be1` |
-| UX polish + rich seeds | 2026-05-28 | PR #18 `3dd6be1` |
-| F-006 Market create UX | 2026-05-28 | PR #21 `528e7ba` |
-| CLOB/LMSR/parimutuel E2E + side fix | 2026-05-28 | PR #23 `6a61122` |
-| E2E Docker Compose + Zeitwerk production fix | 2026-05-28 | PR #26 `490f215` |
-| Multi-player settlement E2E (all 4 mechanisms) | 2026-05-28 | PR #25 |
+| F-005 User profile | 2026-05-27 | PR #17 `07d79ce` |
+| F-002 Full-text search | 2026-05-27 | PR #16 `c400e5f` |
+| F-001 Market taxonomy | 2026-05-27 | PRs #13–15 |
+| CLOB order book completion | 2026-05-27 | PRs #10–12 `5d48ac1` |
+| Pluggable market mechanisms (all 4) | 2026-05-27 | PRs #5–10 `4a7555d` |
+| Betslip + cashout | 2026-05-26 | `c686641` |
+| Binary line DB invariants | 2026-05-26 | `c686641` |
+| Hot/cold storage + SSE | 2026-05-26 | `c686641` |
+| Settlement engine | 2026-05-26 | `3a1789a` |
 
 ---
 
-## Open Design Decisions
+## Known Technical Debt (index)
 
-Full options + trade-offs in `docs/wiki/tech-debt-backlog.md` under "Open design decisions".
+Full details + options in `docs/wiki/tech-debt-backlog.md`.
 
-| Decision | Summary |
-|----------|---------|
-| DD-001 F-009 automated close | Option A recommended: `CloseExpiredMarketsJob` + `closed` status |
-| DD-002 LMSR v2 settlement | Option A recommended: `lmsr_positions` table |
-| DD-003 Parimutuel v2 model | Option A (ParimutuelBet) when traffic justifies it |
-| DD-004 Test DB adapter | Option B (PostgreSQL) for correctness; currently SQLite |
-| DD-005 ADR-0013 duplicate | Fixed: deleted duplicate, marked ADR-0013 accepted |
-
----
-
-## Known Technical Debt
-
-Full details in `docs/wiki/tech-debt-backlog.md`.
-
-| ID | Item | Priority |
-|----|------|---------|
-| TD-001 | LMSR individual settlement payouts | High (LMSR settlement broken for payouts) |
-| TD-002 | Parimutuel per-bettor model | Low (pool math works; history awkward) |
-| TD-003 | LMSR subsidy exhaustion guard | Medium |
-| TD-004 | CLOB cashout | Medium |
-| TD-005 | Cross-mechanism leaderboard P&L | Low |
-| TD-006 | E2E browser matrix (Firefox/WebKit) | Low |
-| TD-007 | Backoffice open-market E2E | Low |
-| TD-008 | Player positions + execution HTML views | Medium |
+| ID | Item | Priority | Blocked by |
+|----|------|---------|------------|
+| TD-001 | LMSR individual settlement payouts | High | DD-002 |
+| TD-002 | Parimutuel per-bettor model | Low | — |
+| TD-003 | LMSR subsidy exhaustion guard | Medium | — |
+| TD-004 | CLOB cashout | Medium | DD-006 |
+| TD-005 | Cross-mechanism leaderboard P&L | Low | — |
+| TD-006 | E2E browser matrix (Firefox/WebKit) | Low | — |
+| TD-007 | Backoffice open-market E2E | Low | — |
+| TD-008 | Player positions + execution HTML views | Medium | — |
+| TD-009 | SQLite ILIKE + jsonb test fidelity gap | Medium | DD-004 |
+| TD-010 | Binary line trigger not tested in SQLite | Medium | DD-004 |
+| TD-011 | Market edit form (backoffice) | Low | — |
+| TD-012 | Market list pagination | Low | — |
