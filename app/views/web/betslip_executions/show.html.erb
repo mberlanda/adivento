@@ -1,0 +1,49 @@
+<div data-testid="execution-confirmation">
+  <h1>Betslip Confirmed</h1>
+
+  <div class="panel" style="background:#0d2a1a;border-color:#2e7d52;">
+    <p style="color:#4caf7d;font-weight:600;margin:0;">
+      ✓ Your bets were placed successfully.
+    </p>
+    <p style="color:#9fb2b8;font-size:0.88em;margin:4px 0 0;">
+      Execution #<%= @execution.id %> &nbsp;·&nbsp; Status: <strong><%= @execution.status %></strong>
+    </p>
+  </div>
+
+  <% if @bets.any? %>
+    <div class="panel">
+      <h3>Bets Placed</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Side</th>
+            <th>Stake</th>
+            <th>Odds</th>
+            <th>Potential payout</th>
+          </tr>
+        </thead>
+        <tbody data-testid="execution-bets-list">
+          <% @bets.each do |bet| %>
+            <tr data-testid="execution-bet-row-<%= bet.id %>">
+              <td><%= link_to bet.market.question, web_market_path(bet.market), style: 'color:#9fb2b8;' %></td>
+              <td><strong><%= bet.market_leg.label %></strong></td>
+              <td><%= bet.stake_minor %></td>
+              <td><%= bet.odds_minor %></td>
+              <td><%= bet.potential_payout_minor %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <p style="color:#9fb2b8;font-size:0.9em;margin-top:12px;">
+        Total stake: <strong><%= @bets.sum(&:stake_minor) %></strong>
+      </p>
+    </div>
+  <% end %>
+
+  <p>
+    <%= link_to "← Back to markets", web_markets_path %>
+    &nbsp;·&nbsp;
+    <%= link_to "My positions", web_positions_path %>
+  </p>
+</div>
