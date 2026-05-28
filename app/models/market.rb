@@ -2,7 +2,7 @@ class Market < ApplicationRecord
   MECHANISM_TYPES = %w[fixed_odds clob lmsr parimutuel].freeze
   CATEGORIES = %w[sports economics politics technology entertainment other].freeze
 
-  enum :status, { draft: 0, open: 1, settled: 2, cancelled: 3 }, default: :draft
+  enum :status, { draft: 0, open: 1, settled: 2, cancelled: 3, closed: 4 }, default: :draft
 
   belongs_to :created_by, class_name: 'User', inverse_of: :created_markets
   belongs_to :settled_by, class_name: 'User', optional: true, inverse_of: :settled_markets

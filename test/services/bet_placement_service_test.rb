@@ -1,6 +1,64 @@
 require 'test_helper'
 
 class BetPlacementServiceTest < ActiveSupport::TestCase
+  test 'raises InvalidBet when close_at is in the past' do
+    market  = markets(:open_market)
+    yes_leg = market_legs(:yes_leg)
+    player  = users(:player)
+    market.bets.delete_all
+    player.wallet.update!(available_minor: 50_000)
+    market.update_columns(close_at: 1.hour.ago)
+
+    err = assert_raises(BetPlacementService::InvalidBet) do
+      BetPlacementService.place!(user: player, market: market,
+                                 market_leg: yes_leg, stake_minor: 100)
+    end
+    assert_match 'closed for new bets', err.message
+  end
+
+  test 'allows placement when close_at is nil' do
+    market  = markets(:open_market)
+    yes_leg = market_legs(:yes_leg)
+    player  = users(:player)
+    market.bets.delete_all
+    player.wallet.update!(available_minor: 50_000)
+    market.update_columns(close_at: nil)
+
+    assert_nothing_raised do
+      BetPlacementService.place!(user: player, market: market,
+                                 market_leg: yes_leg, stake_minor: 100)
+    end
+  end
+
+  test 'allows placement when close_at is in the future' do
+    market  = markets(:open_market)
+    yes_leg = market_legs(:yes_leg)
+    player  = users(:player)
+    market.bets.delete_all
+    player.wallet.update!(available_minor: 50_000)
+    market.update_columns(close_at: 1.hour.from_now)
+
+    assert_nothing_raised do
+      BetPlacementService.place!(user: player, market: market,
+                                 market_leg: yes_leg, stake_minor: 100)
+    end
+  end
+
+  test 'raises InvalidBet when market status is closed' do
+    market  = markets(:open_market)
+    yes_leg = market_legs(:yes_leg)
+    player  = users(:player)
+    market.bets.delete_all
+    player.wallet.update!(available_minor: 50_000)
+    market.update_columns(status: Market.statuses[:closed], close_at: 1.hour.ago)
+
+    err = assert_raises(BetPlacementService::InvalidBet) do
+      BetPlacementService.place!(user: player, market: market,
+                                 market_leg: yes_leg, stake_minor: 100)
+    end
+    assert_match 'Market is not open', err.message
+  end
+
   test 'places bet and writes ledger and audit' do
     user = users(:player)
     market = markets(:open_market)

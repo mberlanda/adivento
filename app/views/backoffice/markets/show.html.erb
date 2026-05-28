@@ -18,7 +18,7 @@
     <p>Closes: <strong><%= @market.close_at.strftime('%Y-%m-%d %H:%M UTC') %></strong>
       <% if @market.open? && @market.close_at > Time.current %>
         <span style="color:#f0bc5c;">(in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
-      <% elsif @market.open? %>
+      <% elsif @market.open? || @market.closed? %>
         <span style="color:#f44336;">(closed for new bets)</span>
       <% end %>
     </p>
@@ -37,7 +37,15 @@
     <% end %>
   <% end %>
 
-  <% if @market.open? %>
+  <% if @market.open? || @market.closed? %>
+    <% if @market.closed? %>
+      <div style="margin-top:16px;padding:14px;background:#2a1f0a;border:1px solid #f0bc5c;border-radius:8px;" data-testid="market-closed-banner">
+        <strong style="color:#f0bc5c;">Closed — awaiting settlement</strong>
+        <span style="color:#9fb2b8;font-size:0.88em;margin-left:8px;">
+          Market closed for new bets on <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
+        </span>
+      </div>
+    <% end %>
     <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;">
       <h4>Settle market</h4>
       <%= form_with url: settle_backoffice_market_path(@market), method: :post,

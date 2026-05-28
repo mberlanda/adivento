@@ -4,6 +4,7 @@ class BetPlacementService
 
   def self.place!(user:, market:, market_leg:, stake_minor:)
     raise InvalidBet, 'Market is not open' unless market.open?
+    raise InvalidBet, 'Market is closed for new bets' if market.close_at.present? && market.close_at <= Time.current
     raise InvalidBet, 'Leg does not belong to market' unless market_leg.market_id == market.id
     raise InvalidBet, 'Leg is inactive' unless market_leg.active?
     raise InvalidBet, 'Stake must be positive' unless stake_minor.to_i.positive?

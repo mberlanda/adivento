@@ -1,0 +1,4 @@
+close_expired_markets:
+  class: CloseExpiredMarketsJob
+  schedule: every 5 minutes
+  queue: default

@@ -132,9 +132,10 @@ Plan approved?
 - **E2E settlement coverage** — CLOB/LMSR/parimutuel settlement-scenario tests (settle YES + NO per mechanism, 10 tests total in `settlement-scenarios.spec.js`)
 - **E2E multi-player settlement** — 16 table-driven tests (4 scenarios × 4 mechanisms); isolated browser contexts per player; API-driven wallet setup; balance assertions after settlement (PR #25)
 - **E2E + Docker Compose production mode** — `docker-compose.e2e.yml` overlay runs Playwright against `RAILS_ENV=production`; Zeitwerk eager-load crash fixed (removed `module Domain` wrapper from catalog files); `package-lock.json` committed; stale E2E Docker files removed (PR #26, `490f215`)
+- **F-009: Automated market close** — `closed: 4` enum, DB check constraint, `CloseExpiredMarketsJob` (solid-queue every 5 min), `BetPlacementService` close_at guard, settlement accepts closed, backoffice/customer closed banners
 
 ### ⏳ Next
-- **F-009: Automated market close** — [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) (prescriptive, ready to execute)
+- See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)
 
 ### Plans + Reviews
 
@@ -151,7 +152,7 @@ Plan approved?
 | CLOB order book completion | [plan](superpowers/plans/2026-05-27-clob-order-book.md) | — | ✅ implemented |
 | F-006: Backoffice market create UX | [plan](superpowers/plans/2026-05-28-f006-backoffice-market-create-ux.md) | — | ✅ implemented |
 | Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
-| F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ⏳ planned |
+| F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
 
 ---
 

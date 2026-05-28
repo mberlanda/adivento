@@ -10,7 +10,7 @@ module Web
       @markets = if current_user
                    Market.includes(:market_legs)
                  else
-                   Market.includes(:market_legs).where(status: %i[open settled])
+                   Market.includes(:market_legs).where(status: %i[open settled closed])
                  end
       @markets = @markets.where(category: @selected_category) if @selected_category
       if @search_query
@@ -29,7 +29,7 @@ module Web
 
     def show
       @market = Market.includes(:market_legs).find(params.expect(:id))
-      unless current_user || @market.open? || @market.settled?
+      unless current_user || @market.open? || @market.settled? || @market.closed?
         return redirect_to web_markets_path, alert: 'This market is not publicly visible yet'
       end
 

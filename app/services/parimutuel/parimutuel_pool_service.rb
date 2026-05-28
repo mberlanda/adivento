@@ -5,6 +5,7 @@ module Parimutuel
     def self.add_stake(market:, user:, side:, stake_minor:)
       ApplicationRecord.transaction do
         raise 'Market is not open' unless market.open?
+        raise 'Market is closed for new bets' if market.close_at.present? && market.close_at <= Time.current
         raise 'Invalid side; must be YES or NO' unless %w[YES NO].include?(side)
 
         wallet = user.wallet.lock!

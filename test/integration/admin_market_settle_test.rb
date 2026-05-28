@@ -67,4 +67,17 @@ class AdminMarketSettleTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_match 'open', response.parsed_body['error']
   end
+
+  test 'admin can settle a closed market via API' do
+    @market.update_columns(status: Market.statuses[:closed], close_at: 1.hour.ago)
+
+    post "/admin/markets/#{@market.id}/settle",
+         params: { outcome: 'YES' },
+         headers: auth_headers_for(users(:admin)), as: :json
+
+    assert_response :success
+    body = response.parsed_body
+    assert_equal 'settled', body['status']
+    assert_equal 'YES', body['settled_outcome']
+  end
 end
