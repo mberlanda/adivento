@@ -4,6 +4,15 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — TD-007 + TD-011: Backoffice open-market E2E + market edit description field
+
+- **TD-007:** Added `e2e/playwright/tests/backoffice-open-market.spec.js` — moderator creates draft market via UI form, opens it, verifies settle form appears and open form disappears
+- **TD-011:** Added `description` to `market_update_params` in `Backoffice::MarketsController`; description textarea added to Edit Details panel in `show.html.erb`; integration test confirms description update via PATCH
+- Key files: `e2e/playwright/tests/backoffice-open-market.spec.js`, `app/controllers/backoffice/markets_controller.rb`, `app/views/backoffice/markets/show.html.erb`
+- Tests: 271 runs, 0 failures, 90.82% coverage — PR #31 `256932d`
+
+---
+
 ## 2026-05-28 — F-016 / TD-003: LMSR subsidy exhaustion guard
 
 - Added `lmsr_realized_loss_minor` (bigint, default 0) to `markets` via migration

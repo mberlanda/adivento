@@ -137,6 +137,8 @@ Plan approved?
 - **F-015: Cross-mechanism leaderboard** — aggregates all ledger entry types (fixed-odds, CLOB, LMSR, parimutuel); removed fixed-odds-only bet count columns
 - **F-017: Market list pagination** — web (12/page) and backoffice (20/page) with Previous/Next controls
 - **F-016 / TD-003: LMSR subsidy exhaustion guard** — `lmsr_realized_loss_minor` column; market locked before pricing; outflow guard raises when net payout would exceed `liquidity_subsidy_minor`; side/quantity input validation (PR #30, `284928b`)
+- **TD-007: Backoffice open-market E2E** — Playwright spec: moderator creates draft → opens market; asserts form transitions (PR #31, `256932d`)
+- **TD-011: Backoffice market edit — description field** — `description` added to update params and Edit Details form (PR #31, `256932d`)
 
 ### ⏳ Next
 - See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)

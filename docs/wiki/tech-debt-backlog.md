@@ -15,7 +15,7 @@ Update this file when a gap is closed or a decision is made.
 | F-011 | LMSR individual settlement payouts | ⏳ backlog | DD-002 decision |
 | F-012 | Player positions HTML view (currently JSON-only) | ✅ done (PR #29) | — |
 | F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ✅ done (PR #29) | — |
-| F-014 | Market edit form in backoffice | ⏳ backlog | DD-007 decision |
+| F-014 | Market edit form in backoffice | ✅ done (PR #31) | — |
 | F-015 | Cross-mechanism leaderboard P&L aggregation | ✅ done (PR #29) | — |
 | F-016 | LMSR subsidy exhaustion guard | ✅ done (PR #30) | — |
 | F-017 | Market list pagination (web + backoffice) | ✅ done (PR #29) | — |
@@ -89,7 +89,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-007 · Backoffice open-market UI test (E2E GAP-7)
 
-**Status:** Not implemented.
+**Status:** ✅ Done (PR #31). `e2e/playwright/tests/backoffice-open-market.spec.js` added.
 **Problem:** The backoffice open-market form (`POST /backoffice/markets/:id/open`) is not covered by any E2E test. The test that creates a market via admin API opens it immediately, so the UI open path is never exercised.
 **Effort:** Low. Needs a test that creates a draft market via admin API (without opening), then opens it via the backoffice UI.
 
@@ -123,7 +123,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-011 · Market edit form (backoffice)
 
-**Status:** Not implemented.
+**Status:** ✅ Done (PR #31). DD-007 resolved as Option B. Edit Details panel in `show.html.erb` supports `description`, `close_at`, `resolution_criteria`, `resolution_source`, `category`, `tags`. Financial fields locked once open.
 **Problem:** Operators cannot update a market's `description`, `close_at`, `resolution_criteria`, or `resolution_source` through the backoffice UI after creation. The admin JSON API (`PATCH /admin/markets/:id`) supports updates, but backoffice has no edit form.
 **Effort:** Low. Standard Rails edit/update pattern identical to the existing create form.
 **Impact:** Operators must use the API directly for any correction after creation.

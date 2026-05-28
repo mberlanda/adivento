@@ -34,10 +34,7 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 ## 🟡 Ready for Autonomous Work
 
-| Task | Notes |
-|------|-------|
-| TD-007 Backoffice open-market E2E | Single Playwright spec written (PR #31 open, awaiting review) |
-| TD-011 Market edit form (backoffice) | Edit form + update action exist; added description field; DD-007 resolved as Option B |
+_No autonomous tasks remaining — all non-blocked items are done._
 
 ---
 
@@ -45,6 +42,8 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| TD-007 Backoffice open-market E2E | 2026-05-28 | PR #31 `256932d` |
+| TD-011 Market edit description field | 2026-05-28 | PR #31 `256932d` |
 | F-016 / TD-003 LMSR subsidy exhaustion guard | 2026-05-28 | PR #30 `284928b` |
 | F-012 Player positions HTML view | 2026-05-28 | PR #29 |
 | F-013 Betslip execution confirmation HTML view | 2026-05-28 | PR #29 |
