@@ -1,0 +1,40 @@
+# docker-compose.e2e.yml — Playwright E2E overlay
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm playwright
+#
+# Runs the full Playwright suite against the web service in production mode.
+# Reports land in e2e/playwright/playwright-report/ on the host.
+
+services:
+  web:
+    environment:
+      RAILS_ENV: production
+      POSTGRES_DB: adivento_production
+      # Required by Rails production boot; not a real secret — E2E only.
+      SECRET_KEY_BASE: e2e-not-a-real-secret-for-local-testing-only
+      # Serve assets without a reverse proxy in front.
+      RAILS_SERVE_STATIC_FILES: "true"
+      RAILS_LOG_TO_STDOUT: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/up || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.54.1-noble
+    working_dir: /e2e
+    volumes:
+      - ./e2e/playwright:/e2e
+    environment:
+      BASE_URL: http://web:3000
+      DOCKER: "1"
+      CI: "1"
+    depends_on:
+      web:
+        condition: service_healthy
+    # npm ci ensures deps are present in CI (node_modules not in git).
+    # The official image ships Node + npm; the volume provides package-lock.json.
+    command: bash -c "npm ci && npx playwright test"
