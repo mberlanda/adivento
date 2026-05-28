@@ -1,0 +1,67 @@
+<div data-testid="positions-page">
+  <h1>My Positions</h1>
+
+  <% if @positions.empty? && @clob_positions.empty? %>
+    <div class="panel" style="color:#9fb2b8;" data-testid="no-positions">
+      <p>No open positions.</p>
+    </div>
+  <% end %>
+
+  <% if @positions.any? %>
+    <div class="panel">
+      <h3>Fixed-Odds & Parimutuel Bets</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Side</th>
+            <th>Stake</th>
+            <th>Potential payout</th>
+            <th>Odds</th>
+          </tr>
+        </thead>
+        <tbody data-testid="positions-list">
+          <% @positions.each do |p| %>
+            <tr data-testid="position-row-<%= p[:bet_id] %>">
+              <td><%= link_to p[:market_question], web_market_path(p[:market_id]), style: 'color:#9fb2b8;' %></td>
+              <td><strong><%= p[:leg_label] %></strong></td>
+              <td><%= p[:stake_minor] %></td>
+              <td><%= p[:potential_payout_minor] %></td>
+              <td><%= p[:odds_minor] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if @clob_positions.any? %>
+    <div class="panel">
+      <h3>CLOB Positions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>YES contracts</th>
+            <th>NO contracts</th>
+            <th>Avg YES price (¢)</th>
+            <th>Unrealised value</th>
+          </tr>
+        </thead>
+        <tbody data-testid="clob-positions-list">
+          <% @clob_positions.each do |cp| %>
+            <tr data-testid="clob-position-row-<%= cp[:market_id] %>">
+              <td><%= link_to cp[:market_question], web_market_path(cp[:market_id]), style: 'color:#9fb2b8;' %></td>
+              <td><%= cp[:yes_contracts] %></td>
+              <td><%= cp[:no_contracts] %></td>
+              <td><%= cp[:avg_yes_price_cents] || '—' %></td>
+              <td><%= cp[:unrealised_value_minor] || '—' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <p><%= link_to "← Back to markets", web_markets_path %></p>
+</div>

@@ -55,6 +55,7 @@
           <a href="<%= nav_action_path("navigation.backoffice") %>" data-testid="nav-backoffice">Backoffice</a>
         <% end %>
         <% if nav_action_available?("navigation.profile") %>
+          <a href="<%= web_positions_path %>" data-testid="nav-positions">Positions</a>
           <a href="<%= nav_action_path("navigation.profile") %>" data-testid="nav-profile">My Profile</a>
           <% nav_user = current_nav_user %>
           <% if nav_user&.wallet %>

@@ -4,10 +4,12 @@ module Web
       bets = Bet.includes(:market, :market_leg)
                 .where(user_id: current_user.id, status: :open)
                 .order(created_at: :desc)
-      render json: {
-        positions: bets.map { |b| serialize_position(b) },
-        clob_positions: clob_contract_positions
-      }
+      @positions = bets.map { |b| serialize_position(b) }
+      @clob_positions = clob_contract_positions
+      respond_to do |format|
+        format.html
+        format.json { render json: { positions: @positions, clob_positions: @clob_positions } }
+      end
     end
 
     def cashout_quotes
