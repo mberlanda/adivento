@@ -4,6 +4,17 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — CLOB/LMSR/parimutuel quick-bet E2E + side param fix (PR #23 merged)
+
+**PR:** #23 (`feat/e2e-mechanism-quickbet`) — squash-merged to main as `6a61122`
+
+### E2E: mechanism quick-bet forms
+- Added E2E tests for CLOB (limit order), LMSR (share buy), parimutuel (pool stake) via the market show quick-bet panel
+- Fixed `side` param upcase bug: LMSR and parimutuel controllers now upcase `params[:side]` before passing to services (services require uppercase YES/NO)
+- Key files: `app/controllers/web/lmsr_trades_controller.rb`, `app/controllers/web/parimutuel_bets_controller.rb`, `e2e/playwright/tests/quick-bet.spec.js`
+
+---
+
 ## 2026-05-28 — F-006 backoffice market create form UX (PR #21 merged)
 
 **PR:** #21 (`feat/f006-market-create-ux`) — squash-merged to main as `528e7ba`

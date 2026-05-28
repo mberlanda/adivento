@@ -123,10 +123,10 @@ Plan approved?
 - **Betting forms on market show** — quick-bet panel for all 4 mechanism types (fixed_odds/CLOB/LMSR/parimutuel); signed-in users get form, guests get sign-in prompt (PR #18)
 - **UX improvements** — CSS design system (pill filters, stat-cards, balance chip); market show price panels per mechanism; 17-market rich seeds (PR #18)
 - **F-006: Backoffice market create UX** — fieldset grouping, live preview, improved help text (PR #21, `528e7ba`)
+- **E2E quick-bet coverage** — CLOB/LMSR/parimutuel form tests; fixed `side` upcase bug in LMSR+parimutuel controllers (PR #23, `6a61122`)
 
 ### ⏳ Next
-- PLAN-D: Playwright E2E — additional coverage
-- CLOB / LMSR / parimutuel order forms end-to-end verification
+- PLAN-D: Playwright E2E — additional coverage (settlement scenario for CLOB/LMSR/parimutuel)
 
 ### Plans + Reviews
 

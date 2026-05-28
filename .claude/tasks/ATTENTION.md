@@ -33,6 +33,7 @@ _(none currently — see Next in INDEX.md)_
 | Profile + F-003 E2E tests | 2026-05-28 | PR #18 |
 | Faucet admin approval E2E tests | 2026-05-28 | PR #19 merged `d9aa8b8` |
 | F-006 Market create UX | 2026-05-28 | PR #21 merged `528e7ba` |
+| CLOB/LMSR/parimutuel E2E + side fix | 2026-05-28 | PR #23 merged `6a61122` |
 | CLOB order book | 2026-05-27 | PRs #10–12 |
 | Pluggable mechanisms | 2026-05-27 | PRs #5–10 |
 
