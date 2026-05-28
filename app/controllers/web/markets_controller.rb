@@ -24,7 +24,10 @@ module Web
             .or(tags_text.matches(term))
         )
       end
-      @markets = @markets.order(created_at: :desc)
+      @page     = [params[:page].to_i, 1].max
+      @per_page = 12
+      @total    = @markets.count
+      @markets  = @markets.order(created_at: :desc).limit(@per_page).offset((@page - 1) * @per_page)
     end
 
     def show

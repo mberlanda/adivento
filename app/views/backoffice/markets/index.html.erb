@@ -177,4 +177,19 @@
   <% else %>
     <p style="color:#9fb2b8;">No markets yet. Create one above or via a template.</p>
   <% end %>
+
+  <% total_pages = (@total.to_f / @per_page).ceil %>
+  <% if total_pages > 1 %>
+    <div style="display:flex;gap:12px;margin-top:16px;" data-testid="pagination">
+      <% if @page > 1 %>
+        <%= link_to "← Previous", backoffice_markets_path(page: @page - 1),
+              style: "color:#f0bc5c;", data: { testid: "pagination-prev" } %>
+      <% end %>
+      <span style="color:#9fb2b8;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
+      <% if @page < total_pages %>
+        <%= link_to "Next →", backoffice_markets_path(page: @page + 1),
+              style: "color:#f0bc5c;", data: { testid: "pagination-next" } %>
+      <% end %>
+    </div>
+  <% end %>
 </div>
