@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_154331) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_170128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -134,6 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_154331) do
     t.float "lmsr_b_parameter"
     t.bigint "lmsr_q_no", default: 0, null: false
     t.bigint "lmsr_q_yes", default: 0, null: false
+    t.bigint "lmsr_realized_loss_minor", default: 0, null: false
     t.string "mechanism_type", default: "fixed_odds", null: false
     t.bigint "parimutuel_pool_no_minor", default: 0, null: false
     t.bigint "parimutuel_pool_yes_minor", default: 0, null: false
