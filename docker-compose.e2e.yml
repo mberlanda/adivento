@@ -5,9 +5,21 @@
 #
 # Runs the full Playwright suite against the web service in production mode.
 # Reports land in e2e/playwright/playwright-report/ on the host.
+#
+# SAFETY: This overlay is designed for use with the ephemeral compose-managed
+# Postgres volume only. db:seed writes hardcoded E2E credentials (password123).
+# Never point it at a persistent or shared database.
 
 services:
   web:
+    # Override command explicitly so the seeding intent is visible and not
+    # inherited silently from the base file when RAILS_ENV changes.
+    command: >
+      sh -c "
+        bundle exec rails db:prepare &&
+        bundle exec rails db:seed &&
+        bundle exec rails server -b 0.0.0.0 -p 3000
+      "
     environment:
       RAILS_ENV: production
       POSTGRES_DB: adivento_production
@@ -35,6 +47,5 @@ services:
     depends_on:
       web:
         condition: service_healthy
-    # npm ci ensures deps are present in CI (node_modules not in git).
-    # The official image ships Node + npm; the volume provides package-lock.json.
+    # package-lock.json is committed; npm ci gives reproducible installs.
     command: bash -c "npm ci && npx playwright test"
