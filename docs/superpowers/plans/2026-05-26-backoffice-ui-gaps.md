@@ -1,5 +1,7 @@
 # Backoffice UI Gaps Implementation Plan
 
+> **Status: ✅ implemented** — all steps complete, committed in `5cb0ef3`. Checkboxes below were not updated during execution.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add full template CRUD (edit + soft-delete) and a complete backoffice markets section (list, show, create, open, settle) so operators can manage the platform through the HTML backoffice without touching JSON APIs.

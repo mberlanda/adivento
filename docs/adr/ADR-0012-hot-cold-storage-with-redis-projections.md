@@ -1,7 +1,7 @@
 # ADR-0012: Hot/Cold Storage with Redis Projections
 
 ## Status
-Proposed
+Accepted — implemented (MarketSnapshotProjector, ReconcileMarketHotStateJob, SSE cold fallback)
 
 ## Context
 Price volatility and frequent updates require low-latency reads while preserving durable financial correctness.

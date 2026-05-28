@@ -1,7 +1,7 @@
 # ADR-0011: Betslip and Cashout Contract
 
 ## Status
-Proposed
+Accepted — implemented in PR #11 (`c686641`)
 
 ## Context
 Users need multi-market slips and optional early exit via cashout with deterministic accounting and idempotent APIs.

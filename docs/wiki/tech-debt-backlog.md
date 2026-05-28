@@ -152,9 +152,4 @@ For each: short options with trade-offs. These are inputs for the next product/a
 
 ### DD-005 · ADR-0013 duplicate / numbering conflict
 
-**Status:** Two files both named ADR-0013.
-- `docs/adr/ADR-0013-pluggable-market-mechanisms.md` — status: Proposed
-- `docs/adr/ADR-0013-clob-order-book-migration.md` — status: unknown (duplicate number)
-- `docs/adr/ADR-0014-clob-order-book-migration.md` — the canonical one
-
-**Required action:** Delete `ADR-0013-clob-order-book-migration.md` (duplicate of ADR-0014). Update `ADR-0013-pluggable-market-mechanisms.md` status from "Proposed" to "Accepted" (it has been implemented).
+**Status:** ✅ Resolved (2026-05-28). Duplicate `ADR-0013-clob-order-book-migration.md` deleted; ADR-0013 and ADR-0011/ADR-0012 all marked Accepted.
