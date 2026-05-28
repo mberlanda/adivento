@@ -4,6 +4,24 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — Multi-player settlement E2E (table-driven, all 4 mechanisms)
+
+Added `multi-player-settlement.spec.js` with 16 tests (4 scenarios × 4 mechanisms).
+
+### Design
+- **Scenario table** (shared): larger-winner/smaller-winner/loser, single-winner/two-losers, only-winners, only-losers. Outcome always YES so YES-side = winner, NO-side = loser.
+- **Setup fully API-driven**: `createTestPlayer` (register API), `fundPlayer` (faucet create + approve), `walletBalance` (JWT `/wallet`). New helpers added to `helpers/api.js`.
+- **Assertions**: winners → `balanceUi > balancesAfterBets` (payout received); losers → `balanceUi < balancesBefore` (stake lost). Relative, not exact.
+- **UI verification**: each player gets an isolated `browser.newContext()`, signs in, navigates to `/web/profile`, and the `wallet-available` testid is checked for direction.
+- **Parimutuel edge cases**: "only winners" / "only losers" inject a fresh market-maker player for the opposite pool (prevents zero-winning-pool refund).
+- **CLOB**: NO orders placed first (resting makers), YES second (takers → immediate fill). Admin wallet topped up per test via `fundAdmin`. Liquidity balanced with admin orders.
+- **LMSR v1**: no individual payouts; asserts settled-outcome visibility on market page instead of balance direction.
+- **`webPost` context**: context intentionally not disposed before response; Playwright cleans up at test end.
+- 16/16 pass (51 s on Chromium).
+- Key files: `e2e/playwright/tests/multi-player-settlement.spec.js`, `e2e/playwright/tests/helpers/api.js`
+
+---
+
 ## 2026-05-28 — Settlement E2E for CLOB/LMSR/parimutuel
 
 - Extended `settlement-scenarios.spec.js` with 6 new tests (2 per mechanism: settle YES + settle NO)
