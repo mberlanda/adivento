@@ -1,8 +1,6 @@
-require_dependency Rails.root.join('app/domain/catalogs/action_catalog').to_s
-
 class AvailableActionsService
   def self.call(user:)
-    ::Domain::Catalogs::ActionCatalog::ACTIONS.each_with_object([]) do |action, available|
+    Catalogs::ActionCatalog::ACTIONS.each_with_object([]) do |action, available|
       next unless audience_matches?(action.fetch(:audience), user)
       next unless permission_matches?(action[:permission_key], user)
 

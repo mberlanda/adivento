@@ -51,7 +51,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run E2E suite
+      - name: Run E2E suite (Docker Compose — Rails production mode)
         run: scripts/e2e.sh
 
       - name: Upload Playwright report
