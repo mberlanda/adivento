@@ -17,7 +17,7 @@ Update this file when a gap is closed or a decision is made.
 | F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ✅ done (PR #29) | — |
 | F-014 | Market edit form in backoffice | ⏳ backlog | DD-007 decision |
 | F-015 | Cross-mechanism leaderboard P&L aggregation | ✅ done (PR #29) | — |
-| F-016 | LMSR subsidy exhaustion guard | ⏳ backlog | — |
+| F-016 | LMSR subsidy exhaustion guard | ✅ done (PR #30) | — |
 | F-017 | Market list pagination (web + backoffice) | ✅ done (PR #29) | — |
 | F-018 | Switch test DB to PostgreSQL | ⏳ backlog | DD-004 decision |
 
