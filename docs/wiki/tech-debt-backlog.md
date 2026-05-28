@@ -10,8 +10,8 @@ Update this file when a gap is closed or a decision is made.
 
 | ID | Feature | Status | Depends on |
 |----|---------|--------|-----------|
-| F-009 | Automated market close (`CloseExpiredMarketsJob` + `closed` status) | ⏳ plan ready | — |
-| F-010 | Market close UX (player-facing "Betting closed" state on market page) | ⏳ backlog | F-009 |
+| F-009 | Automated market close (`CloseExpiredMarketsJob` + `closed` status) | ✅ done (PR #28) | — |
+| F-010 | Market close UX (player-facing "Betting closed" state on market page) | ✅ done (shipped in F-009/PR #28) | F-009 |
 | F-011 | LMSR individual settlement payouts | ⏳ backlog | DD-002 decision |
 | F-012 | Player positions HTML view (currently JSON-only) | ⏳ backlog | — |
 | F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ⏳ backlog | — |

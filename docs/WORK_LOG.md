@@ -4,6 +4,14 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-009: Post-review fixes (PR #28 merged)
+
+- Extended `close_at` guard to all four trade write paths: LMSR, parimutuel, CLOB (previously only fixed-odds `BetPlacementService`)
+- `CloseExpiredMarketsJob`: made status transition atomic with `update_all(where: status=open)`; AuditEvent skipped if row already settled
+- `Web::MarketsController`: included `closed` in anonymous index query and `#show` visibility guard — closed markets now publicly visible
+
+---
+
 ## 2026-05-28 — F-009: Automated Market Close Enforcement
 
 - Migration: DB check constraint `markets_closed_requires_close_at` (status 4 requires non-null close_at)
