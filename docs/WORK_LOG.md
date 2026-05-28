@@ -4,6 +4,13 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-015 + F-017: Leaderboard P&L rewrite + market pagination
+
+- **F-015:** `LeaderboardController` now aggregates `LedgerEntry` rows (BET_STAKE/WIN_PAYOUT, LMSR_TRADE_STAKE, PARIMUTUEL_STAKE/SETTLEMENT_WIN, ORDER_FILL_STAKE/CREDIT) — all mechanisms included; fixed-odds-only "Bets/Won/Lost" columns removed from view
+- **F-017:** `Web::MarketsController#index` (12/page) and `Backoffice::MarketsController#index` (20/page) now paginate with `limit`/`offset`; Previous/Next controls preserve category + search params
+
+---
+
 ## 2026-05-28 — F-012 + F-013: Player positions and execution confirmation HTML views
 
 - **F-012:** `GET /web/positions` now renders HTML; view shows fixed-odds/parimutuel bets table + CLOB contract positions table; "Positions" nav link added for authenticated users
