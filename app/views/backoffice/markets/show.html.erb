@@ -111,6 +111,10 @@
   <h3>Edit Details</h3>
   <%= form_with url: backoffice_market_path(@market), method: :patch,
         html: { data: { testid: 'edit-market-form' } } do |f| %>
+    <p><label>Description</label><br>
+      <%= text_area_tag :description, @market.description,
+            rows: 3, data: { testid: 'edit-market-description' } %>
+    </p>
     <p>
       <label>Category</label><br>
       <%= select_tag :category,

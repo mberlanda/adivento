@@ -222,4 +222,14 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
     assert_equal 'sports', market.category
     assert_includes market.tags, 'nba'
   end
+
+  test 'admin can update market description via PATCH' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+
+    patch "/backoffice/markets/#{market.id}", params: { description: 'Updated description text' }
+
+    assert_response :redirect
+    assert_equal 'Updated description text', market.reload.description
+  end
 end

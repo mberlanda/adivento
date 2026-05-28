@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-28 — F-016 / TD-003: LMSR subsidy exhaustion guard
+
+- Added `lmsr_realized_loss_minor` (bigint, default 0) to `markets` via migration
+- `Lmsr::LmsrTradeService`: market locked before pricing; input validation for side/quantity; outflow guard raises if `lmsr_realized_loss_minor + outflow > liquidity_subsidy_minor`; outflow uses `total_cost.abs` (net payout including fees) not `raw_cost_minor.abs`
+- Guard is buy-only invariant-safe: all LMSR buy trades produce non-negative cost, so outflow is always 0 today; guard activates if sell trades are added later
+- Key files: `app/services/lmsr/lmsr_trade_service.rb`, `db/migrate/20260528170128_add_lmsr_realized_loss_to_markets.rb`
+- Tests: 270 runs, 0 failures, 90.82% coverage — PR #30 `284928b`
+
+---
+
 ## 2026-05-28 — F-015 + F-017: Leaderboard P&L rewrite + market pagination
 
 - **F-015:** `LeaderboardController` now aggregates `LedgerEntry` rows (BET_STAKE/WIN_PAYOUT, LMSR_TRADE_STAKE, PARIMUTUEL_STAKE/SETTLEMENT_WIN, ORDER_FILL_STAKE/CREDIT) — all mechanisms included; fixed-odds-only "Bets/Won/Lost" columns removed from view
