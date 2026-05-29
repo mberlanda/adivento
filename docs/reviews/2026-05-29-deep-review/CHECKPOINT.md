@@ -23,13 +23,13 @@ Last updated: 2026-05-29.
 | `mobile-design.md` | present, ready to commit |
 | `qa-release.md` | present, ready to commit |
 | `security-trust.md` | committed |
+| `devops-operability.md` | committed |
+| `docs-handoff.md` | committed |
 
 ## Not Yet Completed
 
 | Report | Next action |
 |--------|-------------|
-| `devops-operability.md` | dispatch specialist |
-| `docs-handoff.md` | dispatch specialist after all reports are present |
 | `synthesis.md` | write after all family reports are complete |
 
 ## Known Context Notes
@@ -37,3 +37,4 @@ Last updated: 2026-05-29.
 - Some earlier specialist agents accidentally wrote reports into `/Users/mauroberlanda/Code/idee/adivento/docs/reviews/2026-05-29-deep-review/`; do not delete those without checking whether their content has been copied into this worktree.
 - The main workspace has unrelated local edits; keep review PR work inside `/private/tmp/adivento-specialist-reviews`.
 - Commit each specialist report separately.
+- As of this checkpoint, all family reports are present and committed. The only remaining review artifact is `synthesis.md`.

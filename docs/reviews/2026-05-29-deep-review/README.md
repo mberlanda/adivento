@@ -18,8 +18,8 @@ Source plan: `docs/superpowers/plans/2026-05-29-specialist-review-dispatch.md`
 | UI visual design | `ui-design.md` | complete |
 | Mobile app design | `mobile-design.md` | complete |
 | QA/E2E/release | `qa-release.md` | complete |
-| DevOps/operability | `devops-operability.md` | pending |
-| Docs/backlog hygiene | `docs-handoff.md` | pending |
+| DevOps/operability | `devops-operability.md` | complete |
+| Docs/backlog hygiene | `docs-handoff.md` | complete |
 | Cross-cutting synthesis | `synthesis.md` | pending |
 
 ## Report Contract
