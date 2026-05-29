@@ -139,6 +139,8 @@ Plan approved?
 - **F-016 / TD-003: LMSR subsidy exhaustion guard** — `lmsr_realized_loss_minor` column; market locked before pricing; outflow guard raises when net payout would exceed `liquidity_subsidy_minor`; side/quantity input validation (PR #30, `284928b`)
 - **TD-007: Backoffice open-market E2E** — Playwright spec: moderator creates draft → opens market; asserts form transitions (PR #31, `256932d`)
 - **TD-011: Backoffice market edit — description field** — `description` added to update params and Edit Details form (PR #31, `256932d`)
+- **DD-004: PostgreSQL test DB** — `schema_format = :sql`; `db/structure.sql`; Rake hook strips pg_dump incompatibilities; CI postgres:17 service; trigger condition fixed `>= 2` (PR #33, `889d951`)
+- **DD-002 wireframes docs** — UX wireframes v1 under `docs/design/` (5 design docs + pan/zoom canvas HTML + 6 JSX component files) (PR #34, `f784b9b`)
 
 ### ⏳ Next
 - See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)

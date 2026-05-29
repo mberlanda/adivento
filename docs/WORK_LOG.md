@@ -4,6 +4,24 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — DD-004: PostgreSQL test DB + structure.sql + trigger fix (PR #33, `889d951`)
+
+- Switched test environment from SQLite to PostgreSQL (`config/database.yml`, `config/application.rb`)
+- `schema_format = :sql` → `db/structure.sql` generated; Rake hook strips `SET transaction_timeout` for pg_dump version compatibility
+- CI: added `postgres:17` service + env vars in `.github/workflows/ci.yml`; docker-compose upgraded to `postgres:17`
+- Fixed trigger condition: `> 2` → `>= 2` in `AddLegCountTriggerToMarkets` migration (BEFORE INSERT sees pre-insert count)
+- Key files: `config/application.rb`, `config/database.yml`, `db/structure.sql`, `lib/tasks/db_structure.rake`, `.github/workflows/ci.yml`
+
+---
+
+## 2026-05-29 — docs(design): UX wireframes v1 (PR #34, `f784b9b`)
+
+- Added `docs/design/` with 5 markdown docs (brief, IA, flows, settlement, public/community markets)
+- Added `docs/design/wireframes/v1/` — interactive pan/zoom canvas (Wireframes.html + 6 JSX files)
+- Key files: `docs/design/wireframes/v1/Wireframes.html`, `wireframes-web.jsx`, `wireframes-mobile.jsx`, `wireframes-backoffice.jsx`, `wireframes-mechanisms.jsx`, `wireframes-additions.jsx`
+
+---
+
 ## 2026-05-28 — TD-007 + TD-011: Backoffice open-market E2E + market edit description field
 
 - **TD-007:** Added `e2e/playwright/tests/backoffice-open-market.spec.js` — moderator creates draft market via UI form, opens it, verifies settle form appears and open form disappears
