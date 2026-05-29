@@ -58,5 +58,22 @@ module Settlement
         LmsrSettlementHandler.new(@market, 'YES', @admin).call
       end
     end
+
+    test 'positions_from_ledger aggregates YES and NO quantities from audit events' do
+      moderator = users(:moderator)
+      AuditEvent.create!(action: 'lmsr_trade.place', actor: @player, target_type: 'Market', target_id: @market.id,
+                         metadata: { 'side' => 'YES', 'quantity' => 5 })
+      AuditEvent.create!(action: 'lmsr_trade.place', actor: @player, target_type: 'Market', target_id: @market.id,
+                         metadata: { 'side' => 'YES', 'quantity' => 3 })
+      AuditEvent.create!(action: 'lmsr_trade.place', actor: moderator, target_type: 'Market', target_id: @market.id,
+                         metadata: { 'side' => 'NO', 'quantity' => 7 })
+
+      result = LmsrSettlementHandler.positions_from_ledger(@market)
+
+      assert_equal 8,  result[@player.id]['YES']
+      assert_equal 0,  result[@player.id]['NO']
+      assert_equal 7,  result[moderator.id]['NO']
+      assert_equal 0,  result[moderator.id]['YES']
+    end
   end
 end
