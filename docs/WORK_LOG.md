@@ -14,6 +14,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — UX-036 / UX-023: web registration form
+
+- New `GET /register` + `POST /register` (`Web::RegistrationsController`, subclasses `ActionController::Base` like the sessions controller) create a `player` account, sign the user in via the session cookie, and redirect to the home page with a faucet nudge. Invalid input (e.g. duplicate email) re-renders the form with errors and `422`.
+- Added a "Create an account" link to the sign-in page.
+- Closes the new-player funnel that was previously only reachable through the JWT `POST /auth/register` API.
+- Tier 0 item #4 of 4 from the deep-review synthesis.
+- Key files: `config/routes.rb`, `app/controllers/web/registrations_controller.rb`, `app/views/web/registrations/new.html.erb`, `app/views/web/sessions/new.html.erb`, `test/integration/web_registration_test.rb`
+
+---
+
 ## 2026-05-29 — TD-013: lock wallet rows across all mutation paths
 
 - `BetPlacementService` now acquires `user.wallet.lock!` inside the transaction and re-checks the balance authoritatively before debiting (the pre-transaction check is kept only as a cheap fast-fail). Fixes the TOCTOU double-spend where two concurrent placements both passed a stale balance check.
