@@ -1,6 +1,6 @@
 # Tasks Requiring Attention or User Answers
 
-Last updated: 2026-05-28
+Last updated: 2026-05-29
 
 This file is the single index of open items. Check it at the start of each session.
 Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.md`.
@@ -9,26 +9,7 @@ Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.m
 
 ## 🔴 Blocked — Need User Input
 
-### DD-002 · LMSR v2 settlement payout model
-**Blocks:** TD-001 (LMSR payouts currently non-functional for players)
-**Options:** See `docs/wiki/tech-debt-backlog.md` → DD-002
-- A: `lmsr_positions` table (recommended)
-- B: Replay ledger entries
-- C: Re-use `bets` table with `contracts` field
-
-### DD-004 · Test DB adapter (SQLite → PostgreSQL)
-**Blocks:** TD-009/TD-010 (trigger + jsonb gaps only caught in CI, not locally)
-**Options:** See `docs/wiki/tech-debt-backlog.md` → DD-004
-- A: Keep SQLite (current — fast, misses PG-specific behaviour)
-- B: Switch to PostgreSQL (recommended — matches production)
-- C: Dual adapter
-
-### DD-006 · CLOB cashout mechanism
-**Blocks:** TD-004 (CLOB players cannot exit before settlement)
-**Options:** See `docs/wiki/tech-debt-backlog.md` → TD-004
-- A: Sell limit order on book
-- B: Operator buyback at mid-price
-- C: No cashout — hold to settlement (current)
+_No blocked items. All pending design decisions have been resolved._
 
 ---
 
@@ -42,6 +23,10 @@ _No autonomous tasks remaining — all non-blocked items are done._
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| DD-006 CLOB sell orders + operator buyback | 2026-05-29 | PR #36 `8a67f3c` |
+| DD-002 LMSR positions + settlement payouts | 2026-05-29 | PR #35 `f0a8b12` |
+| DD-004 PostgreSQL test DB + structure.sql | 2026-05-29 | PR #33 `889d951` |
+| UX wireframes v1 | 2026-05-29 | PR #34 `f784b9b` |
 | TD-007 Backoffice open-market E2E | 2026-05-28 | PR #31 `256932d` |
 | TD-011 Market edit description field | 2026-05-28 | PR #31 `256932d` |
 | F-016 / TD-003 LMSR subsidy exhaustion guard | 2026-05-28 | PR #30 `284928b` |
@@ -75,17 +60,17 @@ _No autonomous tasks remaining — all non-blocked items are done._
 
 Full details + options in `docs/wiki/tech-debt-backlog.md`.
 
-| ID | Item | Priority | Blocked by |
-|----|------|---------|------------|
-| TD-001 | LMSR individual settlement payouts | High | DD-002 |
-| TD-002 | Parimutuel per-bettor model | Low | — |
-| TD-003 | LMSR subsidy exhaustion guard | ✅ done | — |
-| TD-004 | CLOB cashout | Medium | DD-006 |
-| TD-005 | Cross-mechanism leaderboard P&L | ✅ done | — |
-| TD-006 | E2E browser matrix (Firefox/WebKit) | Low | — |
-| TD-007 | Backoffice open-market E2E | Low | — |
-| TD-008 | Player positions + execution HTML views | ✅ done | — |
-| TD-009 | SQLite ILIKE + jsonb test fidelity gap | Medium | DD-004 |
-| TD-010 | Binary line trigger not tested in SQLite | Medium | DD-004 |
-| TD-011 | Market edit form (backoffice) | Low | — |
-| TD-012 | Market list pagination | ✅ done | — |
+| ID | Item | Priority | Status |
+|----|------|---------|--------|
+| TD-001 | LMSR individual settlement payouts | High | ✅ done (DD-002, PR #35) |
+| TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
+| TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
+| TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
+| TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |
+| TD-006 | E2E browser matrix (Firefox/WebKit) | Low | Deferred |
+| TD-007 | Backoffice open-market E2E | — | ✅ done (PR #31) |
+| TD-008 | Player positions + execution HTML views | — | ✅ done (PR #29) |
+| TD-009 | SQLite ILIKE + jsonb test fidelity gap | — | ✅ resolved (DD-004, PR #33) |
+| TD-010 | Binary line trigger not tested in SQLite | — | ✅ resolved (DD-004, PR #33) |
+| TD-011 | Market edit form (backoffice) | — | ✅ done (PR #31) |
+| TD-012 | Market list pagination | — | ✅ done (PR #29) |
