@@ -79,10 +79,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-008 · Player positions and execution HTML views (E2E GAP-9, GAP-10)
 
-**Status:** Not implemented (JSON-only endpoints).
-**Problem:** `GET /web/positions` and `GET /web/betslips/executions/:id` return JSON only. No HTML views exist. Players cannot see their positions or execution confirmations in a browser.
-**Impact:** Meaningful UX gap. The E2E suite tests these as API endpoints only.
-**Task:** `.claude/tasks/td008-positions-views/`
+**Status:** ✅ Done (PR #29). `GET /web/positions` and `GET /web/betslips/executions/:id` now render HTML alongside JSON responses.
 
 ---
 
@@ -110,6 +107,121 @@ Update this file when a gap is closed or a decision is made.
 ### TD-012 · Market list pagination
 
 **Status:** ✅ Done (PR #29, F-017). Web 12/page, backoffice 20/page with Previous/Next controls.
+
+---
+
+### TD-013 · BetPlacementService missing wallet lock (race condition)
+
+**Status:** Open. Identified 2026-05-29.
+**Problem:** `BetPlacementService` reads `user.wallet` without `lock!` before the balance check, then debits inside a transaction. Two concurrent requests can both pass the balance check on the stale value, resulting in a negative balance. The model validates `available_minor >= 0` but uses the pre-lock stale value, so the guard does not prevent the race. Same issue exists in `BetVoidService`, `CashoutExecutionService`, and `SettlementService#settle_fixed_odds!`.
+**Fix:** Replace `user.wallet` with `user.wallet.lock!` inside the transaction in all four services. Pattern is already correct in `LmsrTradeService`, `ParimutuelPoolService`, and the CLOB handlers.
+**Impact:** High — double-spend possible under concurrent load.
+
+---
+
+### TD-014 · LMSR positions not shown on positions page
+
+**Status:** Open. Identified 2026-05-29.
+**Problem:** `lmsr_positions` table is populated on every LMSR trade and is the source of truth for settlement payouts, but `PositionsController#index` never queries it. Players who trade LMSR see an empty positions page.
+**Fix:** Add `@lmsr_positions` query to `PositionsController#index` (analogous to `@clob_positions`). Add section to positions view.
+**Impact:** High — live player state is invisible on the UI.
+
+---
+
+### TD-015 · Leaderboard P&L missing CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE
+
+**Status:** Open. Identified 2026-05-29.
+**Problem:** `RETURN_TYPES` in `LeaderboardController` omits `CLOB_SELL_CREDIT` (proceeds from selling CLOB contracts) and `PARIMUTUEL_REFUND`. `STAKE_TYPES` omits `LMSR_FEE` and `CLOB_FEE`. Players who use LMSR or CLOB sell paths have distorted P&L on the leaderboard.
+**Fix:** Add missing entry types to the respective constant arrays.
+**Impact:** Medium — leaderboard ranking is wrong for CLOB sellers and LMSR/CLOB players.
+
+---
+
+### TD-016 · Admin API market_params missing category and tags
+
+**Status:** Open. Identified 2026-05-29.
+**Problem:** `Admin::MarketsController#market_params` does not permit `:category` or `:tags`. Markets created via the admin API always get category `'other'` (DB default). E2E tests create markets via the admin API, so all E2E fixture markets are `other` — the category filter bar is never exercised in E2E.
+**Fix:** Add `:category` and `tags: []` to the `params.permit` call in `Admin::MarketsController`.
+**Impact:** Medium — API creates miscategorised markets; E2E category test coverage is vacuous.
+
+---
+
+### TD-017 · Market cancellation (no service, no controller action)
+
+**Status:** Open. Identified 2026-05-29.
+**Problem:** `Market` has a `cancelled: 3` enum value but no `MarketCancellationService` exists. Operators cannot void a market and refund all bets/positions. There is no recovery path for bad questions or externally cancelled events.
+**Fix:** Implement `MarketCancellationService` (atomically refund fixed_odds bets, release CLOB reservations, refund LMSR net costs from audit events, refund parimutuel stakes, mark market `cancelled`). Add `POST /backoffice/markets/:id/cancel` route and action.
+**Impact:** Medium — no hard bug now, but no operational safety net.
+
+---
+
+### TD-018 · CLOB settlement pays sold positions as winners
+
+**Status:** Open. Identified 2026-05-29 codebase review.
+**Problem:** `Settlement::ClobSettlementHandler` pays every order on the winning side with `filled_quantity > 0`, regardless of `direction`. Filled sell orders represent contracts the user exited, but they still receive `SETTLEMENT_WIN` credits. The buyer who filled that sell order also receives settlement, causing double payout on the same contracts.
+**Fix:** Settle CLOB using net positions (`Clob::NetPositionService`) or restrict payout to net long contracts after subtracting filled sell orders. Add a regression test where a player buys YES, sells the full YES position, YES wins, and the seller receives no settlement payout for the sold contracts.
+**Impact:** High — CLOB markets can overpay at settlement after sell/cashout activity.
+
+---
+
+### TD-019 · CLOB sell orders do not reserve contracts
+
+**Status:** Open. Identified 2026-05-29 codebase review.
+**Problem:** `OrderMatchingService#validate_sell_position!` checks current net position only when a sell order is created. Unfilled sell orders do not reserve or otherwise reduce available contracts. A user with 10 contracts can place multiple open sell orders for 10 contracts each; if they later fill, the user can sell more contracts than they own.
+**Fix:** Track reserved sell quantity in net-position checks (`bought - filled_sold - open_sell_unfilled`) or add a contract reservation model/column. Validate again under lock when matching sell orders. Add sequence tests for duplicate sell listings.
+**Impact:** High — CLOB positions can become negative and settlement/accounting becomes unreliable.
+
+---
+
+### TD-020 · Admin CLOB order API skips market trading-state guards
+
+**Status:** Open. Identified 2026-05-29 codebase review.
+**Problem:** `Web::OrdersController#create` rejects non-open markets and markets past `close_at`, but `Admin::OrdersController#create` only checks `market.clob?`. Admin API callers can place CLOB orders on draft, closed, or settled markets.
+**Fix:** Apply the same `open?` and `close_at` checks in `Admin::OrdersController#create`, or move the trading-state guard into `Clob::OrderMatchingService` so all callers share it. Add admin integration tests for draft, closed, and expired markets.
+**Impact:** Medium — privileged/API flows can mutate markets outside the intended lifecycle.
+
+---
+
+### TD-021 · CLOB order cancellation is not consistently locked
+
+**Status:** Open. Identified 2026-05-29 codebase review.
+**Problem:** `Web::OrdersController#destroy` calls `Order.lock.find` before entering the transaction, and `Admin::OrdersController#destroy` does not lock the order or wallet. Two concurrent cancellations can both compute the same `reserved_minor` and release funds twice unless the order row is locked for the whole state transition.
+**Fix:** Move `Order.lock.find` and wallet `lock!` inside the transaction in both controllers. Add a service object for order cancellation so web/admin/settlement release logic uses one implementation.
+**Impact:** Medium — duplicate cancellation can corrupt wallet reserved/available balances under concurrent requests.
+
+---
+
+### TD-022 · RuboCop gate has one autocorrectable offense
+
+**Status:** Open. Identified 2026-05-29 codebase review.
+**Problem:** `bundle exec rubocop --cache false --format simple` reports one `Rails/FilePath` offense in `lib/tasks/db_structure.rake` for the `Rails.root.join('db', 'structure.sql')` path style.
+**Fix:** Apply the autocorrect or change to `Rails.root.join('db/structure.sql')`, then rerun RuboCop.
+**Impact:** Low — validation fails on style even though the test suite is green.
+
+---
+
+## Product/UX implementation gap review — 2026-05-29
+
+The backend tasks above are the highest-confidence autonomous implementation work. The remaining product and UX gaps are larger slices and should be scheduled after the data-integrity fixes unless a demo need pulls them forward.
+
+### Planned UX slices
+
+| Slice | Gaps covered | Plan | Status |
+|-------|-------------|------|--------|
+| PR A: Market browse + detail | UX-001–UX-012 | `docs/superpowers/plans/2026-05-29-ux-market-browse-detail.md` | Planned |
+| PR B: Leaderboard + profile + auth + positions | UX-013–UX-024 | `docs/superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md` | Planned |
+| PR C: Settlement explainer page | UX-025–UX-026 | `docs/superpowers/plans/2026-05-29-ux-settlement-explainer-page.md` | Planned |
+| PR D: Backoffice dashboard + settle + faucet | UX-027–UX-032 | `docs/superpowers/plans/2026-05-29-ux-backoffice-dashboard-settle.md` | Planned |
+
+### Larger product gaps still needing specs/plans
+
+| Feature | Current gap | Suggested next artifact |
+|---------|-------------|-------------------------|
+| F-004 Price history and chart | `PriceSnapshot` exists, but no web/admin price-history endpoints or chart UI are exposed. | New spec/plan for endpoint + chart delivery |
+| F-008 Watchlist and notifications | No watchlist, notification feed, or notification storage exists. | ADR/spec for notification storage model |
+| F-010 Resolution outcome transparency | Settlement records outcome, but no mandatory resolution note, settled timestamp display, or source citation workflow exists. | Spec + migration plan |
+| F-011 Platform activity feed | Audit events exist, but there is no player-facing feed visibility model or cached homepage feed. | Spec for event selection and privacy rules |
+| F-012 Responsible gambling controls | No daily stake limit or cooling-off model exists. | ADR/spec before implementation |
 
 ---
 
