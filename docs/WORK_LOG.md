@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — docs(planning): decision planning dispatch todos
+
+- Recorded approved recommended options for Decisions 2-11 as dispatchable planning todos.
+- Added a resume checkpoint and agent dispatch batches so planning work can be resumed after quota/context limits.
+- Linked the tracker from `.claude/tasks/ATTENTION.md` and `docs/INDEX.md`.
+- Decision 1 backend correctness remains intentionally separate because Claude is already progressing it.
+- Key files: `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md`, `.claude/tasks/ATTENTION.md`, `docs/INDEX.md`
+
+---
+
 ## 2026-05-30 — UX-036 / UX-023: web registration form
 
 - New `GET /register` + `POST /register` (`Web::RegistrationsController`, subclasses `ActionController::Base` like the sessions controller) create a `player` account, sign the user in via the session cookie, and redirect to the home page with a faucet nudge. Invalid input (e.g. duplicate email) re-renders the form with errors and `422`.
