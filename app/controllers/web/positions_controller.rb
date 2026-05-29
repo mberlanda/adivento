@@ -38,6 +38,24 @@ module Web
       render json: { error: e.message }, status: :unprocessable_content
     end
 
+    def clob_cashout
+      market = Market.find(params.expect(:market_id))
+      result = Clob::ClobCashoutService.call(
+        market: market,
+        user: current_user,
+        side: params.expect(:side).upcase,
+        contracts: params.expect(:contracts),
+        price_cents: params.expect(:price_cents)
+      )
+      if result.success?
+        redirect_to web_positions_path, notice: "Sell order placed (order ##{result.order.id})"
+      else
+        redirect_to web_positions_path, alert: result.errors.join(', ')
+      end
+    rescue ActiveRecord::RecordNotFound
+      redirect_to web_positions_path, alert: 'Market not found'
+    end
+
     private
 
     def current_user_bet
@@ -59,33 +77,42 @@ module Web
     end
 
     def clob_contract_positions
-      rows = Order
+      base = Order
              .where(user_id: current_user.id)
              .where('filled_quantity > 0')
              .joins(:market)
              .where(markets: { mechanism_type: 'clob' })
-             .group(:market_id, :side)
+             .group(:market_id, :side, :direction)
              .select(
                'orders.market_id',
                'orders.side',
+               'orders.direction',
                'SUM(orders.filled_quantity) AS total_qty',
                'SUM(orders.price_cents * orders.filled_quantity) AS weighted_price_sum'
              )
 
-      by_market = rows.group_by(&:market_id)
-      markets_by_id = Market.where(id: by_market.keys).index_by(&:id)
+      # Compute net position per market/side: bought - sold
+      grouped = base.each_with_object({}) do |row, h|
+        key = [row.market_id, row.side]
+        h[key] ||= { total_qty: 0, weighted_price_sum: 0 }
+        delta = row.direction == 'buy' ? row.total_qty.to_i : -row.total_qty.to_i
+        h[key][:total_qty] += delta
+        h[key][:weighted_price_sum] += row.total_qty.to_i * (row.direction == 'buy' ? row.weighted_price_sum.to_i / [row.total_qty.to_i, 1].max : 0)
+      end
 
-      by_market.filter_map do |market_id, market_rows|
+      market_ids = grouped.keys.map(&:first).uniq
+      markets_by_id = Market.where(id: market_ids).index_by(&:id)
+
+      market_ids.filter_map do |market_id|
         market  = markets_by_id[market_id]
-        yes_row = market_rows.find { |r| r.side == 'YES' }
-        no_row  = market_rows.find { |r| r.side == 'NO' }
-        yes_qty = yes_row&.total_qty.to_i
-        no_qty  = no_row&.total_qty.to_i
-        next if yes_qty.zero? && no_qty.zero?
+        yes_qty = grouped[[market_id, 'YES']]&.dig(:total_qty).to_i
+        no_qty  = grouped[[market_id, 'NO']]&.dig(:total_qty).to_i
+        next if yes_qty <= 0 && no_qty <= 0
 
-        avg_yes    = yes_qty.positive? ? yes_row.weighted_price_sum.to_i / yes_qty : nil
+        yes_sum    = grouped[[market_id, 'YES']]&.dig(:weighted_price_sum).to_i
+        avg_yes    = yes_qty.positive? ? yes_sum / yes_qty : nil
         best_bid   = market.open? ? market.pricing_engine.order_book_summary[:bid] : nil
-        unrealised = best_bid ? yes_qty * best_bid : nil
+        unrealised = best_bid && yes_qty.positive? ? yes_qty * best_bid : nil
 
         {
           market_id: market_id,

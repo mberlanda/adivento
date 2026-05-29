@@ -232,4 +232,25 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_equal 'Updated description text', market.reload.description
   end
+
+  test 'operator buyback rejects non-CLOB market' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+
+    post "/backoffice/markets/#{market.id}/operator_buyback", params: { side: 'YES', contracts: 10 }
+
+    assert_response :redirect
+    assert_match 'Buyback only available on open CLOB markets', flash[:alert]
+  end
+
+  test 'operator buyback fails gracefully when order book is empty' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:clob_market)
+    users(:admin).wallet.update!(available_minor: 1_000_000)
+
+    post "/backoffice/markets/#{market.id}/operator_buyback", params: { side: 'YES', contracts: 10 }
+
+    assert_response :redirect
+    assert_match 'mid-price', flash[:alert]
+  end
 end
