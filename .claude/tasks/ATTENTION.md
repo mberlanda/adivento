@@ -25,7 +25,6 @@ Recommended order: finish the backend correctness tasks first, then move to the 
 | Fix leaderboard P&L (CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE) | TD-015 | P3 — Medium | Task 3 in 2026-05-29-backend-next-steps.md |
 | Admin API: permit category and tags in market params | TD-016 | P4 — Medium | Task 4 in 2026-05-29-backend-next-steps.md |
 | MarketCancellationService + backoffice cancel action | TD-017 | P5 — Medium | Task 5 in 2026-05-29-backend-next-steps.md |
-| Fix CLOB settlement overpay after sell orders | TD-018 | P1 — High | Needs plan |
 | Reserve CLOB contracts for open sell orders | TD-019 | P1 — High | Needs plan |
 | Add admin CLOB order trading-state guards | TD-020 | P3 — Medium | Needs plan |
 | Lock CLOB order cancellation consistently | TD-021 | P3 — Medium | Needs plan |
@@ -37,6 +36,7 @@ Recommended order: finish the backend correctness tasks first, then move to the 
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| TD-018 CLOB settlement pays net positions | 2026-05-29 | branch `fix/td-018-clob-net-settlement` |
 | DD-006 CLOB sell orders + operator buyback | 2026-05-29 | PR #36 `8a67f3c` |
 | DD-002 LMSR positions + settlement payouts | 2026-05-29 | PR #35 `f0a8b12` |
 | DD-004 PostgreSQL test DB + structure.sql | 2026-05-29 | PR #33 `889d951` |

@@ -157,7 +157,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-018 · CLOB settlement pays sold positions as winners
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** Resolved 2026-05-29. `ClobSettlementHandler` Pass 2 now pays each holder's net long position (`Clob::NetPositionService`) instead of raw filled orders; regression test in `test/services/settlement/clob_settlement_handler_test.rb`.
 **Problem:** `Settlement::ClobSettlementHandler` pays every order on the winning side with `filled_quantity > 0`, regardless of `direction`. Filled sell orders represent contracts the user exited, but they still receive `SETTLEMENT_WIN` credits. The buyer who filled that sell order also receives settlement, causing double payout on the same contracts.
 **Fix:** Settle CLOB using net positions (`Clob::NetPositionService`) or restrict payout to net long contracts after subtracting filled sell orders. Add a regression test where a player buys YES, sells the full YES position, YES wins, and the seller receives no settlement payout for the sold contracts.
 **Impact:** High — CLOB markets can overpay at settlement after sell/cashout activity.
