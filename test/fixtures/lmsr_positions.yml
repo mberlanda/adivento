@@ -1,0 +1,5 @@
+player_yes:
+  user: player
+  market: lmsr_market
+  side: "YES"
+  contracts: 10

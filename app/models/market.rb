@@ -9,6 +9,7 @@ class Market < ApplicationRecord
   has_many :market_legs, dependent: :destroy
   has_many :bets, dependent: :destroy
   has_many :orders, dependent: :destroy
+  has_many :lmsr_positions, dependent: :destroy
 
   validates :question, presence: true
   validates :description, presence: true

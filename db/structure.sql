@@ -258,6 +258,40 @@ ALTER SEQUENCE public.ledger_entries_id_seq OWNED BY public.ledger_entries.id;
 
 
 --
+-- Name: lmsr_positions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lmsr_positions (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    market_id bigint NOT NULL,
+    side character varying NOT NULL,
+    contracts bigint DEFAULT 0 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: lmsr_positions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.lmsr_positions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: lmsr_positions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.lmsr_positions_id_seq OWNED BY public.lmsr_positions.id;
+
+
+--
 -- Name: market_legs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -679,6 +713,13 @@ ALTER TABLE ONLY public.ledger_entries ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: lmsr_positions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lmsr_positions ALTER COLUMN id SET DEFAULT nextval('public.lmsr_positions_id_seq'::regclass);
+
+
+--
 -- Name: market_legs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -802,6 +843,14 @@ ALTER TABLE ONLY public.faucet_requests
 
 ALTER TABLE ONLY public.ledger_entries
     ADD CONSTRAINT ledger_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lmsr_positions lmsr_positions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lmsr_positions
+    ADD CONSTRAINT lmsr_positions_pkey PRIMARY KEY (id);
 
 
 --
@@ -1019,6 +1068,27 @@ CREATE INDEX index_ledger_entries_on_user_id ON public.ledger_entries USING btre
 
 
 --
+-- Name: index_lmsr_positions_on_market_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_lmsr_positions_on_market_id ON public.lmsr_positions USING btree (market_id);
+
+
+--
+-- Name: index_lmsr_positions_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_lmsr_positions_on_user_id ON public.lmsr_positions USING btree (user_id);
+
+
+--
+-- Name: index_lmsr_positions_on_user_market_side; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_lmsr_positions_on_user_market_side ON public.lmsr_positions USING btree (user_id, market_id, side);
+
+
+--
 -- Name: index_market_legs_on_market_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1213,6 +1283,14 @@ ALTER TABLE ONLY public.role_permissions
 
 
 --
+-- Name: lmsr_positions fk_rails_4d3c3c10f1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lmsr_positions
+    ADD CONSTRAINT fk_rails_4d3c3c10f1 FOREIGN KEY (market_id) REFERENCES public.markets(id);
+
+
+--
 -- Name: user_grants fk_rails_617c37dfa7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1325,6 +1403,14 @@ ALTER TABLE ONLY public.markets
 
 
 --
+-- Name: lmsr_positions fk_rails_ee9f84f8dd; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lmsr_positions
+    ADD CONSTRAINT fk_rails_ee9f84f8dd FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: betslip_executions fk_rails_f099221393; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1363,6 +1449,7 @@ ALTER TABLE ONLY public.user_grants
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260529023811'),
 ('20260528170128'),
 ('20260528154331'),
 ('20260527221019'),

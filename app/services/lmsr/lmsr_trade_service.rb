@@ -72,6 +72,8 @@ module Lmsr
           updated_at: Time.current
         )
 
+        upsert_position(delta_yes + delta_no)
+
         AuditEvent.create!(
           action: 'lmsr_trade.place',
           actor: @user,
@@ -87,6 +89,15 @@ module Lmsr
       end
     rescue StandardError => e
       Result.new(success?: false, cost_minor: 0, fee_minor: 0, errors: [e.message])
+    end
+
+    private
+
+    def upsert_position(quantity)
+      LmsrPosition
+        .find_or_initialize_by(user: @user, market: @market, side: @side)
+        .tap { |p| p.contracts = (p.contracts || 0) + quantity }
+        .save!
     end
   end
 end
