@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_170128) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.1].define(version: 2026_05_29_023811) do
   create_table "audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -96,6 +93,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_170128) do
     t.index ["actor_id"], name: "index_ledger_entries_on_actor_id"
     t.index ["entry_type"], name: "index_ledger_entries_on_entry_type"
     t.index ["user_id"], name: "index_ledger_entries_on_user_id"
+  end
+
+  create_table "lmsr_positions", force: :cascade do |t|
+    t.bigint "contracts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.bigint "market_id", null: false
+    t.string "side", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["market_id"], name: "index_lmsr_positions_on_market_id"
+    t.index ["user_id", "market_id", "side"], name: "index_lmsr_positions_on_user_market_side", unique: true
+    t.index ["user_id"], name: "index_lmsr_positions_on_user_id"
   end
 
   create_table "market_legs", force: :cascade do |t|
@@ -250,6 +259,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_170128) do
   add_foreign_key "faucet_requests", "users", column: "reviewed_by_id"
   add_foreign_key "ledger_entries", "users"
   add_foreign_key "ledger_entries", "users", column: "actor_id"
+  add_foreign_key "lmsr_positions", "markets"
+  add_foreign_key "lmsr_positions", "users"
   add_foreign_key "market_legs", "markets"
   add_foreign_key "markets", "users", column: "created_by_id"
   add_foreign_key "markets", "users", column: "settled_by_id"

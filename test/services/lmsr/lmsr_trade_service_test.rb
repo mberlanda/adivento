@@ -7,6 +7,7 @@ module Lmsr
       @market.update_columns(lmsr_b_parameter: Lmsr::LmsrPricingService.b_from_subsidy(100_000), lmsr_q_yes: 0, lmsr_q_no: 0)
       @player = users(:player)
       @player.wallet.update!(available_minor: 100_000, reserved_minor: 0)
+      LmsrPosition.where(user: @player, market: @market).delete_all
     end
 
     test 'buying YES contracts debits wallet and increments lmsr_q_yes' do
@@ -42,6 +43,22 @@ module Lmsr
       assert_difference -> { AuditEvent.where(action: 'lmsr_trade.place').count }, 1 do
         Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
       end
+    end
+
+    test 'position upserted after trade' do
+      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+
+      pos = LmsrPosition.find_by(user: @player, market: @market, side: 'YES')
+
+      assert_not_nil pos
+      assert_equal 10, pos.contracts
+    end
+
+    test 'position accumulates across multiple trades' do
+      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 5)
+      Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 3)
+
+      assert_equal 8, LmsrPosition.find_by(user: @player, market: @market, side: 'YES').contracts
     end
 
     test 'lmsr_realized_loss_minor does not change on a standard buy trade' do
