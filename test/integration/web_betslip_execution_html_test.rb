@@ -18,6 +18,7 @@ class WebBetslipExecutionHtmlTest < ActionDispatch::IntegrationTest
   test 'execution confirmation page renders HTML' do
     get "/web/betslips/executions/#{@execution.id}",
         headers: auth_headers_for(@player)
+
     assert_response :success
     assert_select '[data-testid="execution-confirmation"]'
   end
@@ -25,8 +26,10 @@ class WebBetslipExecutionHtmlTest < ActionDispatch::IntegrationTest
   test 'execution confirmation page still returns JSON when requested' do
     get "/web/betslips/executions/#{@execution.id}",
         headers: auth_headers_for(@player).merge('Accept' => 'application/json')
+
     assert_response :success
     body = response.parsed_body
+
     assert_equal @execution.id, body['execution_id']
     assert_equal 'completed', body['status']
   end
@@ -34,6 +37,7 @@ class WebBetslipExecutionHtmlTest < ActionDispatch::IntegrationTest
   test 'execution 404 redirects to markets page in HTML' do
     get '/web/betslips/executions/999999',
         headers: auth_headers_for(@player)
+
     assert_redirected_to web_markets_path
   end
 end

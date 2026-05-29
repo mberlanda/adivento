@@ -49,6 +49,7 @@ module Lmsr
       # The guard is in place for forward-compatibility if sell trades are ever added.
       initial_loss = @market.lmsr_realized_loss_minor
       Lmsr::LmsrTradeService.call(market: @market, user: @player, side: 'YES', quantity: 10)
+
       assert_equal initial_loss, @market.reload.lmsr_realized_loss_minor
     end
   end

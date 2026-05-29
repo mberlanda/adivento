@@ -32,9 +32,9 @@ gem 'bootsnap', '>= 1.18', require: false
 
 group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'rubocop', '~> 1.86.2', require: false
-  gem 'rubocop-minitest', '~> 0.39.1', require: false
-  gem 'rubocop-rails', '~> 2.35.3', require: false
+  gem 'rubocop', '1.86.2', require: false
+  gem 'rubocop-minitest', '0.39.1', require: false
+  gem 'rubocop-rails', '2.35.3', require: false
 end
 
 group :development do
