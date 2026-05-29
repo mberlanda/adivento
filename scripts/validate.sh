@@ -11,9 +11,9 @@ else
   echo "--- Rubocop: skipped (no .rubocop.yml) ---"
 fi
 
-# check 2: apply test schema (db:reset = drop+create+schema:load; avoids SQLite FK constraint errors on fresh DBs)
+# check 2: load structure.sql into test DB (requires PostgreSQL to be running)
 echo "--- DB schema ---"
-RAILS_ENV=test bin/rails db:reset
+RAILS_ENV=test bin/rails db:drop db:create db:schema:load
 
 # check 3: test suite
 echo "--- Test suite ---"

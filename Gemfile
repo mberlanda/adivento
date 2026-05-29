@@ -18,7 +18,6 @@ gem 'jwt', '~> 2.9'
 
 group :test do
   gem 'simplecov', require: false
-  gem 'sqlite3', '~> 2.0'
 end
 
 # Use Active Storage variant

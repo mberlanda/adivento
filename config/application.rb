@@ -34,5 +34,8 @@ module Adivento
 
     # Web and API are both served from this monolith.
     config.api_only = false
+
+    # Use SQL structure dump to capture PostgreSQL-specific objects (triggers, functions).
+    config.active_record.schema_format = :sql
   end
 end
