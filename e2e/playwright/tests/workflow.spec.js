@@ -177,7 +177,7 @@ test.describe('UI workflows with API-assisted operations', () => {
     const { token: playerToken } = await loginApi(baseURL, USERS.player.email, USERS.player.password);
     const api = await request.newContext({
       baseURL,
-      extraHTTPHeaders: { Authorization: `Bearer ${playerToken}` },
+      extraHTTPHeaders: { Authorization: `Bearer ${playerToken}`, Accept: 'application/json' },
     });
 
     // Step 1: get a quote
