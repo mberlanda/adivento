@@ -18,6 +18,10 @@ This file is the lightweight Codex entrypoint. Keep `CLAUDE.md` in place for Cla
 - Keep changes surgical and aligned with existing style.
 - Do not modify ClaudeCode files unless the request explicitly asks for ClaudeCode behavior.
 - Do not touch unrelated dirty worktree changes.
+- Put every change in its own Git worktree and pull request.
+- Request Copilot review on every pull request:
+  `gh pr edit --add-reviewer @copilot`
+- Before merging any pull request, CI must pass and review comments must be addressed.
 - Run the narrowest useful verification for code changes; for docs-only changes, a review/read-through is enough.
 - Use existing documentation templates only when creating ADRs, specs, plans, or plan reviews.
 
@@ -27,4 +31,5 @@ bin/rails test
 bin/rails test path/to/file_test.rb
 docker compose up -d db
 scripts/validate.sh
+scripts/e2e.sh
 ```
