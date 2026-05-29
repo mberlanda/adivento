@@ -4,6 +4,19 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — DD-002: LMSR positions table, settlement payouts, ledger replay (PR #35, `f0a8b12`)
+
+- Migration `CreateLmsrPositions`: `lmsr_positions` table (user, market, side YES/NO, contracts bigint), unique index per user/market/side
+- `LmsrPosition` model: validates side inclusion, contracts non-negative, uniqueness; `for_market` + `holding` scopes
+- `Market#has_many :lmsr_positions` added
+- `LmsrTradeService` upserts position after each buy trade (Option A — primary path)
+- `LmsrSettlementHandler` rewritten: pays 100 minor/winning contract via `find_each` batching; `positions_from_ledger` class method (Option B audit path) aggregates from `AuditEvent` metadata
+- `db/schema.rb` removed from tracking; `structure.sql` updated; `db/schema.rb` added to `.gitignore`
+- Key files: `app/models/lmsr_position.rb`, `app/services/settlement/lmsr_settlement_handler.rb`, `app/services/lmsr/lmsr_trade_service.rb`
+- Tests: 284 runs, 0 failures, 92.18% coverage
+
+---
+
 ## 2026-05-29 — DD-004: PostgreSQL test DB + structure.sql + trigger fix (PR #33, `889d951`)
 
 - Switched test environment from SQLite to PostgreSQL (`config/database.yml`, `config/application.rb`)

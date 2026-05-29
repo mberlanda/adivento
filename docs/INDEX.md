@@ -141,6 +141,7 @@ Plan approved?
 - **TD-011: Backoffice market edit — description field** — `description` added to update params and Edit Details form (PR #31, `256932d`)
 - **DD-004: PostgreSQL test DB** — `schema_format = :sql`; `db/structure.sql`; Rake hook strips pg_dump incompatibilities; CI postgres:17 service; trigger condition fixed `>= 2` (PR #33, `889d951`)
 - **DD-002 wireframes docs** — UX wireframes v1 under `docs/design/` (5 design docs + pan/zoom canvas HTML + 6 JSX component files) (PR #34, `f784b9b`)
+- **DD-002: LMSR positions** — `lmsr_positions` table + model; trade service upserts positions; settlement pays 100 minor/contract to winners; `positions_from_ledger` audit path; `schema.rb` removed in favour of `structure.sql` (PR #35, `f0a8b12`)
 
 ### ⏳ Next
 - See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)
