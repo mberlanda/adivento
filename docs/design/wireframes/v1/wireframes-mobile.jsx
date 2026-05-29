@@ -131,7 +131,7 @@
           {Array.from({ length: 6 }).map((_, i) => (
             <Row key={i} style={{ justifyContent: 'space-between', padding: '9px 4px', borderBottom: '1px solid var(--wf-faint)', alignItems: 'center', background: i === 2 ? 'var(--wf-accent-soft)' : 'transparent' }}>
               <Text size={11.5}><b>{i + 4}</b></Text>
-              <Row style={{ gap: 7, width: 110 }}><Avatar size={20} /><Text size={11}>player_{i}{i === 2 ? ' (you)' : ''}</Text></Row>
+              <Row style={{ gap: 7, width: 110 }}><Avatar size={20} /><Text size={11}>{`player_${i}`}{i === 2 ? ' (you)' : ''}</Text></Row>
               <Text size={11.5} style={{ color: 'var(--wf-pos)' }}>+{1400 - i * 130}</Text>
             </Row>
           ))}

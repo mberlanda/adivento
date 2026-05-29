@@ -46,7 +46,7 @@
             <Label style={{ marginBottom: 8 }}>Pending faucet requests · 5</Label>
             {[0, 1].map((i) => (
               <Row key={i} style={{ justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid var(--wf-faint)', alignItems: 'center' }}>
-                <Col gap={2}><Text size={11.5}><b>player_{i}</b></Text><Text size={10} soft>1,000 ADIV · 2h ago</Text></Col>
+                <Col gap={2}><Text size={11.5}><b>{`player_${i}`}</b></Text><Text size={10} soft>1,000 ADIV · 2h ago</Text></Col>
                 <Row style={{ gap: 5 }}><Pill style={{ color: 'var(--wf-pos)', borderColor: 'var(--wf-pos)' }}>Approve</Pill><Pill>Reject</Pill></Row>
               </Row>
             ))}
@@ -167,7 +167,7 @@
         <Row style={{ justifyContent: 'space-between', padding: '11px 16px', borderBottom: '1.5px solid var(--wf-faint)' }}>{['PLAYER', 'AMOUNT', 'CURRENT BAL', 'REASON', 'REQUESTED', 'ACTION'].map((h) => <Text key={h} size={10.5} soft>{h}</Text>)}</Row>
         {Array.from({ length: 5 }).map((_, i) => (
           <Row key={i} style={{ justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--wf-faint)', alignItems: 'center' }}>
-            <Row style={{ gap: 8, width: 130 }}><div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px solid var(--wf-line)', background: 'var(--wf-fill)' }} /><Text size={12}>player_{i}</Text></Row>
+            <Row style={{ gap: 8, width: 130 }}><div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px solid var(--wf-line)', background: 'var(--wf-fill)' }} /><Text size={12}>{`player_${i}`}</Text></Row>
             <Text size={12}><b>1,000</b></Text><Text size={12} soft>{i * 250}</Text>
             <div style={{ width: 130 }}><Line w="80%" /></div><Text size={11} soft>{i + 1}h ago</Text>
             <Row style={{ gap: 6 }}><Btn primary style={{ background: 'var(--wf-pos)', borderColor: 'var(--wf-pos)', padding: '5px 12px', fontSize: 12 }}>Approve</Btn><Btn ghost style={{ padding: '5px 12px', fontSize: 12 }}>Reject</Btn></Row>

@@ -5,6 +5,12 @@ Low-fidelity, grayscale wireframes for all four surfaces. Structure & flow only 
 ## Open
 Open `Wireframes.html` in a browser. It's a self-contained pan/zoom **design canvas** (loads React + Babel from a CDN — needs network on first open).
 
+> **Note:** opening via `file://` may block Babel from loading the `.jsx` sources (CORS restriction in Chrome/Safari). If the canvas is blank, serve the folder with a local static server instead:
+> ```sh
+> cd docs/design/wireframes/v1 && npx serve .
+> # then open http://localhost:3000/Wireframes.html
+> ```
+
 - **Pan:** drag the background / two-finger scroll. **Zoom:** pinch / ctrl+wheel.
 - **Focus a frame:** click its ⤢ button (top-right on hover), then use ←/→ to flip through a section, Esc to exit.
 - **Export a frame:** ⋯ menu → Download PNG / HTML.

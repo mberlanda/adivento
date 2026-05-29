@@ -138,7 +138,7 @@
             <Row style={{ justifyContent: 'space-between', marginBottom: 8 }}><Label>Activity &amp; top holders</Label><Row style={{ gap: 5 }}><Pill active>Trades</Pill><Pill>Holders</Pill></Row></Row>
             {[['bought YES', '+120 @ 60¢', 'var(--wf-pos)'], ['sold NO', '−80 @ 41¢', 'var(--wf-neg)'], ['bought YES', '+50 @ 61¢', 'var(--wf-pos)']].map(([a, d, c], i) => (
               <Row key={i} style={{ justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--wf-faint)', alignItems: 'center' }}>
-                <Row style={{ gap: 8 }}><Avatar size={22} /><Text size={12}>player_{i} <span style={{ color: 'var(--wf-soft)' }}>{a}</span></Text></Row>
+                <Row style={{ gap: 8 }}><Avatar size={22} /><Text size={12}>{`player_${i}`} <span style={{ color: 'var(--wf-soft)' }}>{a}</span></Text></Row>
                 <Text size={12} style={{ color: c }}>{d}</Text><Text size={10.5} soft>{i + 1}m ago</Text>
               </Row>
             ))}
@@ -276,7 +276,7 @@
           {Array.from({ length: 7 }).map((_, i) => (
             <Row key={i} style={{ justifyContent: 'space-between', padding: '11px 16px', borderBottom: '1px solid var(--wf-faint)', alignItems: 'center', background: i === 3 ? 'var(--wf-accent-soft)' : 'transparent' }}>
               <Text size={12.5}><b>{i + 4}</b></Text>
-              <Row style={{ gap: 8, width: 160 }}><Avatar size={22} /><Text size={12}>player_{i}{i === 3 ? '  (you)' : ''}</Text></Row>
+              <Row style={{ gap: 8, width: 160 }}><Avatar size={22} /><Text size={12}>{`player_${i}`}{i === 3 ? '  (you)' : ''}</Text></Row>
               <Text size={12} style={{ color: 'var(--wf-pos)' }}>+{1400 - i * 130}</Text>
               <Text size={12} soft>{12 - i}k</Text><Text size={12} soft>{60 - i * 2}%</Text><Text size={12} soft>{40 - i * 3}</Text>
             </Row>
