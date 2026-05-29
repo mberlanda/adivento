@@ -121,6 +121,8 @@ module Clob
                                .where(side: opposite(incoming.side), direction: 'buy', status: %w[open partial])
                                .lock('FOR UPDATE SKIP LOCKED')
                                .order(price_cents: :desc, created_at: :asc)
+        # Array#+ materialises both relations into memory. Acceptable at current book sizes;
+        # replace with a UNION query or lazy iteration if order books grow large.
         sell_resting + cross_resting
       end
     end
@@ -191,6 +193,8 @@ module Clob
     # Sell fill: seller gives up existing contracts, buyer pays cash.
     # Fill price = maker's (buyer's) price_cents when seller is taker,
     # or seller's (sell order's) price_cents when seller is maker.
+    # No taker fee here: the seller is exiting an existing position (providing liquidity),
+    # not creating new contracts the way a cross-side buy match does.
     def execute_sell_fill!(sell_order, buy_order, qty, fill_price)
       proceeds = fill_price * qty  # what the seller receives
       buyer_stake = fill_price * qty

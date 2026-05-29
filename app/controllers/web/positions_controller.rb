@@ -77,40 +77,37 @@ module Web
     end
 
     def clob_contract_positions
-      base = Order
-             .where(user_id: current_user.id)
-             .where('filled_quantity > 0')
-             .joins(:market)
-             .where(markets: { mechanism_type: 'clob' })
-             .group(:market_id, :side, :direction)
-             .select(
-               'orders.market_id',
-               'orders.side',
-               'orders.direction',
-               'SUM(orders.filled_quantity) AS total_qty',
-               'SUM(orders.price_cents * orders.filled_quantity) AS weighted_price_sum'
-             )
+      scope = Order
+              .where(user_id: current_user.id)
+              .where('filled_quantity > 0')
+              .joins(:market)
+              .where(markets: { mechanism_type: 'clob' })
 
-      # Compute net position per market/side: bought - sold
-      grouped = base.each_with_object({}) do |row, h|
-        key = [row.market_id, row.side]
-        h[key] ||= { total_qty: 0, weighted_price_sum: 0 }
-        delta = row.direction == 'buy' ? row.total_qty.to_i : -row.total_qty.to_i
-        h[key][:total_qty] += delta
-        h[key][:weighted_price_sum] += row.total_qty.to_i * (row.direction == 'buy' ? row.weighted_price_sum.to_i / [row.total_qty.to_i, 1].max : 0)
-      end
+      # net contracts per market/side: buy fills minus sell fills
+      net = scope
+            .group(:market_id, :side, :direction)
+            .sum(:filled_quantity)
+            .each_with_object(Hash.new(0)) do |((market_id, side, dir), qty), h|
+              h[[market_id, side]] += dir == 'buy' ? qty : -qty
+            end
 
-      market_ids = grouped.keys.map(&:first).uniq
+      # avg buy price per market/side (for cost-basis display)
+      avg_buy = scope
+                .where(direction: 'buy')
+                .group(:market_id, :side)
+                .select('market_id, side, SUM(price_cents * filled_quantity)::float / SUM(filled_quantity) AS avg_price')
+                .index_by { |r| [r.market_id, r.side] }
+
+      market_ids = net.keys.map(&:first).uniq
       markets_by_id = Market.where(id: market_ids).index_by(&:id)
 
       market_ids.filter_map do |market_id|
-        market  = markets_by_id[market_id]
-        yes_qty = grouped[[market_id, 'YES']]&.dig(:total_qty).to_i
-        no_qty  = grouped[[market_id, 'NO']]&.dig(:total_qty).to_i
+        yes_qty = net[[market_id, 'YES']]
+        no_qty  = net[[market_id, 'NO']]
         next if yes_qty <= 0 && no_qty <= 0
 
-        yes_sum    = grouped[[market_id, 'YES']]&.dig(:weighted_price_sum).to_i
-        avg_yes    = yes_qty.positive? ? yes_sum / yes_qty : nil
+        market     = markets_by_id[market_id]
+        avg_yes    = avg_buy[[market_id, 'YES']]&.avg_price&.round
         best_bid   = market.open? ? market.pricing_engine.order_book_summary[:bid] : nil
         unrealised = best_bid && yes_qty.positive? ? yes_qty * best_bid : nil
 
