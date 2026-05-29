@@ -4,6 +4,20 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — DD-006: CLOB sell limit orders and operator buyback (PR #36, `8a67f3c`)
+
+- `direction` column added to `orders` (buy/sell, default 'buy'); DB check constraint; `Order#buy?`/`sell?`/`reserved_minor` helpers
+- `Clob::NetPositionService`: net contracts = buy fills − sell fills per user/market/side
+- `Clob::OrderMatchingService` extended: sell orders match same-side resting buy orders; `execute_sell_fill!` credits seller at maker price via `CLOB_SELL_CREDIT` ledger entry; `validate_sell_position!` guards overselling
+- `Clob::ClobCashoutService`: validates market is open CLOB, contracts > 0, places sell limit order via OrderMatchingService
+- `Clob::OperatorBuybackService`: derives mid-price from order book (YES ask = 100 − NO_bid), places admin buy order; graceful nil when book is empty on both sides
+- Backoffice: `POST /backoffice/markets/:id/operator_buyback` + form panel on market show (open CLOB only)
+- Web: `POST /web/positions/clob_cashout` action; `clob_contract_positions` simplified to two SQL aggregates (net qty + avg buy price)
+- Key files: `app/services/clob/`, `app/controllers/web/positions_controller.rb`, `app/controllers/backoffice/markets_controller.rb`
+- Tests: 300 runs, 0 failures, 92.2% coverage
+
+---
+
 ## 2026-05-29 — DD-002: LMSR positions table, settlement payouts, ledger replay (PR #35, `f0a8b12`)
 
 - Migration `CreateLmsrPositions`: `lmsr_positions` table (user, market, side YES/NO, contracts bigint), unique index per user/market/side
