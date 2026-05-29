@@ -34,20 +34,28 @@ module Admin
                       status: :unprocessable_content
       end
 
-      released = order.reserved_minor
+      released = nil
       ApplicationRecord.transaction do
-        order.cancelled_quantity += order.unfilled_quantity
-        order.status = :cancelled
-        order.save!
-        w = order.user.wallet
+        # Re-load and lock the order inside the transaction so a concurrent fill or
+        # duplicate cancel cannot release the same funds twice (TD-013).
+        locked = Order.lock.find(order.id)
+        raise ActiveRecord::Rollback unless locked.open? || locked.partial?
+
+        released = locked.reserved_minor
+        locked.cancelled_quantity += locked.unfilled_quantity
+        locked.status = :cancelled
+        locked.save!
+        w = locked.user.wallet.lock!
         w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
         AuditEvent.create!(
           action: 'order.cancel',
           actor: current_user,
-          target_type: 'Order', target_id: order.id,
+          target_type: 'Order', target_id: locked.id,
           metadata: { released_minor: released }
         )
       end
+
+      return render json: { error: 'Order cannot be cancelled' }, status: :unprocessable_content if released.nil?
 
       render json: { order_id: order.id, status: 'cancelled', released_minor: released }
     end

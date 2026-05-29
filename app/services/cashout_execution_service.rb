@@ -9,7 +9,7 @@ class CashoutExecutionService
 
       quote = CashoutQuoteService.quote(bet: locked_bet)
 
-      wallet = locked_bet.user.wallet
+      wallet = locked_bet.user.wallet.lock!
       wallet.update!(available_minor: wallet.available_minor + quote.net_payout_minor)
 
       locked_bet.update!(status: :voided)

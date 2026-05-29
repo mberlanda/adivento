@@ -71,7 +71,7 @@ module Parimutuel
       LedgerEntry.where(entry_type: 'PARIMUTUEL_STAKE')
                  .where("metadata->>'market_id' = ?", @market.id.to_s)
                  .find_each do |entry|
-                   w = entry.user.wallet
+                   w = entry.user.wallet.lock!
                    w.update!(available_minor: w.available_minor + entry.amount_minor)
                    LedgerEntry.create!(
                      user: entry.user, actor: @settled_by,
