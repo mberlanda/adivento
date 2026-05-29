@@ -7,8 +7,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Backoffice open-market flow', () => {
-  test('moderator creates a draft market then opens it for betting', async ({ page }) => {
-    await signInUi(page, USERS.moderator.email, USERS.moderator.password);
+  test('admin creates a draft market then opens it for betting', async ({ page }) => {
+    await signInUi(page, USERS.admin.email, USERS.admin.password);
     await page.goto('/backoffice/markets');
 
     const suffix = Date.now();
