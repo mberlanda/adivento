@@ -5,9 +5,9 @@ Base: origin/main (PR #41 deep-review + synthesis already merged).
 - [x] **PR1 — TD-018** Settle CLOB by net positions, not raw filled orders. ✅ suite green 92.51%.
   - branch `fix/td-018-clob-net-settlement`
   - RED→GREEN: `ClobSettlementHandler` Pass 2 pays `NetPositionService` net per user.
-- [ ] **PR2 — TD-019** Reserve contracts for open CLOB sell orders (no oversell).
-  - RED: order_matching test — holder of 10 cannot place two open 10-contract sells.
-  - GREEN: account unfilled open sells in available-to-sell; re-validate under lock at fill.
+- [x] **PR2 — TD-019** Reserve contracts for open CLOB sell orders. ✅ suite green 92.51%.
+  - branch `fix/td-019-clob-sell-reservation` (stacked on PR1)
+  - GREEN: `validate_sell_position!` subtracts unfilled open sells. Fill-time concurrency = follow-up.
 - [ ] **PR3 — TD-013** Lock wallet rows across all mutation paths + concurrency test.
   - Services: BetPlacement, BetVoid, CashoutExecution, settle_fixed_odds!, ClobSettlementHandler pass1,
     WalletGrantService, ParimutuelSettlementService#refund_all!, Admin::OrdersController#destroy.

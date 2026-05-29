@@ -71,7 +71,14 @@ module Clob
 
     def validate_sell_position!(order)
       net = NetPositionService.call(user: order.user, market: @market, side: order.side)
-      raise 'Insufficient position to sell' if net < order.quantity
+      # Contracts already committed to this user's other resting sell orders on the
+      # same side must be reserved — otherwise overlapping open sells could oversell
+      # the held position (TD-019).
+      committed = @market.orders
+                         .where(user: order.user, side: order.side, direction: 'sell', status: %w[open partial])
+                         .where.not(id: order.id)
+                         .sum('quantity - filled_quantity - cancelled_quantity')
+      raise 'Insufficient position to sell' if (net - committed) < order.quantity
     end
 
     def count_matchable_quantity(incoming)
