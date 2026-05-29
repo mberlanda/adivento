@@ -12,7 +12,7 @@ Source plan: `docs/superpowers/plans/2026-05-29-specialist-review-dispatch.md`
 | Rails/code correctness | `code-correctness.md` | complete |
 | Market mechanics | `market-mechanics.md` | complete |
 | Data/Postgres | `data-postgres.md` | complete |
-| Security/trust/compliance | `security-trust.md` | pending |
+| Security/trust/compliance | `security-trust.md` | complete |
 | Product/roadmap | `product-roadmap.md` | complete |
 | UX research / IA | `ux-research-ia.md` | complete |
 | UI visual design | `ui-design.md` | complete |
