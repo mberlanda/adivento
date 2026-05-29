@@ -1,6 +1,8 @@
 services:
   db:
-    image: postgres:16
+    # NOTE: if upgrading from postgres:16, recreate the volume first:
+    #   docker compose down -v && docker compose up -d db
+    image: postgres:17
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

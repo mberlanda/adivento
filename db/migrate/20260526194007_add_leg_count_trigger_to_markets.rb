@@ -4,7 +4,7 @@ class AddLegCountTriggerToMarkets < ActiveRecord::Migration[8.1]
       CREATE OR REPLACE FUNCTION check_market_leg_count()
       RETURNS TRIGGER AS $$
       BEGIN
-        IF (SELECT COUNT(*) FROM market_legs WHERE market_id = NEW.market_id) > 2 THEN
+        IF (SELECT COUNT(*) FROM market_legs WHERE market_id = NEW.market_id) >= 2 THEN
           RAISE EXCEPTION 'Market % already has 2 legs', NEW.market_id;
         END IF;
         RETURN NEW;
