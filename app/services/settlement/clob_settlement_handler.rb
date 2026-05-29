@@ -15,7 +15,7 @@ module Settlement
         order.save!
         next if released.zero?
 
-        w = order.user.wallet
+        w = order.user.wallet.lock!
         w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
         AuditEvent.create!(
           action: 'order.settlement_cancel',

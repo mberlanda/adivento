@@ -56,7 +56,7 @@ class SettlementService
       if bet.market_leg.label == outcome
         bet.update!(status: :settled_win)
 
-        wallet = bet.user.wallet
+        wallet = bet.user.wallet.lock!
         wallet.update!(available_minor: wallet.available_minor + bet.potential_payout_minor)
 
         LedgerEntry.create!(

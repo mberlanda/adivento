@@ -3,7 +3,7 @@ class WalletGrantService
     ApplicationRecord.transaction do
       faucet_request.update!(status: :approved, reviewed_by: actor, note: note)
 
-      wallet = faucet_request.user.wallet
+      wallet = faucet_request.user.wallet.lock!
       wallet.update!(available_minor: wallet.available_minor + faucet_request.amount_minor)
 
       LedgerEntry.create!(
