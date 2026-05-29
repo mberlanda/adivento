@@ -41,8 +41,8 @@ module Clob
 
     def mid_price
       summary = @market.pricing_engine.order_book_summary
-      bid     = summary[:bid]          # best YES buy price
-      yes_ask = summary[:ask] ? 100 - summary[:ask] : nil  # NO bid implies YES ask = 100 - no_bid
+      bid     = summary[:bid] # best YES buy price
+      yes_ask = summary[:ask] ? 100 - summary[:ask] : nil # NO bid implies YES ask = 100 - no_bid
 
       return nil if bid.nil? && yes_ask.nil?
       return bid     if yes_ask.nil?
