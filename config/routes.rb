@@ -3,6 +3,9 @@ Rails.application.routes.draw do
 
   root 'web/markets#index'
 
+  get '/register', to: 'web/registrations#new'
+  post '/register', to: 'web/registrations#create'
+
   get '/signin', to: 'web/sessions#new'
   post '/signin', to: 'web/sessions#create'
   delete '/signout', to: 'web/sessions#destroy'
