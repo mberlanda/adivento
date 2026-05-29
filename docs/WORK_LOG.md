@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — TD-013: lock wallet rows across all mutation paths
+
+- `BetPlacementService` now acquires `user.wallet.lock!` inside the transaction and re-checks the balance authoritatively before debiting (the pre-transaction check is kept only as a cheap fast-fail). Fixes the TOCTOU double-spend where two concurrent placements both passed a stale balance check.
+- Added the same `wallet.lock!` to every other unlocked wallet mutation: `BetVoidService`, `CashoutExecutionService`, `SettlementService#settle_fixed_odds!`, `Settlement::ClobSettlementHandler` Pass 1, `WalletGrantService#approve!`, `Parimutuel::ParimutuelSettlementService#refund_all!`.
+- `Admin::OrdersController#destroy` re-loads and locks the order row inside the transaction and recomputes the released amount under lock (partial TD-021), matching `Web::OrdersController#destroy`.
+- New concurrency test `test/services/bet_placement_concurrency_test.rb` (real threads, `use_transactional_tests = false`): two simultaneous placements on a one-bet balance produce exactly one bet.
+- Tier 0 item #3 of 4 from the deep-review synthesis.
+
+---
+
 ## 2026-05-29 — TD-019: reserve contracts for open CLOB sell orders
 
 - `Clob::OrderMatchingService#validate_sell_position!` now subtracts the unfilled quantity of the user's other resting (open/partial) sell orders on the same side before allowing a new sell. Prevents overlapping open sell orders from collectively overselling the held position (e.g. two 10-contract sells against a 10-contract holding).

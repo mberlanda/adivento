@@ -112,7 +112,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-013 · BetPlacementService missing wallet lock (race condition)
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** Resolved 2026-05-29 (scope expanded). Wallet rows are now locked (`lock!`) inside the transaction with an authoritative balance re-check in `BetPlacementService`, and `lock!` added to every other unlocked wallet mutation: `BetVoidService`, `CashoutExecutionService`, `SettlementService#settle_fixed_odds!`, `Settlement::ClobSettlementHandler` Pass 1, `WalletGrantService#approve!`, and `Parimutuel::ParimutuelSettlementService#refund_all!`. `Admin::OrdersController#destroy` now re-loads and locks the order row inside the transaction (partial TD-021). Concurrency regression test: `test/services/bet_placement_concurrency_test.rb` (two concurrent placements on a one-bet balance create exactly one bet).
 **Problem:** `BetPlacementService` reads `user.wallet` without `lock!` before the balance check, then debits inside a transaction. Two concurrent requests can both pass the balance check on the stale value, resulting in a negative balance. The model validates `available_minor >= 0` but uses the pre-lock stale value, so the guard does not prevent the race. Same issue exists in `BetVoidService`, `CashoutExecutionService`, and `SettlementService#settle_fixed_odds!`.
 **Fix:** Replace `user.wallet` with `user.wallet.lock!` inside the transaction in all four services. Pattern is already correct in `LmsrTradeService`, `ParimutuelPoolService`, and the CLOB handlers.
 **Impact:** High — double-spend possible under concurrent load.
@@ -197,6 +197,18 @@ Update this file when a gap is closed or a decision is made.
 **Problem:** `bundle exec rubocop --cache false --format simple` reports one `Rails/FilePath` offense in `lib/tasks/db_structure.rake` for the `Rails.root.join('db', 'structure.sql')` path style.
 **Fix:** Apply the autocorrect or change to `Rails.root.join('db/structure.sql')`, then rerun RuboCop.
 **Impact:** Low — validation fails on style even though the test suite is green.
+
+---
+
+### TD-034 · Settlement & sell-order idempotency under concurrent operations
+
+**Status:** Open. Raised by Copilot review on PRs #43/#44 (2026-05-30).
+**Problem:** Several paths are safe single-threaded but not under truly concurrent calls:
+- `Clob::OrderMatchingService#validate_sell_position!` is non-atomic — two concurrent sell placements for the same user/side can both pass the available-to-sell check (TD-019 fixed the deterministic two-open-orders case; the concurrent race remains).
+- `Parimutuel::ParimutuelSettlementService` does not lock the market until after `refund_all!`, so two concurrent settlements on a zero-winning-pool market could double-refund.
+- `Settlement::ClobSettlementHandler` Pass 1 cancels orders without a per-order row lock, so concurrent settlements of the same market could double-release reservations.
+**Fix:** Lock the market row at the start of every settlement handler (matching `LmsrSettlementHandler`) so settlement is serialized per market, and re-validate sell position under a row lock at fill time. Best done as one focused "settlement idempotency" PR alongside the TD-028 settlement-handler unification.
+**Impact:** Medium — requires genuine concurrency (two operators / two requests racing on the same market) to trigger; SettlementService already blocks sequential double-settle via the status guard.
 
 ---
 

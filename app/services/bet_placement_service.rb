@@ -15,8 +15,9 @@ class BetPlacementService
 
     potential_payout_minor = (stake_minor.to_i * market_leg.odds_minor) / 10_000
 
-    wallet = user.wallet
-    raise InvalidBet, 'Insufficient wallet balance' if wallet.available_minor < stake_minor.to_i
+    # Cheap pre-check before the expensive risk computation. The authoritative
+    # balance check happens under a row lock inside the transaction (TD-013).
+    raise InvalidBet, 'Insufficient wallet balance' if user.wallet.available_minor < stake_minor.to_i
 
     simulated = {
       market_leg_id: market_leg.id,
@@ -27,6 +28,9 @@ class BetPlacementService
     raise RiskLimitExceeded, 'Liability cap exceeded' if post_trade_liability > market.liability_cap_minor
 
     ApplicationRecord.transaction do
+      wallet = user.wallet.lock!
+      raise InvalidBet, 'Insufficient wallet balance' if wallet.available_minor < stake_minor.to_i
+
       wallet.update!(available_minor: wallet.available_minor - stake_minor.to_i)
 
       bet = Bet.create!(

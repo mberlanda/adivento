@@ -8,7 +8,7 @@ class BetVoidService
       locked_bet = Bet.lock.find(bet.id)
       raise InvalidVoid, 'Bet is not active' unless locked_bet.open?
 
-      wallet = locked_bet.user.wallet
+      wallet = locked_bet.user.wallet.lock!
       wallet.update!(available_minor: wallet.available_minor + locked_bet.stake_minor)
 
       locked_bet.update!(status: :voided)

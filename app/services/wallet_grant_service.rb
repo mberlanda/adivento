@@ -1,27 +1,34 @@
 class WalletGrantService
+  class InvalidGrant < StandardError; end
+
   def self.approve!(faucet_request:, actor:, note: nil)
     ApplicationRecord.transaction do
-      faucet_request.update!(status: :approved, reviewed_by: actor, note: note)
+      # Lock the request row and re-check its state inside the transaction so the
+      # same request cannot be approved twice (double-credit) under concurrency.
+      request = FaucetRequest.lock.find(faucet_request.id)
+      raise InvalidGrant, 'Faucet request is not pending' unless request.pending?
 
-      wallet = faucet_request.user.wallet
-      wallet.update!(available_minor: wallet.available_minor + faucet_request.amount_minor)
+      request.update!(status: :approved, reviewed_by: actor, note: note)
+
+      wallet = request.user.wallet.lock!
+      wallet.update!(available_minor: wallet.available_minor + request.amount_minor)
 
       LedgerEntry.create!(
-        user: faucet_request.user,
+        user: request.user,
         actor: actor,
         entry_type: 'FAUCET_GRANT',
-        amount_minor: faucet_request.amount_minor,
+        amount_minor: request.amount_minor,
         direction: 'credit',
-        metadata: { faucet_request_id: faucet_request.id }
+        metadata: { faucet_request_id: request.id }
       )
 
       AuditEvent.create!(
         actor: actor,
         action: 'faucet_request.approve',
         target_type: 'FaucetRequest',
-        target_id: faucet_request.id,
+        target_id: request.id,
         reason: note,
-        metadata: { amount_minor: faucet_request.amount_minor }
+        metadata: { amount_minor: request.amount_minor }
       )
     end
   end
