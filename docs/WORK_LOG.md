@@ -4,6 +4,15 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — TD-018: CLOB settlement pays net positions
+
+- `Settlement::ClobSettlementHandler` Pass 2 now credits each holder's **net** long position on the winning side (filled buys − filled sells, via `Clob::NetPositionService`) instead of every raw filled winning-side order. Fixes double-payout where a player who bought then sold their position was paid at settlement alongside the buyer who absorbed the sell.
+- `SETTLEMENT_WIN` ledger entries now carry `market_id` metadata.
+- Tier 0 item #1 of 4 from the deep-review synthesis (`docs/reviews/2026-05-29-deep-review/synthesis.md`).
+- Key files: `app/services/settlement/clob_settlement_handler.rb`, `test/services/settlement/clob_settlement_handler_test.rb`
+
+---
+
 ## 2026-05-29 — docs(backlog): implementation gap review
 
 - Published the backend gap review as an executable next-steps plan: TD-013 wallet locking, TD-014 LMSR positions UI, TD-015 leaderboard ledger types, TD-016 admin API category/tags, TD-017 market cancellation
