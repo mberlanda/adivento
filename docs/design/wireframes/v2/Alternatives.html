@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adivento — Alternative Wireframes (Dark)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style> html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; } </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="wireframe-kit.jsx"></script>
+  <script type="text/babel" src="wireframe-dark.jsx"></script>
+  <script type="text/babel" src="wireframes-alt.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard } = window;
+    const { WFAlt } = window;
+
+    function App() {
+      return (
+        <DesignCanvas>
+          <DCSection id="start" title="Alternative direction — Dark “Terminal”" subtitle="PR2 · diverges on navigation, detail layout & visual structure">
+            <DCArtboard id="intro" label="Read me" width={1100} height={360}><WFAlt.Intro /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="ia" title="A · Navigation / IA directions" subtitle="Three home models — pick one, or mix with PR1">
+            <DCArtboard id="feed" label="A1 · Feed-first home" width={1180} height={740}><WFAlt.Feed /></DCArtboard>
+            <DCArtboard id="hub" label="A2 · Category hub" width={1180} height={660}><WFAlt.Hub /></DCArtboard>
+            <DCArtboard id="terminal" label="A3 · Terminal dashboard" width={1180} height={620}><WFAlt.Terminal /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="detail" title="B · Market detail & betting layouts" subtitle="Same market, three structures">
+            <DCArtboard id="b-terminal" label="B1 · Trading terminal" width={1180} height={680}><WFAlt.TradeTerminal /></DCArtboard>
+            <DCArtboard id="b-compact" label="B2 · Chart-dominant compact" width={1180} height={820}><WFAlt.ChartCompact /></DCArtboard>
+            <DCArtboard id="b-mobile" label="B3 · Mobile terminal" width={320} height={700}><WFAlt.MobileTrade /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="structure" title="C · Bolder visual structure (system holds)" subtitle="Portfolio & leaderboard in the dark terminal language">
+            <DCArtboard id="portfolio" label="Portfolio + equity curve" width={1180} height={640}><WFAlt.Portfolio /></DCArtboard>
+            <DCArtboard id="leaderboard" label="Leaderboard" width={1180} height={620}><WFAlt.Leaderboard /></DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
