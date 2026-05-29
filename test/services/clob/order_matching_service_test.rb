@@ -154,6 +154,7 @@ module Clob
       assert_equal 'filled', result.incoming_order.status
       assert_equal 5, result.incoming_order.filled_quantity
       resting.reload
+
       assert_equal 'filled', resting.status
       # Seller credited at buyer's (maker's) price: 65¢ × 5 = 325
       assert_equal seller_initial + 325, @seller.wallet.reload.available_minor

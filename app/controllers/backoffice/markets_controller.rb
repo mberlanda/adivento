@@ -97,7 +97,8 @@ module Backoffice
       )
 
       if result.success?
-        redirect_to backoffice_market_path(@market), notice: "Buyback order placed at mid-price (order ##{result.orders.first.id})"
+        redirect_to backoffice_market_path(@market),
+                    notice: "Buyback order placed at mid-price (order ##{result.orders.first.id})"
       else
         redirect_to backoffice_market_path(@market), alert: result.errors.join(', ')
       end

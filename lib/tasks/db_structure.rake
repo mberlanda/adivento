@@ -4,7 +4,7 @@
 Rake::Task['db:schema:dump'].enhance do
   next unless Rails.application.config.active_record.schema_format == :sql
 
-  path = Rails.root.join('db', 'structure.sql')
+  path = Rails.root.join('db/structure.sql')
   content = path.read
   cleaned = content.gsub(/^SET transaction_timeout\s*=\s*\d+;\n?/, '')
   path.write(cleaned) if cleaned != content

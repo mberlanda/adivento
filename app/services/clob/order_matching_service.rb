@@ -196,7 +196,7 @@ module Clob
     # No taker fee here: the seller is exiting an existing position (providing liquidity),
     # not creating new contracts the way a cross-side buy match does.
     def execute_sell_fill!(sell_order, buy_order, qty, fill_price)
-      proceeds = fill_price * qty  # what the seller receives
+      proceeds = fill_price * qty # what the seller receives
       buyer_stake = fill_price * qty
 
       sell_order.filled_quantity += qty
@@ -262,7 +262,8 @@ module Clob
         action: 'order.place',
         actor: order.user,
         target_type: 'Order', target_id: order.id,
-        metadata: { side: order.side, direction: order.direction, price_cents: order.price_cents, quantity: order.quantity, fills: fills.size }
+        metadata: { side: order.side, direction: order.direction, price_cents: order.price_cents,
+                    quantity: order.quantity, fills: fills.size }
       )
       fills.each do |f|
         AuditEvent.create!(
