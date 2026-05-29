@@ -35,7 +35,7 @@ Updated: 2026-05-29.
 | UX-020 | Profile: P&L stats not in 4-stat grid (Net P&L, Total bets, Win rate, Volume) | web | open | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
 | UX-021 | Profile: no open-positions summary card with links | web | open | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
 | UX-022 | Positions page: plain table, not using card/stat-grid design system | web | open | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
-| UX-023 | Auth: no register form — only sign-in exists | web | open | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
+| UX-023 | Auth: no register form — only sign-in exists | web | **done 2026-05-30** (= synthesis UX-036): `GET/POST /register`, `Web::RegistrationsController`, "Create an account" link on sign-in | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
 | UX-024 | Auth: no first-run faucet nudge after registration | web | open | [plan](../superpowers/plans/2026-05-29-ux-leaderboard-profile-auth.md) |
 | UX-025 | Settlement explainer page (`/web/settlement`) missing entirely | web | open | [plan](../superpowers/plans/2026-05-29-ux-settlement-explainer-page.md) |
 | UX-026 | Market resolution panel: no link to settlement explainer | web | open | [plan](../superpowers/plans/2026-05-29-ux-settlement-explainer-page.md) |

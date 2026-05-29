@@ -34,6 +34,7 @@ Recommended order: finish the backend correctness tasks first, then move to the 
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| UX-036/UX-023 web registration form + session login | 2026-05-30 | branch `feat/ux-036-web-registration` |
 | TD-013 lock wallet rows across all mutation paths | 2026-05-29 | branch `fix/td-013-wallet-locking` |
 | TD-019 reserve contracts for open CLOB sell orders | 2026-05-29 | branch `fix/td-019-clob-sell-reservation` |
 | TD-018 CLOB settlement pays net positions | 2026-05-29 | branch `fix/td-018-clob-net-settlement` |
