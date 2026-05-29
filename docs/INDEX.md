@@ -146,6 +146,7 @@ Plan approved?
 
 ### ⏳ Next
 - Execute `docs/superpowers/plans/2026-05-29-backend-next-steps.md` first: TD-013 through TD-017 are the highest-confidence planned backend correctness gaps.
+- Dispatch planning agents from `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md` for approved Decisions 2-11.
 - Create follow-up plans for TD-018 through TD-022 from `docs/wiki/tech-debt-backlog.md`.
 - Then schedule the planned UX slices in `docs/wiki/UX_BACKLOG.md`.
 - Larger product gaps still need specs/plans: F-004 price history, F-008 watchlists/notifications, F-010 resolution notes, F-011 activity feed, F-012 responsible-gaming controls.
@@ -167,6 +168,7 @@ Plan approved?
 | Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
 | Backend next steps (TD-013–TD-017) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned |
+| Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ planning todos |
 
 ---
 

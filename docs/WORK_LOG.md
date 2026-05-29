@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — docs(planning): decision planning dispatch todos
+
+- Recorded approved recommended options for Decisions 2-11 as dispatchable planning todos.
+- Added a resume checkpoint and agent dispatch batches so planning work can be resumed after quota/context limits.
+- Linked the tracker from `.claude/tasks/ATTENTION.md` and `docs/INDEX.md`.
+- Decision 1 backend correctness remains intentionally separate because Claude is already progressing it.
+- Key files: `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md`, `.claude/tasks/ATTENTION.md`, `docs/INDEX.md`
+
+---
+
 ## 2026-05-29 — TD-013: lock wallet rows across all mutation paths
 
 - `BetPlacementService` now acquires `user.wallet.lock!` inside the transaction and re-checks the balance authoritatively before debiting (the pre-transaction check is kept only as a cheap fast-fail). Fixes the TOCTOU double-spend where two concurrent placements both passed a stale balance check.
