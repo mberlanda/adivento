@@ -12,14 +12,14 @@ Update this file when a gap is closed or a decision is made.
 |----|---------|--------|-----------|
 | F-009 | Automated market close (`CloseExpiredMarketsJob` + `closed` status) | ✅ done (PR #28) | — |
 | F-010 | Market close UX (player-facing "Betting closed" state on market page) | ✅ done (shipped in F-009/PR #28) | F-009 |
-| F-011 | LMSR individual settlement payouts | ⏳ backlog | DD-002 decision |
+| F-011 | LMSR individual settlement payouts | ✅ done (PR #35, DD-002) | — |
 | F-012 | Player positions HTML view (currently JSON-only) | ✅ done (PR #29) | — |
 | F-013 | Betslip execution confirmation HTML view (currently JSON-only) | ✅ done (PR #29) | — |
 | F-014 | Market edit form in backoffice | ✅ done (PR #31) | — |
 | F-015 | Cross-mechanism leaderboard P&L aggregation | ✅ done (PR #29) | — |
 | F-016 | LMSR subsidy exhaustion guard | ✅ done (PR #30) | — |
 | F-017 | Market list pagination (web + backoffice) | ✅ done (PR #29) | — |
-| F-018 | Switch test DB to PostgreSQL | ⏳ backlog | DD-004 decision |
+| F-018 | Switch test DB to PostgreSQL | ✅ done (PR #33, DD-004) | — |
 
 ---
 
@@ -27,11 +27,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-001 · LMSR individual settlement payouts
 
-**Status:** Deferred from v1.
-**Problem:** When an LMSR market settles, the handler marks the market closed but does not credit individual position holders. Players who held YES/NO positions at settlement do not receive payouts.
-**Root cause:** No per-player position tracking for LMSR. LedgerEntry records the trade cost but not the resulting contract inventory.
-**Required:** A `lmsr_realized_loss_minor` column (or equivalent position model) to track each player's LMSR contract holdings so the settlement handler can iterate and credit.
-**Impact:** LMSR settlement currently unusable for real payouts. E2E tests assert only the "Settled outcome:" UI label.
+**Status:** ✅ Done (PR #35, DD-002). `lmsr_positions` table tracks per-player YES/NO contract holdings; `LmsrSettlementHandler` pays out 100 minor/winning contract.
 
 ---
 
@@ -45,33 +41,19 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-003 · LMSR subsidy exhaustion guard
 
-**Status:** Deferred from v1.
-**Problem:** `Lmsr::LmsrTradeService` does not check whether the cumulative realized loss on the market has exceeded `liquidity_subsidy_minor`. An operator can lose more than they committed.
-**Required:** Add `lmsr_realized_loss_minor` column to `markets`. Reject trades that would push realized loss past the subsidy.
+**Status:** ✅ Done (PR #30). `lmsr_realized_loss_minor` column on markets; guard in `LmsrTradeService` rejects trades that would push realized loss past `liquidity_subsidy_minor`.
 
 ---
 
 ### TD-004 · CLOB cashout (sell contracts before settlement)
 
-**Status:** Not yet designed.
-**Problem:** Players with open CLOB positions (contract holdings) cannot exit before settlement. `CashoutQuoteService` handles fixed-odds voids but has no CLOB path.
-**Options:**
-- A: Post a sell limit order on the CLOB book (pure market mechanics, but requires buyer).
-- B: Operator buyback at current mid-price (guaranteed exit, operator takes mark-to-market risk).
-- C: No cashout for CLOB (positions held to settlement — simplest, least player-friendly).
-
-**Trade-offs:**
-- A preserves market integrity but leaves player stranded if no buyer.
-- B adds operator risk but gives players a predictable exit.
-- C is the current state; acceptable if CLOB markets are short-lived.
+**Status:** ✅ Done (PR #36, DD-006). Option A (sell limit orders) + Option B (operator buyback at mid-price). `direction` column on orders; `NetPositionService`; `ClobCashoutService`; `OperatorBuybackService`; web + backoffice endpoints.
 
 ---
 
 ### TD-005 · Cross-mechanism leaderboard P&L
 
-**Status:** Deferred.
-**Problem:** The leaderboard (`GET /web/leaderboard`) calculates P&L from settled `bets` only. CLOB fill credits (`ORDER_FILL_CREDIT` ledger entries) and LMSR/parimutuel payouts are not aggregated. Rankings are incomplete for players using non-fixed-odds mechanisms.
-**Required:** Aggregate all payout ledger entries (not just settled bets) for accurate P&L.
+**Status:** ✅ Done (PR #29). Leaderboard now aggregates all ledger entry types across all 4 mechanisms.
 
 ---
 
@@ -106,18 +88,13 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-009 · SQLite ILIKE + jsonb test fidelity gap
 
-**Status:** Structural gap (not a bug yet, but hidden risk).
-**Problem:** Full-text search uses Arel `.matches` which generates `ILIKE` on PostgreSQL but `LIKE` on SQLite (case-sensitive on some platforms). The `tags` column is `jsonb` in PostgreSQL; in SQLite it is stored as text. Tests pass locally under SQLite but may not catch ILIKE case-sensitivity edge cases or jsonb operator errors.
-**Blocked by:** DD-004 (test DB decision).
-**Impact:** Low for current tests; would surface immediately if tags search logic gets more sophisticated.
+**Status:** ✅ Resolved (PR #33, DD-004). Test DB switched to PostgreSQL; ILIKE and jsonb work correctly in all tests.
 
 ---
 
 ### TD-010 · Binary line trigger not exercised in SQLite tests
 
-**Status:** Structural gap.
-**Problem:** The `enforce_max_two_market_legs` PostgreSQL BEFORE INSERT trigger is defined in a migration but SQLite ignores it. The Minitest suite tests the Rails-level validation (`MarketLeg` model guard + `Market#requires_two_legs_to_open`), but the DB-level trigger is only exercised in CI where PostgreSQL is used. A future Rails-level validation bypass would not be caught locally.
-**Blocked by:** DD-004.
+**Status:** ✅ Resolved (PR #33, DD-004). PostgreSQL test DB exercises the `enforce_max_two_market_legs` trigger; trigger condition also fixed (`>= 2`).
 
 ---
 
@@ -132,10 +109,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-012 · Market list pagination
 
-**Status:** Not implemented.
-**Problem:** `Web::MarketsController#index` and `Backoffice::MarketsController#index` load all markets without pagination. Seeds already generate 17 markets; in production this will grow.
-**Effort:** Low. Add `page`/`per_page` params and standard Rails pagination (kaminari or `limit`/`offset`).
-**Impact:** Performance and UX degrade with market volume; not urgent for POC.
+**Status:** ✅ Done (PR #29, F-017). Web 12/page, backoffice 20/page with Previous/Next controls.
 
 ---
 
@@ -146,6 +120,8 @@ For each: short options with trade-offs. These are inputs for the next product/a
 ---
 
 ### DD-001 · F-009 Automated market close
+
+**Status:** ✅ Done (PR #28, F-009). Option A implemented: `CloseExpiredMarketsJob` + `closed: 4` status.
 
 **Question:** What happens when a market's `close_at` datetime passes?
 **Context:** `close_at` field exists on markets (added in F-003). No automated action fires when it passes.
@@ -161,6 +137,8 @@ For each: short options with trade-offs. These are inputs for the next product/a
 ---
 
 ### DD-002 · LMSR v2 settlement payout model
+
+**Status:** ✅ Done (PR #35). Option A + B implemented: `lmsr_positions` table + `positions_from_ledger` audit path.
 
 **Question:** How should individual LMSR positions be tracked for payout at settlement?
 
@@ -189,6 +167,8 @@ For each: short options with trade-offs. These are inputs for the next product/a
 
 ### DD-004 · Test DB adapter (SQLite vs PostgreSQL)
 
+**Status:** ✅ Done (PR #33). Option B implemented: all tests run against PostgreSQL.
+
 **Question:** Should the test suite use SQLite (current) or PostgreSQL?
 
 **Context:** Tests run against SQLite3 (`storage/test.sqlite3`). Production uses PostgreSQL. Schema includes PostgreSQL-specific triggers (binary line invariant), `jsonb` columns, and `ILIKE`. SQLite silently ignores FK constraints and doesn't support these.
@@ -210,6 +190,8 @@ For each: short options with trade-offs. These are inputs for the next product/a
 ---
 
 ### DD-006 · CLOB cashout mechanism
+
+**Status:** ✅ Done (PR #36). Option A (sell limit orders) + Option B (operator buyback at mid-price) both implemented.
 
 **Question:** How should players exit CLOB positions before settlement?
 **Context:** `CashoutQuoteService`/`CashoutExecutionService` handle fixed-odds voids only. CLOB players hold contracts (YES/NO) that are only redeemable at settlement.
