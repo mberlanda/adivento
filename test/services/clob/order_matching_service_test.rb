@@ -175,6 +175,42 @@ module Clob
       assert_includes result.errors.first, 'Insufficient position'
     end
 
+    test 'rejects a second open sell order that would oversell held contracts (TD-019)' do
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+
+      # Seller holds exactly 10 YES contracts (from a filled buy)
+      Order.create!(
+        market: @market, market_leg: yes_leg, user: @seller,
+        side: 'YES', direction: 'buy', price_cents: 60, quantity: 10,
+        status: :filled, filled_quantity: 10, time_in_force: :gtc
+      )
+
+      # First sell for all 10 contracts: no resting buys, so it rests open.
+      first = Clob::OrderMatchingService.call(
+        market: @market,
+        incoming_order_params: {
+          user: @seller, side: 'YES', price_cents: 99,
+          direction: 'sell', quantity: 10, market_leg: yes_leg, time_in_force: :gtc
+        }
+      )
+
+      assert_predicate first, :success?
+      assert_equal 'open', first.incoming_order.status
+
+      # Second sell for another 10 must be rejected — the 10 held contracts are
+      # already committed to the resting first sell order.
+      second = Clob::OrderMatchingService.call(
+        market: @market,
+        incoming_order_params: {
+          user: @seller, side: 'YES', price_cents: 99,
+          direction: 'sell', quantity: 10, market_leg: yes_leg, time_in_force: :gtc
+        }
+      )
+
+      assert_not second.success?
+      assert_includes second.errors.first, 'Insufficient position'
+    end
+
     test 'CLOB_SELL_CREDIT ledger entry written on sell fill' do
       yes_leg = @market.market_legs.find_by!(label: 'YES')
 
