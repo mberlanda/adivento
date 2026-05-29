@@ -20,7 +20,6 @@ Recommended order: finish the backend correctness tasks first, then move to the 
 
 | Task | ID | Priority | Plan |
 |------|----|----------|------|
-| Fix wallet lock in BetPlacementService and related services | TD-013 | P1 — High | Task 1 in 2026-05-29-backend-next-steps.md |
 | Expose LMSR positions on player positions page | TD-014 | P2 — High | Task 2 in 2026-05-29-backend-next-steps.md |
 | Fix leaderboard P&L (CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE) | TD-015 | P3 — Medium | Task 3 in 2026-05-29-backend-next-steps.md |
 | Admin API: permit category and tags in market params | TD-016 | P4 — Medium | Task 4 in 2026-05-29-backend-next-steps.md |
@@ -35,6 +34,7 @@ Recommended order: finish the backend correctness tasks first, then move to the 
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| TD-013 lock wallet rows across all mutation paths | 2026-05-29 | branch `fix/td-013-wallet-locking` |
 | TD-019 reserve contracts for open CLOB sell orders | 2026-05-29 | branch `fix/td-019-clob-sell-reservation` |
 | TD-018 CLOB settlement pays net positions | 2026-05-29 | branch `fix/td-018-clob-net-settlement` |
 | DD-006 CLOB sell orders + operator buyback | 2026-05-29 | PR #36 `8a67f3c` |
