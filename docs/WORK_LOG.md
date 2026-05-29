@@ -4,6 +4,15 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — TD-019: reserve contracts for open CLOB sell orders
+
+- `Clob::OrderMatchingService#validate_sell_position!` now subtracts the unfilled quantity of the user's other resting (open/partial) sell orders on the same side before allowing a new sell. Prevents overlapping open sell orders from collectively overselling the held position (e.g. two 10-contract sells against a 10-contract holding).
+- Remaining follow-up: concurrent fill-time revalidation under a per-position lock (tracked with TD-013 locking work).
+- Tier 0 item #2 of 4 from the deep-review synthesis.
+- Key files: `app/services/clob/order_matching_service.rb`, `test/services/clob/order_matching_service_test.rb`
+
+---
+
 ## 2026-05-29 — TD-018: CLOB settlement pays net positions
 
 - `Settlement::ClobSettlementHandler` Pass 2 now credits each holder's **net** long position on the winning side (filled buys − filled sells, via `Clob::NetPositionService`) instead of every raw filled winning-side order. Fixes double-payout where a player who bought then sold their position was paid at settlement alongside the buyer who absorbed the sell.

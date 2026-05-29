@@ -166,7 +166,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-019 · CLOB sell orders do not reserve contracts
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** Resolved 2026-05-29. `validate_sell_position!` now reserves contracts already committed to the user's other resting (open/partial) sell orders on the same side: available-to-sell = net − open-unfilled-sells. Regression test in `test/services/clob/order_matching_service_test.rb`. **Remaining:** concurrent fill-time revalidation under a per-position lock is still a follow-up (overlaps TD-013 locking).
 **Problem:** `OrderMatchingService#validate_sell_position!` checks current net position only when a sell order is created. Unfilled sell orders do not reserve or otherwise reduce available contracts. A user with 10 contracts can place multiple open sell orders for 10 contracts each; if they later fill, the user can sell more contracts than they own.
 **Fix:** Track reserved sell quantity in net-position checks (`bought - filled_sold - open_sell_unfilled`) or add a contract reservation model/column. Validate again under lock when matching sell orders. Add sequence tests for duplicate sell listings.
 **Impact:** High — CLOB positions can become negative and settlement/accounting becomes unreliable.
