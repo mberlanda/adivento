@@ -2,12 +2,12 @@ class CloseExpiredMarketsJob < ApplicationJob
   queue_as :default
 
   def perform
-    expired = Market.open.where.not(close_at: nil).where('close_at <= ?', Time.current)
+    expired = Market.open.where.not(close_at: nil).where(close_at: ..Time.current)
 
     expired.find_each do |market|
       updated = Market.where(id: market.id, status: Market.statuses[:open])
                       .update_all(status: Market.statuses[:closed])
-      next unless updated > 0
+      next unless updated.positive?
 
       AuditEvent.create!(
         action: 'market.close',

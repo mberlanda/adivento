@@ -77,6 +77,7 @@ class AdminMarketSettleTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     body = response.parsed_body
+
     assert_equal 'settled', body['status']
     assert_equal 'YES', body['settled_outcome']
   end
