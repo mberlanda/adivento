@@ -145,7 +145,10 @@ Plan approved?
 - **DD-006: CLOB sell orders + operator buyback** — `direction` column on orders; sell limit order matching against resting buy orders; `NetPositionService`; `ClobCashoutService`; `OperatorBuybackService` (mid-price from book); backoffice buyback UI; web clob_cashout action (PR #36, `8a67f3c`)
 
 ### ⏳ Next
-- See `docs/wiki/tech-debt-backlog.md` for prioritised backlog (F-010 through F-018, TD-001 through TD-012)
+- Execute `docs/superpowers/plans/2026-05-29-backend-next-steps.md` first: TD-013 through TD-017 are the highest-confidence planned backend correctness gaps.
+- Create follow-up plans for TD-018 through TD-022 from `docs/wiki/tech-debt-backlog.md`.
+- Then schedule the planned UX slices in `docs/wiki/UX_BACKLOG.md`.
+- Larger product gaps still need specs/plans: F-004 price history, F-008 watchlists/notifications, F-010 resolution notes, F-011 activity feed, F-012 responsible-gaming controls.
 
 ### Plans + Reviews
 
@@ -163,6 +166,7 @@ Plan approved?
 | F-006: Backoffice market create UX | [plan](superpowers/plans/2026-05-28-f006-backoffice-market-create-ux.md) | — | ✅ implemented |
 | Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
+| Backend next steps (TD-013–TD-017) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned |
 
 ---
 

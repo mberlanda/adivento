@@ -4,6 +4,7 @@ Last updated: 2026-05-29
 
 This file is the single index of open items. Check it at the start of each session.
 Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.md`.
+Backend next-steps plan: `docs/superpowers/plans/2026-05-29-backend-next-steps.md`
 
 ---
 
@@ -15,7 +16,20 @@ _No blocked items. All pending design decisions have been resolved._
 
 ## 🟡 Ready for Autonomous Work
 
-_No autonomous tasks remaining — all non-blocked items are done._
+Recommended order: finish the backend correctness tasks first, then move to the planned UX slices in `docs/wiki/UX_BACKLOG.md`.
+
+| Task | ID | Priority | Plan |
+|------|----|----------|------|
+| Fix wallet lock in BetPlacementService and related services | TD-013 | P1 — High | Task 1 in 2026-05-29-backend-next-steps.md |
+| Expose LMSR positions on player positions page | TD-014 | P2 — High | Task 2 in 2026-05-29-backend-next-steps.md |
+| Fix leaderboard P&L (CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE) | TD-015 | P3 — Medium | Task 3 in 2026-05-29-backend-next-steps.md |
+| Admin API: permit category and tags in market params | TD-016 | P4 — Medium | Task 4 in 2026-05-29-backend-next-steps.md |
+| MarketCancellationService + backoffice cancel action | TD-017 | P5 — Medium | Task 5 in 2026-05-29-backend-next-steps.md |
+| Fix CLOB settlement overpay after sell orders | TD-018 | P1 — High | Needs plan |
+| Reserve CLOB contracts for open sell orders | TD-019 | P1 — High | Needs plan |
+| Add admin CLOB order trading-state guards | TD-020 | P3 — Medium | Needs plan |
+| Lock CLOB order cancellation consistently | TD-021 | P3 — Medium | Needs plan |
+| Clear RuboCop Rails/FilePath offense | TD-022 | P5 — Low | No plan needed |
 
 ---
 
@@ -65,6 +79,16 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-001 | LMSR individual settlement payouts | High | ✅ done (DD-002, PR #35) |
 | TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
 | TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
+| TD-013 | BetPlacementService wallet lock (race condition) | High | Open — see plan |
+| TD-014 | LMSR positions missing from positions page | High | Open — see plan |
+| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | Open — see plan |
+| TD-016 | Admin API missing category/tags params | Medium | Open — see plan |
+| TD-017 | Market cancellation service + backoffice action | Medium | Open — see plan |
+| TD-018 | CLOB settlement pays sold positions as winners | High | Open — needs plan |
+| TD-019 | CLOB sell orders do not reserve contracts | High | Open — needs plan |
+| TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — needs plan |
+| TD-021 | CLOB order cancellation locking | Medium | Open — needs plan |
+| TD-022 | RuboCop Rails/FilePath offense | Low | Open |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |
 | TD-006 | E2E browser matrix (Firefox/WebKit) | Low | Deferred |
@@ -74,3 +98,15 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-010 | Binary line trigger not tested in SQLite | — | ✅ resolved (DD-004, PR #33) |
 | TD-011 | Market edit form (backoffice) | — | ✅ done (PR #31) |
 | TD-012 | Market list pagination | — | ✅ done (PR #29) |
+
+---
+
+## Product / UX Backlog Pointers
+
+| Area | Next action |
+|------|-------------|
+| UX market browse/detail | Execute PR A in `docs/wiki/UX_BACKLOG.md` |
+| UX leaderboard/profile/auth/positions | Execute PR B in `docs/wiki/UX_BACKLOG.md` |
+| Settlement explainer | Execute PR C in `docs/wiki/UX_BACKLOG.md` |
+| Backoffice dashboard/settle/faucet | Execute PR D in `docs/wiki/UX_BACKLOG.md` |
+| Price history, watchlists, resolution notes, activity feed, responsible-gaming controls | Create specs/plans from `docs/product/BACKLOG.md` |

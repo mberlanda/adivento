@@ -4,6 +4,17 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-29 — docs(backlog): implementation gap review
+
+- Published the backend gap review as an executable next-steps plan: TD-013 wallet locking, TD-014 LMSR positions UI, TD-015 leaderboard ledger types, TD-016 admin API category/tags, TD-017 market cancellation
+- Recorded additional follow-up backend findings TD-018 through TD-022 for CLOB settlement/sell-order/cancellation correctness and one RuboCop gate fix
+- Updated `.claude/tasks/ATTENTION.md` so future sessions start from the ready autonomous backend tasks and then move to UX/product slices
+- Corrected stale TD-008 status: player positions and betslip execution HTML views are done in PR #29
+- Added product/UX gap review pointers for planned UX slices and larger features needing specs/plans
+- Key files: `.claude/tasks/ATTENTION.md`, `docs/wiki/tech-debt-backlog.md`, `docs/superpowers/plans/2026-05-29-backend-next-steps.md`, `docs/INDEX.md`
+
+---
+
 ## 2026-05-29 — DD-006: CLOB sell limit orders and operator buyback (PR #36, `8a67f3c`)
 
 - `direction` column added to `orders` (buy/sell, default 'buy'); DB check constraint; `Order#buy?`/`sell?`/`reserved_minor` helpers
