@@ -200,6 +200,18 @@ Update this file when a gap is closed or a decision is made.
 
 ---
 
+### TD-034 · Settlement & sell-order idempotency under concurrent operations
+
+**Status:** Open. Raised by Copilot review on PRs #43/#44 (2026-05-30).
+**Problem:** Several paths are safe single-threaded but not under truly concurrent calls:
+- `Clob::OrderMatchingService#validate_sell_position!` is non-atomic — two concurrent sell placements for the same user/side can both pass the available-to-sell check (TD-019 fixed the deterministic two-open-orders case; the concurrent race remains).
+- `Parimutuel::ParimutuelSettlementService` does not lock the market until after `refund_all!`, so two concurrent settlements on a zero-winning-pool market could double-refund.
+- `Settlement::ClobSettlementHandler` Pass 1 cancels orders without a per-order row lock, so concurrent settlements of the same market could double-release reservations.
+**Fix:** Lock the market row at the start of every settlement handler (matching `LmsrSettlementHandler`) so settlement is serialized per market, and re-validate sell position under a row lock at fill time. Best done as one focused "settlement idempotency" PR alongside the TD-028 settlement-handler unification.
+**Impact:** Medium — requires genuine concurrency (two operators / two requests racing on the same market) to trigger; SettlementService already blocks sequential double-settle via the status guard.
+
+---
+
 ## Product/UX implementation gap review — 2026-05-29
 
 The backend tasks above are the highest-confidence autonomous implementation work. The remaining product and UX gaps are larger slices and should be scheduled after the data-integrity fixes unless a demo need pulls them forward.
