@@ -20,7 +20,7 @@ Source plan: `docs/superpowers/plans/2026-05-29-specialist-review-dispatch.md`
 | QA/E2E/release | `qa-release.md` | complete |
 | DevOps/operability | `devops-operability.md` | complete |
 | Docs/backlog hygiene | `docs-handoff.md` | complete |
-| Cross-cutting synthesis | `synthesis.md` | pending |
+| Cross-cutting synthesis | `synthesis.md` | complete |
 
 ## Report Contract
 
