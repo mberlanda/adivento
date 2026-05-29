@@ -44,6 +44,23 @@ The user accepted Decision 1 as already in progress with Claude and asked to tra
 - If an option affects multiple systems or establishes policy, create or update an ADR under `docs/adr/`.
 - If a feature needs product requirements before implementation, create or update a spec under `docs/specs/`.
 
+## Already-Implemented Audit
+
+Checked against the current branch after merging `origin/main` on 2026-05-30. None of the D2-D11 todos should be deleted as already implemented.
+
+| Todo | Audit result | Evidence |
+|------|--------------|----------|
+| D2-TODO-001 | Keep | No `app/services/market_cancellation_service.rb`; TD-017 still says no cancellation service exists. |
+| D3-TODO-002 | Keep | `Web::OrdersController#create` has lifecycle guards, but `Admin::OrdersController#create` only checks CLOB and `Clob::OrderMatchingService` has no centralized open/close guard. |
+| D4-TODO-003 | Keep | Admin cancel now locks order/wallet as a partial TD-013 follow-up, but there is no shared `Clob::OrderCancellationService`; web/admin still duplicate cancellation logic. |
+| D5-TODO-004 | Keep | `docs/product/BACKLOG.md` still describes the project as a fixed-odds POC and has not been rewritten around four mechanisms. |
+| D6-TODO-005 | Keep | `PriceSnapshot` and recorder exist, but there is no price-history endpoint or real chart consumer. |
+| D7-TODO-006 | Keep | `resolution_note` and `settled_at` appear only in backlog prose; no schema/controller/service implementation exists. |
+| D8-TODO-007 | Keep | No notification/watchlist models, tables, controllers, or routes exist. |
+| D9-TODO-008 | Keep | `docs/wiki/UX_BACKLOG.md` still marks UX-034 deferred and blocked by community features. |
+| D10-TODO-009 | Keep | Playwright has local Firefox/WebKit projects when not in Docker, but CI has no nightly schedule and Docker E2E remains Chromium-only. |
+| D11-TODO-010 | Keep | Docs still describe strict sequencing; no surgical-exception checklist or policy update exists. |
+
 ## Planning Todos
 
 ### D2-TODO-001: Plan full cross-mechanism market cancellation
