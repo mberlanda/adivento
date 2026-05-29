@@ -25,17 +25,21 @@ module Settlement
         )
       end
 
-      # Pass 2: credit winning contracts (100 per filled contract on winning side)
-      @market.orders.where(side: @winning_side).where.not(filled_quantity: 0).find_each do |order|
-        payout = order.filled_quantity * 100
-        next if payout.zero?
+      # Pass 2: credit each holder for their NET long position on the winning side
+      # (filled buys - filled sells). Paying raw filled orders would double-pay
+      # contracts that were sold before settlement (TD-018).
+      user_ids = @market.orders.where(side: @winning_side).where.not(filled_quantity: 0).distinct.pluck(:user_id)
+      User.where(id: user_ids).find_each do |user|
+        net = Clob::NetPositionService.call(user: user, market: @market, side: @winning_side)
+        next unless net.positive?
 
-        w = order.user.wallet.lock!
+        payout = net * 100
+        w = user.wallet.lock!
         w.update!(available_minor: w.available_minor + payout)
         LedgerEntry.create!(
-          user: order.user, actor: @settled_by,
+          user: user, actor: @settled_by,
           entry_type: 'SETTLEMENT_WIN', direction: 'credit',
-          amount_minor: payout
+          amount_minor: payout, metadata: { market_id: @market.id }
         )
       end
 
