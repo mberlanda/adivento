@@ -112,7 +112,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-013 · BetPlacementService missing wallet lock (race condition)
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** Resolved 2026-05-29 (scope expanded). Wallet rows are now locked (`lock!`) inside the transaction with an authoritative balance re-check in `BetPlacementService`, and `lock!` added to every other unlocked wallet mutation: `BetVoidService`, `CashoutExecutionService`, `SettlementService#settle_fixed_odds!`, `Settlement::ClobSettlementHandler` Pass 1, `WalletGrantService#approve!`, and `Parimutuel::ParimutuelSettlementService#refund_all!`. `Admin::OrdersController#destroy` now re-loads and locks the order row inside the transaction (partial TD-021). Concurrency regression test: `test/services/bet_placement_concurrency_test.rb` (two concurrent placements on a one-bet balance create exactly one bet).
 **Problem:** `BetPlacementService` reads `user.wallet` without `lock!` before the balance check, then debits inside a transaction. Two concurrent requests can both pass the balance check on the stale value, resulting in a negative balance. The model validates `available_minor >= 0` but uses the pre-lock stale value, so the guard does not prevent the race. Same issue exists in `BetVoidService`, `CashoutExecutionService`, and `SettlementService#settle_fixed_odds!`.
 **Fix:** Replace `user.wallet` with `user.wallet.lock!` inside the transaction in all four services. Pattern is already correct in `LmsrTradeService`, `ParimutuelPoolService`, and the CLOB handlers.
 **Impact:** High — double-spend possible under concurrent load.
