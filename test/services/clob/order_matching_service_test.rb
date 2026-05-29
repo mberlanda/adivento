@@ -121,5 +121,84 @@ module Clob
         )
       end
     end
+
+    test 'sell YES order matches against resting buy YES order' do
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+
+      # Buyer has a resting YES buy order at 65¢
+      resting = Order.create!(
+        market: @market, market_leg: yes_leg, user: @buyer,
+        side: 'YES', direction: 'buy', price_cents: 65, quantity: 5,
+        status: :open, time_in_force: :gtc
+      )
+      @buyer.wallet.update!(available_minor: 500_000 - 325, reserved_minor: 325)
+
+      # Seller has 5 YES contracts (from filled buy)
+      Order.create!(
+        market: @market, market_leg: yes_leg, user: @seller,
+        side: 'YES', direction: 'buy', price_cents: 60, quantity: 5,
+        status: :filled, time_in_force: :gtc, filled_quantity: 5
+      )
+
+      seller_initial = @seller.wallet.reload.available_minor
+
+      result = Clob::OrderMatchingService.call(
+        market: @market,
+        incoming_order_params: {
+          user: @seller, side: 'YES', price_cents: 60,
+          direction: 'sell', quantity: 5, market_leg: yes_leg, time_in_force: :gtc
+        }
+      )
+
+      assert_predicate result, :success?
+      assert_equal 'filled', result.incoming_order.status
+      assert_equal 5, result.incoming_order.filled_quantity
+      resting.reload
+      assert_equal 'filled', resting.status
+      # Seller credited at buyer's (maker's) price: 65¢ × 5 = 325
+      assert_equal seller_initial + 325, @seller.wallet.reload.available_minor
+    end
+
+    test 'sell order rejected when net position is insufficient' do
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+
+      result = Clob::OrderMatchingService.call(
+        market: @market,
+        incoming_order_params: {
+          user: @seller, side: 'YES', price_cents: 60,
+          direction: 'sell', quantity: 5, market_leg: yes_leg, time_in_force: :gtc
+        }
+      )
+
+      assert_not result.success?
+      assert_includes result.errors.first, 'Insufficient position'
+    end
+
+    test 'CLOB_SELL_CREDIT ledger entry written on sell fill' do
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+
+      Order.create!(
+        market: @market, market_leg: yes_leg, user: @buyer,
+        side: 'YES', direction: 'buy', price_cents: 65, quantity: 5,
+        status: :open, time_in_force: :gtc
+      )
+      @buyer.wallet.update!(available_minor: 500_000 - 325, reserved_minor: 325)
+
+      Order.create!(
+        market: @market, market_leg: yes_leg, user: @seller,
+        side: 'YES', direction: 'buy', price_cents: 60, quantity: 5,
+        status: :filled, time_in_force: :gtc, filled_quantity: 5
+      )
+
+      assert_difference -> { LedgerEntry.where(entry_type: 'CLOB_SELL_CREDIT').count }, 1 do
+        Clob::OrderMatchingService.call(
+          market: @market,
+          incoming_order_params: {
+            user: @seller, side: 'YES', price_cents: 60,
+            direction: 'sell', quantity: 5, market_leg: yes_leg, time_in_force: :gtc
+          }
+        )
+      end
+    end
   end
 end

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       collection do
         post :cashout_quotes
         post :cashout_execute
+        post :clob_cashout
       end
     end
   end
@@ -47,6 +48,7 @@ Rails.application.routes.draw do
     resources :markets, only: %i[index show create update] do
       post :open, on: :member
       post :settle, on: :member
+      post :operator_buyback, on: :member
     end
     resources :faucet_requests, only: [:index] do
       post :approve, on: :member

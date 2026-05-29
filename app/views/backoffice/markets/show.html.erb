@@ -37,6 +37,31 @@
     <% end %>
   <% end %>
 
+  <% if @market.clob? && @market.open? %>
+    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;" data-testid="operator-buyback-panel">
+      <h4>Operator buyback</h4>
+      <p style="color:#9fb2b8;font-size:0.88em;">
+        Place a buy order at the current mid-price to provide immediate liquidity for players who want to sell.
+      </p>
+      <%= form_with url: operator_buyback_backoffice_market_path(@market), method: :post,
+            html: { data: { testid: "operator-buyback-form" } } do |f| %>
+        <p>
+          <label>Side</label>
+          <select name="side" data-testid="buyback-side" style="margin-left:8px;">
+            <% @market.market_legs.each do |leg| %>
+              <option value="<%= leg.label %>"><%= leg.label %></option>
+            <% end %>
+          </select>
+        </p>
+        <p>
+          <label>Contracts</label>
+          <%= number_field_tag :contracts, 10, min: 1, data: { testid: "buyback-contracts" }, style: "margin-left:8px;width:80px;" %>
+        </p>
+        <%= f.submit "Trigger buyback at mid-price", data: { testid: "buyback-submit" } %>
+      <% end %>
+    </div>
+  <% end %>
+
   <% if @market.open? || @market.closed? %>
     <% if @market.closed? %>
       <div style="margin-top:16px;padding:14px;background:#2a1f0a;border:1px solid #f0bc5c;border-radius:8px;" data-testid="market-closed-banner">

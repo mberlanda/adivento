@@ -435,7 +435,9 @@ CREATE TABLE public.orders (
     status integer DEFAULT 0 NOT NULL,
     time_in_force integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    direction character varying DEFAULT 'buy'::character varying NOT NULL,
+    CONSTRAINT orders_direction_valid CHECK (((direction)::text = ANY (ARRAY[('buy'::character varying)::text, ('sell'::character varying)::text])))
 );
 
 
@@ -1449,6 +1451,7 @@ ALTER TABLE ONLY public.user_grants
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260529030007'),
 ('20260529023811'),
 ('20260528170128'),
 ('20260528154331'),

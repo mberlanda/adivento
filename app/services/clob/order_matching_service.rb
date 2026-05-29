@@ -13,7 +13,12 @@ module Clob
       ApplicationRecord.transaction do
         order = build_incoming_order
         order.save!
-        reserve_funds!(order)
+
+        if order.sell?
+          validate_sell_position!(order)
+        else
+          reserve_funds!(order)
+        end
 
         # FOK: check full availability before matching
         if order.fok?
@@ -45,6 +50,7 @@ module Clob
         market_leg: @params[:market_leg],
         user: @params[:user],
         side: @params[:side],
+        direction: @params[:direction] || 'buy',
         price_cents: @params[:price_cents],
         quantity: @params[:quantity],
         time_in_force: @params[:time_in_force] || :gtc,
@@ -63,14 +69,14 @@ module Clob
       )
     end
 
-    def count_matchable_quantity(incoming)
-      opposite_side  = incoming.side == 'YES' ? 'NO' : 'YES'
-      resting_orders = @market.orders
-                              .where(side: opposite_side, status: %w[open partial])
-                              .order(price_cents: :desc, created_at: :asc)
+    def validate_sell_position!(order)
+      net = NetPositionService.call(user: order.user, market: @market, side: order.side)
+      raise 'Insufficient position to sell' if net < order.quantity
+    end
 
+    def count_matchable_quantity(incoming)
       total = 0
-      resting_orders.each do |resting|
+      resting_for(incoming).each do |resting|
         break unless compatible?(incoming, resting)
 
         total += resting.unfilled_quantity
@@ -81,33 +87,65 @@ module Clob
 
     def match!(incoming)
       fills = []
-      opposite_side  = incoming.side == 'YES' ? 'NO' : 'YES'
-      resting_orders = @market.orders
-                              .where(side: opposite_side, status: %w[open partial])
-                              .lock('FOR UPDATE SKIP LOCKED')
-                              .order(price_cents: :desc, created_at: :asc)
-
-      resting_orders.each do |resting|
+      resting_for(incoming).each do |resting|
         break if incoming.unfilled_quantity <= 0
         break unless compatible?(incoming, resting)
 
-        fill_qty   = [incoming.unfilled_quantity, resting.unfilled_quantity].min
+        fill_qty = [incoming.unfilled_quantity, resting.unfilled_quantity].min
         fill_price = resting.price_cents
-        fills << execute_fill!(incoming, resting, fill_qty, fill_price)
+        fills << if incoming.sell?
+                   execute_sell_fill!(incoming, resting, fill_qty, fill_price)
+                 else
+                   execute_fill!(incoming, resting, fill_qty, fill_price)
+                 end
       end
       fills
     end
 
-    def compatible?(incoming, resting)
-      if incoming.side == 'YES'
-        incoming.price_cents + resting.price_cents >= 100
+    # Returns the resting orders that `incoming` can match against.
+    # Sell orders match against same-side buy resting orders.
+    # Buy orders match against sell resting orders first, then cross-side buy orders.
+    def resting_for(incoming)
+      if incoming.sell?
+        @market.orders
+               .where(side: incoming.side, direction: 'buy', status: %w[open partial])
+               .lock('FOR UPDATE SKIP LOCKED')
+               .order(price_cents: :desc, created_at: :asc)
       else
-        resting.price_cents + incoming.price_cents >= 100
+        # Buy order: first try resting sell orders on same side (cheaper), then cross-side
+        sell_resting = @market.orders
+                              .where(side: incoming.side, direction: 'sell', status: %w[open partial])
+                              .lock('FOR UPDATE SKIP LOCKED')
+                              .order(price_cents: :asc, created_at: :asc)
+        cross_resting = @market.orders
+                               .where(side: opposite(incoming.side), direction: 'buy', status: %w[open partial])
+                               .lock('FOR UPDATE SKIP LOCKED')
+                               .order(price_cents: :desc, created_at: :asc)
+        # Array#+ materialises both relations into memory. Acceptable at current book sizes;
+        # replace with a UNION query or lazy iteration if order books grow large.
+        sell_resting + cross_resting
       end
     end
 
+    def compatible?(incoming, resting)
+      if incoming.sell?
+        # Sell YES at ask, resting buy YES at bid — compatible if bid >= ask
+        resting.price_cents >= incoming.price_cents
+      elsif resting.sell?
+        # Buy YES at bid, resting sell YES at ask — compatible if bid >= ask
+        incoming.price_cents >= resting.price_cents
+      else
+        # Both are buy orders on opposite sides — original cross-side compatibility
+        if incoming.side == 'YES'
+          incoming.price_cents + resting.price_cents >= 100
+        else
+          resting.price_cents + incoming.price_cents >= 100
+        end
+      end
+    end
+
+    # Original fill: both sides are buy orders, together they fund a new contract.
     def execute_fill!(taker, maker, qty, price)
-      # Each side pays their own price; together they sum to 100 (contract value)
       taker_stake = taker.price_cents * qty
       maker_stake = maker.price_cents * qty
 
@@ -119,7 +157,6 @@ module Clob
       maker.status = maker.unfilled_quantity.zero? ? :filled : :partial
       maker.save!
 
-      # Release reservation for the filled quantity (stake is now committed)
       maker_wallet = maker.user.wallet.lock!
       maker_wallet.update!(reserved_minor: maker_wallet.reserved_minor - maker_stake)
 
@@ -140,7 +177,6 @@ module Clob
 
       @market.update_columns(last_fill_price_cents: price, updated_at: Time.current)
 
-      # Taker fee charged on taker's stake
       fee = (@market.taker_fee_bps.to_i * taker_stake / 10_000.0).ceil
       if fee.positive?
         LedgerEntry.create!(
@@ -152,6 +188,48 @@ module Clob
       end
 
       { taker_order: taker, maker_order: maker, qty: qty, price: price, fee: fee }
+    end
+
+    # Sell fill: seller gives up existing contracts, buyer pays cash.
+    # Fill price = maker's (buyer's) price_cents when seller is taker,
+    # or seller's (sell order's) price_cents when seller is maker.
+    # No taker fee here: the seller is exiting an existing position (providing liquidity),
+    # not creating new contracts the way a cross-side buy match does.
+    def execute_sell_fill!(sell_order, buy_order, qty, fill_price)
+      proceeds = fill_price * qty  # what the seller receives
+      buyer_stake = fill_price * qty
+
+      sell_order.filled_quantity += qty
+      sell_order.status = sell_order.unfilled_quantity.zero? ? :filled : :partial
+      sell_order.save!
+
+      buy_order.filled_quantity += qty
+      buy_order.status = buy_order.unfilled_quantity.zero? ? :filled : :partial
+      buy_order.save!
+
+      # Release buyer's reservation for this fill quantity
+      buyer_wallet = buy_order.user.wallet.lock!
+      buyer_wallet.update!(reserved_minor: buyer_wallet.reserved_minor - buyer_stake)
+
+      # Credit seller for the proceeds (no prior reservation to release)
+      seller_wallet = sell_order.user.wallet.lock!
+      seller_wallet.update!(available_minor: seller_wallet.available_minor + proceeds)
+
+      fill_meta = { market_id: @market.id, fill_price: fill_price, fill_qty: qty }
+      LedgerEntry.create!(
+        user: sell_order.user, actor: sell_order.user,
+        entry_type: 'CLOB_SELL_CREDIT', direction: 'credit',
+        amount_minor: proceeds, metadata: fill_meta
+      )
+      LedgerEntry.create!(
+        user: buy_order.user, actor: sell_order.user,
+        entry_type: 'ORDER_FILL_STAKE', direction: 'debit',
+        amount_minor: buyer_stake, metadata: fill_meta
+      )
+
+      @market.update_columns(last_fill_price_cents: fill_price, updated_at: Time.current)
+
+      { taker_order: sell_order, maker_order: buy_order, qty: qty, price: fill_price, fee: 0 }
     end
 
     def apply_tif_cancellation!(order)
@@ -168,6 +246,9 @@ module Clob
       order.cancelled_quantity += unfilled
       order.status = order.filled_quantity.zero? ? :cancelled : :filled
       order.save!
+
+      return unless order.buy?
+
       release = order.price_cents * unfilled
       wallet = order.user.wallet.lock!
       wallet.update!(
@@ -181,7 +262,7 @@ module Clob
         action: 'order.place',
         actor: order.user,
         target_type: 'Order', target_id: order.id,
-        metadata: { side: order.side, price_cents: order.price_cents, quantity: order.quantity, fills: fills.size }
+        metadata: { side: order.side, direction: order.direction, price_cents: order.price_cents, quantity: order.quantity, fills: fills.size }
       )
       fills.each do |f|
         AuditEvent.create!(
@@ -192,5 +273,7 @@ module Clob
         )
       end
     end
+
+    def opposite(side) = side == 'YES' ? 'NO' : 'YES'
   end
 end

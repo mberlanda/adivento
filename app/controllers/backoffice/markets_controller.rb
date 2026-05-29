@@ -1,7 +1,7 @@
 module Backoffice
   class MarketsController < BaseController
     before_action -> { require_permission!('market.read') }
-    before_action :set_market, only: %i[show open settle update]
+    before_action :set_market, only: %i[show open settle update operator_buyback]
 
     def index
       @page     = [params[:page].to_i, 1].max
@@ -79,6 +79,28 @@ module Backoffice
         metadata: {}
       )
       redirect_to backoffice_market_path(@market), notice: 'Market is now open'
+    end
+
+    def operator_buyback
+      require_permission!('market.update')
+      return if performed?
+
+      unless @market.clob? && @market.open?
+        return redirect_to backoffice_market_path(@market), alert: 'Buyback only available on open CLOB markets'
+      end
+
+      result = Clob::OperatorBuybackService.call(
+        market: @market,
+        operator: current_user,
+        side: params.expect(:side).upcase,
+        contracts: params.expect(:contracts)
+      )
+
+      if result.success?
+        redirect_to backoffice_market_path(@market), notice: "Buyback order placed at mid-price (order ##{result.orders.first.id})"
+      else
+        redirect_to backoffice_market_path(@market), alert: result.errors.join(', ')
+      end
     end
 
     def settle
