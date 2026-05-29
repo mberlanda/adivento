@@ -8,16 +8,16 @@ Source plan: `docs/superpowers/plans/2026-05-29-specialist-review-dispatch.md`
 
 | Family | Report | Status |
 |--------|--------|--------|
-| Architecture | `architecture.md` | pending |
-| Rails/code correctness | `code-correctness.md` | pending |
-| Market mechanics | `market-mechanics.md` | pending |
-| Data/Postgres | `data-postgres.md` | pending |
+| Architecture | `architecture.md` | complete |
+| Rails/code correctness | `code-correctness.md` | complete |
+| Market mechanics | `market-mechanics.md` | complete |
+| Data/Postgres | `data-postgres.md` | complete |
 | Security/trust/compliance | `security-trust.md` | pending |
-| Product/roadmap | `product-roadmap.md` | pending |
-| UX research / IA | `ux-research-ia.md` | pending |
-| UI visual design | `ui-design.md` | pending |
-| Mobile app design | `mobile-design.md` | pending |
-| QA/E2E/release | `qa-release.md` | pending |
+| Product/roadmap | `product-roadmap.md` | complete |
+| UX research / IA | `ux-research-ia.md` | complete |
+| UI visual design | `ui-design.md` | complete |
+| Mobile app design | `mobile-design.md` | complete |
+| QA/E2E/release | `qa-release.md` | complete |
 | DevOps/operability | `devops-operability.md` | pending |
 | Docs/backlog hygiene | `docs-handoff.md` | pending |
 | Cross-cutting synthesis | `synthesis.md` | pending |
@@ -31,4 +31,3 @@ Each specialist report should include:
 - Detailed notes
 - Open questions
 - Backlog candidates
-
