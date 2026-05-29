@@ -16,6 +16,9 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :role, presence: true
+  # Enforce the minimum the registration form advertises. allow_nil so updates that
+  # do not touch the password (e.g. role changes, digest-only fixtures) are unaffected.
+  validates :password, length: { minimum: 8 }, allow_nil: true
 
   before_validation :normalize_email
   after_create :ensure_wallet

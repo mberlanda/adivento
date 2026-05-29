@@ -26,6 +26,14 @@ class WebRegistrationTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'POST /register rejects a password shorter than 8 characters' do
+    assert_no_difference 'User.count' do
+      post '/register', params: { email: 'shortpw@example.com', password: 'short' }
+    end
+
+    assert_response :unprocessable_content
+  end
+
   test 'POST /register re-renders with an error for a duplicate email' do
     existing = users(:player)
 
