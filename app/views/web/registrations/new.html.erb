@@ -1,0 +1,16 @@
+<h1>Create your account</h1>
+<p class="muted">Sign up to track positions, climb the leaderboard, and trade on markets.</p>
+
+<%= form_with url: "/register", method: :post, html: { data: { testid: "register-form" } } do |f| %>
+  <p>
+    <%= f.label :email, "Email" %><br>
+    <%= f.email_field :email, required: true, data: { testid: "register-email" } %>
+  </p>
+  <p>
+    <%= f.label :password, "Password" %><br>
+    <%= f.password_field :password, required: true, minlength: 8, data: { testid: "register-password" } %>
+  </p>
+  <p><%= f.submit "Create account", data: { testid: "register-submit" } %></p>
+<% end %>
+
+<p class="muted">Already have an account? <%= link_to "Sign in", signin_path %></p>

@@ -73,6 +73,7 @@ Rails/ApplicationController:
     - 'app/controllers/backoffice/base_controller.rb'
     - 'app/controllers/web/base_controller.rb'
     - 'app/controllers/web/sessions_controller.rb'
+    - 'app/controllers/web/registrations_controller.rb'
 
 Layout/IndentationStyle:
   EnforcedStyle: spaces
