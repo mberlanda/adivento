@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adivento — Wireframes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #f0eee9; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="wireframe-kit.jsx"></script>
+  <script type="text/babel" src="wireframes-web.jsx"></script>
+  <script type="text/babel" src="wireframes-mechanisms.jsx"></script>
+  <script type="text/babel" src="wireframes-mobile.jsx"></script>
+  <script type="text/babel" src="wireframes-backoffice.jsx"></script>
+  <script type="text/babel" src="wireframes-additions.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+    const { WFWeb, WFMech, WFMob, WFBo, WFExtra } = window;
+    const A = '#356b8a';
+
+    function Brief() {
+      const li = { fontSize: 13, lineHeight: 1.5, color: '#3a3a3a', marginBottom: 7 };
+      const tag = (t, c) => <span style={{ display: 'inline-block', border: `1.5px solid ${c}`, color: c, borderRadius: 999, padding: '2px 10px', fontSize: 11, fontWeight: 700, marginRight: 6, marginBottom: 6 }}>{t}</span>;
+      return (
+        <div className="wf" style={{ width: '100%', height: '100%', padding: '30px 34px', background: '#fff', overflow: 'hidden' }}>
+          <div style={{ fontFamily: "'Caveat',cursive", fontSize: 30, fontWeight: 700, color: A, marginBottom: 2 }}>Adivento — Design System Wireframes</div>
+          <div style={{ fontSize: 13, color: '#8d8d8d', marginBottom: 18 }}>Phase 1 of 2 · low-fi structure & flow · iterated from the existing /web + /backoffice surfaces</div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr 1fr', gap: 26 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: A, marginBottom: 9 }}>What this is</div>
+              <div style={li}>Structural wireframes for <b>all four surfaces</b> — customer web, the four betting mechanisms, the native mobile app, and the operator backoffice.</div>
+              <div style={li}>Grayscale on purpose: we lock <b>layout, hierarchy & flow</b> first, then apply a theme in Phase 2.</div>
+              <div style={li}>Pan/zoom this canvas. Click any frame’s ⤢ to focus; use ←/→ to flip through a section.</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: A, marginBottom: 9 }}>Assumptions</div>
+              <div style={li}>• Binary markets only (exactly 2 legs, DB-enforced).</div>
+              <div style={li}>• ADIV play-money; faucet top-ups gated by moderators.</div>
+              <div style={li}>• Guests browse; players bet; moderators operate.</div>
+              <div style={li}>• Real-time prices via SSE → a “live” indicator on open markets.</div>
+              <div style={li}>• Maps to existing routes: <code>/web</code>, <code>/backoffice</code>.</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: A, marginBottom: 9 }}>Phase 2 — two themes to pick</div>
+              <div style={{ marginBottom: 10 }}>{tag('Playful Fantasy', '#356b8a')}{tag('Serious Terminal', '#9a6a1e')}</div>
+              <div style={li}>Both descend from your current cream+teal (customer) and dark+gold (operator) DNA. You’ll be able to toggle and mix-and-match.</div>
+              <div style={{ ...li, color: '#9a6a1e' }}>Next: confirm flows below, then I build the hi-fi, theme-switchable prototype + the <code>docs/design/</code> guide.</div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: 18, paddingTop: 14, borderTop: '1.5px solid #e6e4de', display: 'flex', gap: 26, alignItems: 'center' }}>
+            <span style={{ fontFamily: "'Caveat',cursive", fontSize: 18, color: A, fontWeight: 700 }}>Legend:</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: '#3a3a3a' }}><span style={{ width: 18, height: 18, borderRadius: 999, background: A, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>1</span> numbered design note (see guide)</span>
+            <span style={{ fontFamily: "'Caveat',cursive", fontSize: 17, color: A, fontWeight: 600 }}>↑ handwritten = annotation</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: '#3a3a3a' }}><span style={{ width: 26, height: 16, borderRadius: 3, backgroundColor: '#f4f3ef', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,.06) 4px, rgba(0,0,0,.06) 5px)', border: '1.5px solid #c7c7c2' }} /> = image placeholder</span>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <DesignCanvas>
+          <DCSection id="start" title="Start here" subtitle="Brief, assumptions & how to read this canvas">
+            <DCArtboard id="brief" label="Design brief" width={1180} height={400}><Brief /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="web" title="1 · Customer Web (desktop)" subtitle="Discovery → market detail → profile/wallet → leaderboard → auth">
+            <DCArtboard id="browse" label="Discovery / Browse" width={1180} height={650}><WFWeb.Browse /></DCArtboard>
+            <DCArtboard id="detail" label="Market detail + bet" width={1180} height={1240}><WFWeb.MarketDetail /></DCArtboard>
+            <DCArtboard id="profile" label="Profile / Wallet / Faucet" width={1180} height={640}><WFWeb.Profile /></DCArtboard>
+            <DCArtboard id="leaderboard" label="Leaderboard" width={1180} height={640}><WFWeb.Leaderboard /></DCArtboard>
+            <DCArtboard id="auth" label="Auth / Onboarding" width={1180} height={430}><WFWeb.Auth /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="mech" title="2 · Betting mechanisms" subtitle="The four mechanisms diverge most in the bet panel — one frame each">
+            <DCArtboard id="fo" label="Fixed-odds" width={360} height={560}><WFMech.FixedOdds /></DCArtboard>
+            <DCArtboard id="clob" label="CLOB · order book" width={360} height={640}><WFMech.Clob /></DCArtboard>
+            <DCArtboard id="lmsr" label="LMSR · AMM" width={360} height={600}><WFMech.Lmsr /></DCArtboard>
+            <DCArtboard id="pari" label="Parimutuel · pool" width={360} height={600}><WFMech.Parimutuel /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="mobile" title="3 · Native mobile app" subtitle="iOS/Android feel — bottom tabs, thumb-reachable bet sheet">
+            <DCArtboard id="m-markets" label="Markets" width={320} height={680}><WFMob.Markets /></DCArtboard>
+            <DCArtboard id="m-detail" label="Market detail + bet sheet" width={320} height={680}><WFMob.Detail /></DCArtboard>
+            <DCArtboard id="m-profile" label="Profile / Wallet" width={320} height={680}><WFMob.Profile /></DCArtboard>
+            <DCArtboard id="m-leaderboard" label="Leaderboard" width={320} height={680}><WFMob.Leaderboard /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="backoffice" title="4 · Backoffice / operator console" subtitle="Dashboard → create+config → settle → faucet review (dark+gold in hi-fi)">
+            <DCArtboard id="bo-dash" label="Dashboard" width={1180} height={620}><WFBo.Dashboard /></DCArtboard>
+            <DCArtboard id="bo-create" label="Create + mechanism config" width={1180} height={760}><WFBo.Create /></DCArtboard>
+            <DCArtboard id="bo-settle" label="Settle market" width={1180} height={620}><WFBo.Settle /></DCArtboard>
+            <DCArtboard id="bo-faucet" label="Faucet review" width={1180} height={520}><WFBo.Faucet /></DCArtboard>
+          </DCSection>
+
+          <DCSection id="extra" title="5 · Stats, settlement & community markets" subtitle="Added per review — price history, how settlement works, public vs community-restricted bets">
+            <DCArtboard id="x-settle" label="How settlement works" width={1180} height={720}><WFExtra.Settlement /></DCArtboard>
+            <DCArtboard id="x-scope" label="Browse · public vs community" width={1180} height={620}><WFExtra.Scope /></DCArtboard>
+            <DCArtboard id="x-community" label="Community hub (group page)" width={1180} height={620}><WFExtra.Community /></DCArtboard>
+            <DCArtboard id="x-visibility" label="Create · visibility & access" width={380} height={560}><WFExtra.Visibility /></DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
