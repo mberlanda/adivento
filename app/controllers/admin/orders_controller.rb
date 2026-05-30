@@ -31,9 +31,7 @@ module Admin
       order = Order.find(params.expect(:id))
       result = Clob::OrderCancellationService.call(order: order, actor: current_user)
 
-      unless result.success?
-        return render json: { error: result.errors.join(', ') }, status: :unprocessable_content
-      end
+      return render json: { error: result.errors.join(', ') }, status: :unprocessable_content unless result.success?
 
       render json: {
         order_id: result.order.id,

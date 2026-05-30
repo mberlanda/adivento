@@ -77,9 +77,11 @@ class ClobOrdersTest < ActionDispatch::IntegrationTest
     users(:player).wallet.update!(available_minor: 99_800, reserved_minor: 200)
 
     delete "/admin/orders/#{order.id}", headers: auth_headers_for(users(:admin)), as: :json
+
     assert_response :ok
 
     delete "/admin/orders/#{order.id}", headers: auth_headers_for(users(:admin)), as: :json
+
     assert_response :unprocessable_content
 
     assert_equal 100_000, users(:player).wallet.reload.available_minor
