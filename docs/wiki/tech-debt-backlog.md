@@ -121,7 +121,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-014 · LMSR positions not shown on positions page
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** ✅ Done 2026-05-30. `Web::PositionsController#index` now exposes LMSR holdings in HTML and JSON; regression coverage in `test/integration/web_positions_test.rb`.
 **Problem:** `lmsr_positions` table is populated on every LMSR trade and is the source of truth for settlement payouts, but `PositionsController#index` never queries it. Players who trade LMSR see an empty positions page.
 **Fix:** Add `@lmsr_positions` query to `PositionsController#index` (analogous to `@clob_positions`). Add section to positions view.
 **Impact:** High — live player state is invisible on the UI.
@@ -130,7 +130,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-015 · Leaderboard P&L missing CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** ✅ Done 2026-05-30. Leaderboard P&L now includes CLOB sell credits, parimutuel refunds, LMSR fees, and CLOB fees; regression coverage in `test/integration/web_leaderboard_test.rb`.
 **Problem:** `RETURN_TYPES` in `LeaderboardController` omits `CLOB_SELL_CREDIT` (proceeds from selling CLOB contracts) and `PARIMUTUEL_REFUND`. `STAKE_TYPES` omits `LMSR_FEE` and `CLOB_FEE`. Players who use LMSR or CLOB sell paths have distorted P&L on the leaderboard.
 **Fix:** Add missing entry types to the respective constant arrays.
 **Impact:** Medium — leaderboard ranking is wrong for CLOB sellers and LMSR/CLOB players.
@@ -139,7 +139,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-016 · Admin API market_params missing category and tags
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** ✅ Done 2026-05-30. `Admin::MarketsController#market_params` now permits `category` and `tags: []`; regression coverage in `test/integration/admin_permissions_test.rb`.
 **Problem:** `Admin::MarketsController#market_params` does not permit `:category` or `:tags`. Markets created via the admin API always get category `'other'` (DB default). E2E tests create markets via the admin API, so all E2E fixture markets are `other` — the category filter bar is never exercised in E2E.
 **Fix:** Add `:category` and `tags: []` to the `params.permit` call in `Admin::MarketsController`.
 **Impact:** Medium — API creates miscategorised markets; E2E category test coverage is vacuous.
@@ -193,7 +193,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-022 · RuboCop gate has one autocorrectable offense
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** ✅ Done 2026-05-30. `lib/tasks/db_structure.rake` now uses `Rails.root.join('db/structure.sql')`; RuboCop reports no offenses.
 **Problem:** `bundle exec rubocop --cache false --format simple` reports one `Rails/FilePath` offense in `lib/tasks/db_structure.rake` for the `Rails.root.join('db', 'structure.sql')` path style.
 **Fix:** Apply the autocorrect or change to `Rails.root.join('db/structure.sql')`, then rerun RuboCop.
 **Impact:** Low — validation fails on style even though the test suite is green.

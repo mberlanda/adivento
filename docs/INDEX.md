@@ -136,6 +136,7 @@ Plan approved?
 - **F-012 + F-013: Player positions + execution confirmation HTML views** — `GET /web/positions` and `GET /web/betslips/executions/:id` now render HTML alongside JSON; Positions nav link added
 - **F-015: Cross-mechanism leaderboard** — aggregates all ledger entry types (fixed-odds, CLOB, LMSR, parimutuel); removed fixed-odds-only bet count columns
 - **F-017: Market list pagination** — web (12/page) and backoffice (20/page) with Previous/Next controls
+- **Wave 1 backend quick wins** — TD-014 LMSR holdings on positions page, TD-015 leaderboard P&L entry types, TD-016 admin API category/tags, TD-022 RuboCop cleanup
 - **F-016 / TD-003: LMSR subsidy exhaustion guard** — `lmsr_realized_loss_minor` column; market locked before pricing; outflow guard raises when net payout would exceed `liquidity_subsidy_minor`; side/quantity input validation (PR #30, `284928b`)
 - **TD-007: Backoffice open-market E2E** — Playwright spec: moderator creates draft → opens market; asserts form transitions (PR #31, `256932d`)
 - **TD-011: Backoffice market edit — description field** — `description` added to update params and Edit Details form (PR #31, `256932d`)
@@ -146,7 +147,7 @@ Plan approved?
 
 ### ⏳ Next
 - **The execution plan now lives in `.claude/tasks/ATTENTION.md`** (Waves 1–5, each item tagged with owner — 🔴 Opus / 🟢 Sonnet / 🔵 Codex — complexity, and dependencies). Start there.
-- TD-013/TD-018/TD-019 are **done** (PRs #44/#42/#46). Remaining backend correctness: TD-014/015/016 (quick wins), TD-017/020/021 (CLOB, plans D2/D3/D4 written), TD-022 (lint), TD-034 (settlement concurrency — needs plan).
+- TD-013/014/015/016/018/019/022 are **done**. Remaining backend correctness: TD-017/020/021 (CLOB, plans D2/D3/D4 written), TD-034 (settlement concurrency — needs plan).
 - Decisions D2–D8 are **planned** (specs/plans written); D9–D11 are planning todos. See the dispatch tracker.
 - Product gaps now planned: **F-004 price history → D6**, **F-008 watchlists → D8**, **F-010 resolution notes → D7**. Still un-planned: F-011 activity feed, F-012 responsible-gaming controls (author after the **D5** backlog rewrite, using `PROD-###`).
 
@@ -166,7 +167,7 @@ Plan approved?
 | F-006: Backoffice market create UX | [plan](superpowers/plans/2026-05-28-f006-backoffice-market-create-ux.md) | — | ✅ implemented |
 | Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
-| Backend next steps (TD-014–TD-016) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned (TD-013/017 split out) |
+| Backend next steps (TD-014–TD-016) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ✅ Wave 1 implemented (TD-013/017 split out) |
 | Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ D2–D8 planned, D9–D11 todos |
 | D2: Market cancellation | [spec](specs/2026-05-30-market-cancellation.md) · [plan](superpowers/plans/2026-05-30-market-cancellation.md) | — | ⏳ planned |
 | D3: CLOB trading-state guards | [plan](superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md) | — | ⏳ planned |

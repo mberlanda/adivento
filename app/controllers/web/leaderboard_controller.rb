@@ -3,8 +3,12 @@ module Web
     skip_before_action :authenticate_request!
     before_action :attach_current_user
 
-    STAKE_TYPES  = %w[BET_STAKE LMSR_TRADE_STAKE PARIMUTUEL_STAKE ORDER_FILL_STAKE].freeze
-    RETURN_TYPES = %w[BET_WIN_PAYOUT BET_CASHOUT_PAYOUT SETTLEMENT_WIN ORDER_FILL_CREDIT].freeze
+    STAKE_TYPES = %w[
+      BET_STAKE LMSR_TRADE_STAKE LMSR_FEE PARIMUTUEL_STAKE ORDER_FILL_STAKE CLOB_FEE
+    ].freeze
+    RETURN_TYPES = %w[
+      BET_WIN_PAYOUT BET_CASHOUT_PAYOUT SETTLEMENT_WIN ORDER_FILL_CREDIT CLOB_SELL_CREDIT PARIMUTUEL_REFUND
+    ].freeze
 
     def index
       @entries = leaderboard_entries

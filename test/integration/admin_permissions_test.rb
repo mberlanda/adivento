@@ -24,6 +24,25 @@ class AdminPermissionsTest < ActionDispatch::IntegrationTest
     assert_equal %w[NO YES], market.market_legs.order(:label).pluck(:label)
   end
 
+  test 'admin can set category and tags when creating a market' do
+    post '/admin/markets',
+         params: {
+           question: 'Will City win the final?',
+           description: 'Sports market',
+           category: 'sports',
+           tags: %w[football final]
+         },
+         headers: auth_headers_for(users(:admin)),
+         as: :json
+
+    assert_response :created
+
+    market = Market.order(:created_at).last
+
+    assert_equal 'sports', market.category
+    assert_equal %w[football final], market.tags
+  end
+
   test 'moderator can add leg to a draft market with fewer than 2 legs' do
     market = markets(:draft_market)
 
