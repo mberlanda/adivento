@@ -1,0 +1,115 @@
+/* ============================================================================
+   Adivento Design System — TOKENS
+   Two themes via [data-theme]. Light = "Fantasy" (cream+teal, descends from
+   the current /web surface). Dark = "Terminal" (high-contrast slate, descends
+   from /backoffice + PR2). Every component reads ONLY these semantic vars, so
+   switching data-theme reskins the whole app. Default (no attr) = light.
+   ============================================================================ */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* surfaces */
+  --adv-bg:           #f6f4ec;
+  --adv-bg-grad:      radial-gradient(1200px 600px at 80% -10%, #e9f3ee 0%, rgba(233,243,238,0) 60%);
+  --adv-surface:      #ffffff;
+  --adv-surface-2:    #f3f1e8;   /* inset / fill */
+  --adv-surface-3:    #ece9dd;
+
+  /* ink */
+  --adv-ink:          #1d2826;
+  --adv-muted:        #6a736f;
+  --adv-faint-ink:    #98a09b;
+
+  /* lines */
+  --adv-line:         #d9d5c7;
+  --adv-faint:        #e7e3d6;
+
+  /* brand accent (teal) */
+  --adv-accent:       #0e7c66;
+  --adv-accent-strong:#0a6353;
+  --adv-accent-ink:   #ffffff;       /* text on accent */
+  --adv-accent-soft:  #d8ece4;       /* tinted bg */
+  --adv-accent-line:  #a9d4c5;
+
+  /* semantic market colors */
+  --adv-yes:          #0e7c66;       /* YES = brand teal in light */
+  --adv-yes-soft:     #d8ece4;
+  --adv-no:           #b4541f;       /* NO  = warm clay */
+  --adv-no-soft:      #f4e2d4;
+  --adv-pos:          #1f8a5b;       /* gains */
+  --adv-neg:          #c2452f;       /* losses */
+  --adv-warn:         #b8860b;
+  --adv-warn-soft:    #f5ead0;
+  --adv-info:         #2a6f97;
+
+  /* status (lifecycle) */
+  --adv-draft:        #8a8577;
+  --adv-open:         #0e7c66;
+  --adv-closed:       #b8860b;
+  --adv-settled:      #5b6470;
+
+  /* radii */
+  --adv-r-sm: 8px;
+  --adv-r-md: 12px;
+  --adv-r-lg: 16px;
+  --adv-r-xl: 22px;
+  --adv-r-pill: 999px;
+
+  /* shadow */
+  --adv-shadow-sm: 0 1px 2px rgba(29,40,38,.06);
+  --adv-shadow-md: 0 4px 14px rgba(29,40,38,.08);
+  --adv-shadow-lg: 0 18px 48px rgba(29,40,38,.14);
+  --adv-ring: 0 0 0 3px var(--adv-accent-soft);
+
+  /* chart */
+  --adv-chart-grid: #e7e3d6;
+  --adv-chart-area: 0.10;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --adv-bg:           #11161f;
+  --adv-bg-grad:      radial-gradient(1200px 600px at 80% -10%, #1b2942 0%, rgba(27,41,66,0) 55%);
+  --adv-surface:      #1b2130;
+  --adv-surface-2:    #232c3e;
+  --adv-surface-3:    #2b3547;
+
+  --adv-ink:          #eef2f9;
+  --adv-muted:        #93a0bd;
+  --adv-faint-ink:    #6b7794;
+
+  --adv-line:         #3a445c;
+  --adv-faint:        #2c3447;
+
+  --adv-accent:       #5b9dd9;
+  --adv-accent-strong:#7bb4e6;
+  --adv-accent-ink:   #08121d;
+  --adv-accent-soft:  #1f3147;
+  --adv-accent-line:  #34507a;
+
+  --adv-yes:          #5cc491;
+  --adv-yes-soft:     #16332a;
+  --adv-no:           #e58178;
+  --adv-no-soft:      #3a241f;
+  --adv-pos:          #5cc491;
+  --adv-neg:          #e58178;
+  --adv-warn:         #e3aa54;
+  --adv-warn-soft:    #3a2f1c;
+  --adv-info:         #5b9dd9;
+
+  --adv-draft:        #6b7794;
+  --adv-open:         #5cc491;
+  --adv-closed:       #e3aa54;
+  --adv-settled:      #93a0bd;
+
+  --adv-shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --adv-shadow-md: 0 6px 20px rgba(0,0,0,.45);
+  --adv-shadow-lg: 0 24px 60px rgba(0,0,0,.6);
+  --adv-ring: 0 0 0 3px var(--adv-accent-soft);
+
+  --adv-chart-grid: #2c3447;
+  --adv-chart-area: 0.16;
+}

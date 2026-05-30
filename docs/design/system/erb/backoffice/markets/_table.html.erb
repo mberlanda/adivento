@@ -1,0 +1,33 @@
+<%#
+  Adivento DS — backoffice markets table
+  Usage: <%= render "backoffice/markets/table", markets: @markets %>
+  Locals:
+    markets: collection responding to #question, #mechanism, #yes_pct,
+             #volume_label, #status, and a path helper.
+  The action button switches on status: closed -> "Settle" (primary).
+%>
+<div class="adv-card adv-card--flush">
+  <table class="adv-table">
+    <thead>
+      <tr><th>Market</th><th>Mech</th><th>Chance</th><th>Volume</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% markets.each do |m| %>
+        <tr class="<%= 'is-highlight' if m.status.to_s == 'closed' %>">
+          <td><%= m.question %></td>
+          <td><%= render "shared/adv_mech_chip", mechanism: m.mechanism %></td>
+          <td class="adv-num"><%= m.yes_pct %><%= m.mechanism.to_s == 'clob' ? '¢' : '%' %></td>
+          <td class="adv-num"><%= m.volume_label %></td>
+          <td><%= render "shared/adv_badge", status: m.status %></td>
+          <td>
+            <% if m.status.to_s == "closed" %>
+              <%= render "shared/adv_button", label: "Settle", variant: "primary", size: "sm", href: backoffice_market_path(m) %>
+            <% else %>
+              <%= render "shared/adv_button", label: "Edit", variant: "ghost", size: "sm", href: backoffice_market_path(m) %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

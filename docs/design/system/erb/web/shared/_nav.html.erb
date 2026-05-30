@@ -1,0 +1,42 @@
+<%#
+  Adivento DS — customer top nav
+  Usage (in layouts/application.html.erb, inside <body class="adv-app">):
+    <%= render "web/shared/nav", current: :markets, balance: current_user&.balance %>
+  Locals:
+    current: :markets | :communities | :leaderboard | nil
+    balance: Numeric or nil (guest)
+%>
+<%
+  current ||= nil
+  balance = defined?(balance) ? balance : nil
+  links = [[:markets, "Markets", web_markets_path],
+           [:communities, "Communities", "#"],
+           [:leaderboard, "Leaderboard", web_leaderboard_path]]
+%>
+<header class="adv-nav">
+  <%= link_to web_markets_path, class: "adv-nav__brand", style: "text-decoration:none" do %>
+    <span class="adv-nav__mark"></span> Adivento
+  <% end %>
+
+  <nav class="adv-nav__links adv-hide-mobile">
+    <% links.each do |key, label, path| %>
+      <%= link_to label, path, class: "adv-nav__link #{'is-active' if current == key}" %>
+    <% end %>
+  </nav>
+
+  <span class="adv-spacer"></span>
+
+  <% if balance %>
+    <span class="adv-balance adv-hide-mobile"><%= number_with_delimiter(balance) %> <small>ADIV</small></span>
+  <% end %>
+
+  <button class="adv-btn adv-btn--ghost adv-btn--sm" data-adv-theme-toggle aria-pressed="false" aria-label="Toggle theme">
+    ◑ <span data-adv-theme-label>Light</span>
+  </button>
+
+  <% if balance %>
+    <%= link_to "#", class: "adv-avatar adv-avatar--sm", "aria-label": "Profile" do %><% end %>
+  <% else %>
+    <%= render "shared/adv_button", label: "Sign in", variant: "primary", size: "sm", href: "#" %>
+  <% end %>
+</header>

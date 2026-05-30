@@ -1,0 +1,49 @@
+<%#
+  Adivento DS — market card (discovery grid)
+  Usage:
+    <div class="adv-grid adv-grid--auto">
+      <% @markets.each do |market| %>
+        <%= render "web/markets/card", market: market %>
+      <% end %>
+    </div>
+  Locals:
+    market: responds to #id, #question, #status, #mechanism, #yes_pct (0-100),
+            #volume_label, #closes_label, #spark (Array<Numeric> 0-100, optional),
+            #delta (Numeric, optional), #live? (optional)
+  Notes:
+    - yes_pct drives both the headline number and the probability bar.
+    - For ¢-priced mechanisms (CLOB) pass yes_pct as the cents value and set
+      pct_suffix: "¢"; defaults to "%".
+%>
+<%
+  pct_suffix = defined?(pct_suffix) ? pct_suffix : "%"
+  spark = (market.respond_to?(:spark) && market.spark.present?) ? market.spark : nil
+  delta = market.respond_to?(:delta) ? market.delta : nil
+  live  = market.respond_to?(:live?) ? market.live? : (market.status.to_s == "open")
+%>
+<%= link_to web_market_path(market), class: "adv-card adv-market", style: "text-decoration:none;color:inherit" do %>
+  <div class="adv-market__top">
+    <%= render "shared/adv_badge", status: market.status, live: live %>
+    <%= render "shared/adv_mech_chip", mechanism: market.mechanism %>
+  </div>
+
+  <div class="adv-market__q"><%= market.question %></div>
+
+  <div class="adv-probar">
+    <div class="adv-probar__fill" style="width: <%= market.yes_pct %>%"></div>
+  </div>
+
+  <div class="adv-row adv-row--between">
+    <span class="adv-market__pct adv-num"><%= market.yes_pct %><%= pct_suffix %></span>
+    <% if spark %>
+      <svg data-adv-spark="<%= spark.join(',') %>" aria-hidden="true"></svg>
+    <% elsif delta %>
+      <span class="adv-delta adv-delta--<%= delta >= 0 ? 'up' : 'down' %>"><%= delta.abs %></span>
+    <% end %>
+  </div>
+
+  <div class="adv-market__foot">
+    <span><%= market.volume_label %></span>
+    <span><%= market.closes_label %></span>
+  </div>
+<% end %>

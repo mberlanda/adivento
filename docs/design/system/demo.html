@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adivento Design System — Components</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/tokens.css" />
+  <link rel="stylesheet" href="assets/application.css" />
+  <link rel="stylesheet" href="assets/components.css" />
+  <style>
+    body { margin: 0; }
+    .demo-section { padding: 32px 0; border-bottom: 1px solid var(--adv-faint); }
+    .demo-section > .adv-container > .adv-eyebrow { margin-bottom: 4px; }
+    .demo-section h2 { margin: 0 0 20px; }
+    .demo-grid-label { font-size: 12px; color: var(--adv-muted); margin-bottom: 10px; font-weight: 600; }
+    .swatch { height: 56px; border-radius: var(--adv-r-md); border: 1.5px solid var(--adv-faint); display: flex; align-items: flex-end; padding: 6px 8px; font-size: 10.5px; font-weight: 600; }
+    .demo-tile { padding: 16px; border: 1px dashed var(--adv-line); border-radius: var(--adv-r-md); }
+    .demo-stickybar { position: sticky; top: 0; z-index: 100; }
+  </style>
+</head>
+<body class="adv-app">
+
+  <!-- ============ top nav with theme toggle ============ -->
+  <header class="adv-nav demo-stickybar">
+    <div class="adv-nav__brand"><span class="adv-nav__mark"></span> Adivento</div>
+    <nav class="adv-nav__links adv-hide-mobile">
+      <a class="adv-nav__link is-active" href="#">Markets</a>
+      <a class="adv-nav__link" href="#">Communities</a>
+      <a class="adv-nav__link" href="#">Leaderboard</a>
+    </nav>
+    <span class="adv-spacer"></span>
+    <span class="adv-balance adv-hide-mobile">4,250 <small>ADIV</small></span>
+    <button class="adv-btn adv-btn--ghost adv-btn--sm" data-adv-theme-toggle aria-pressed="false">
+      ◑ <span data-adv-theme-label>Light</span>
+    </button>
+    <span class="adv-avatar adv-avatar--sm"></span>
+  </header>
+
+  <!-- ============ foundations ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Foundations</div>
+      <h2 class="adv-h1">Semantic tokens — one set, two themes</h2>
+      <p class="adv-muted adv-small" style="max-width:640px">Components read only these variables. Flip the toggle in the header to reskin the entire page — light “Fantasy” (cream + teal) ↔ dark “Terminal” (slate + blue). Add <code>data-theme="dark"</code> to <code>&lt;html&gt;</code> to default dark.</p>
+      <div class="adv-grid adv-grid--4" style="margin-top:20px">
+        <div><div class="swatch" style="background:var(--adv-bg);color:var(--adv-ink)">--adv-bg</div></div>
+        <div><div class="swatch" style="background:var(--adv-surface);color:var(--adv-ink)">--adv-surface</div></div>
+        <div><div class="swatch" style="background:var(--adv-accent);color:var(--adv-accent-ink)">--adv-accent</div></div>
+        <div><div class="swatch" style="background:var(--adv-accent-soft);color:var(--adv-accent)">--adv-accent-soft</div></div>
+        <div><div class="swatch" style="background:var(--adv-yes);color:#fff">--adv-yes</div></div>
+        <div><div class="swatch" style="background:var(--adv-no);color:#fff">--adv-no</div></div>
+        <div><div class="swatch" style="background:var(--adv-pos);color:#fff">--adv-pos</div></div>
+        <div><div class="swatch" style="background:var(--adv-neg);color:#fff">--adv-neg</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ atoms ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Atoms</div>
+      <h2 class="adv-h1">Buttons, chips, badges, inputs</h2>
+
+      <div class="demo-grid-label">Buttons</div>
+      <div class="adv-row adv-row--wrap" style="margin-bottom:24px">
+        <button class="adv-btn adv-btn--primary">Place bet</button>
+        <button class="adv-btn adv-btn--ghost">Watch</button>
+        <button class="adv-btn adv-btn--yes">Buy YES</button>
+        <button class="adv-btn adv-btn--no">Buy NO</button>
+        <button class="adv-btn">Default</button>
+        <button class="adv-btn adv-btn--quiet">Quiet</button>
+        <button class="adv-btn adv-btn--primary" disabled>Disabled</button>
+        <button class="adv-btn adv-btn--sm adv-btn--ghost">Small</button>
+      </div>
+
+      <div class="adv-grid adv-grid--3">
+        <div>
+          <div class="demo-grid-label">Chips & mechanism tags</div>
+          <div class="adv-row adv-row--wrap">
+            <span class="adv-chip is-active">All</span>
+            <span class="adv-chip">Politics</span>
+            <span class="adv-chip adv-chip--accent" data-mech>CLOB</span>
+            <span class="adv-chip" data-mech>LMSR</span>
+          </div>
+        </div>
+        <div>
+          <div class="demo-grid-label">Status badges</div>
+          <div class="adv-row adv-row--wrap">
+            <span class="adv-badge adv-badge--open adv-badge--live">Live</span>
+            <span class="adv-badge adv-badge--draft">Draft</span>
+            <span class="adv-badge adv-badge--closed">Closed</span>
+            <span class="adv-badge adv-badge--settled">Settled</span>
+          </div>
+        </div>
+        <div>
+          <div class="demo-grid-label">Segmented control</div>
+          <div class="adv-segment" data-adv-segment>
+            <button class="adv-segment__item is-active">1D</button>
+            <button class="adv-segment__item">1W</button>
+            <button class="adv-segment__item">ALL</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="adv-grid adv-grid--3" style="margin-top:24px">
+        <div>
+          <div class="demo-grid-label">Text field</div>
+          <label class="adv-label">Email</label>
+          <input class="adv-input" placeholder="you@example.com" />
+        </div>
+        <div>
+          <div class="demo-grid-label">Input with suffix</div>
+          <label class="adv-label">Stake</label>
+          <div class="adv-input-group"><input class="adv-input adv-num" value="100" /><span class="adv-input-group__suffix">ADIV</span></div>
+        </div>
+        <div>
+          <div class="demo-grid-label">Select</div>
+          <label class="adv-label">Sort</label>
+          <select class="adv-select"><option>Volume</option><option>Closing soon</option><option>Newest</option></select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ market components ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Market — discovery</div>
+      <h2 class="adv-h1">Market cards</h2>
+      <div class="adv-grid adv-grid--3">
+        <!-- card 1 -->
+        <article class="adv-card adv-market">
+          <div class="adv-market__top"><span class="adv-badge adv-badge--open adv-badge--live">Live</span><span class="adv-chip adv-chip--accent" data-mech>FIXED</span></div>
+          <div class="adv-market__q">Will the proposal pass before Q3 2026?</div>
+          <div class="adv-probar"><div class="adv-probar__fill" style="width:62%"></div></div>
+          <div class="adv-row adv-row--between">
+            <span class="adv-market__pct adv-num">62%</span>
+            <svg data-adv-spark="48,50,47,53,55,58,62"></svg>
+          </div>
+          <div class="adv-market__foot"><span>Vol 128k</span><span>Closes 6d</span></div>
+        </article>
+        <!-- card 2 -->
+        <article class="adv-card adv-market">
+          <div class="adv-market__top"><span class="adv-badge adv-badge--open">Open</span><span class="adv-chip adv-chip--accent" data-mech>CLOB</span></div>
+          <div class="adv-market__q">BTC above $100k at year end?</div>
+          <div class="adv-probar"><div class="adv-probar__fill" style="width:54%"></div></div>
+          <div class="adv-row adv-row--between">
+            <span class="adv-market__pct adv-num">54¢</span>
+            <span class="adv-delta adv-delta--down">2</span>
+          </div>
+          <div class="adv-market__foot"><span>Vol 96k</span><span>Closes 30d</span></div>
+        </article>
+        <!-- card 3 -->
+        <article class="adv-card adv-market">
+          <div class="adv-market__top"><span class="adv-badge adv-badge--closed">Closed</span><span class="adv-chip" data-mech>PARI</span></div>
+          <div class="adv-market__q">Home side wins the cup final?</div>
+          <div class="adv-probar"><div class="adv-probar__fill" style="width:71%"></div></div>
+          <div class="adv-row adv-row--between">
+            <span class="adv-market__pct adv-num">71%</span>
+            <span class="adv-delta adv-delta--up">9</span>
+          </div>
+          <div class="adv-market__foot"><span>Pool 240k</span><span>Settling</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ market detail: chart + prices + stats ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Market — detail</div>
+      <h2 class="adv-h1">Price history, prices & decision stats</h2>
+      <div class="adv-card">
+        <div class="adv-row adv-row--between" style="margin-bottom:12px">
+          <div class="adv-row" style="align-items:baseline;gap:10px">
+            <span style="font-size:30px;font-weight:800;color:var(--adv-accent)" class="adv-num" data-live-pct>62%</span>
+            <span class="adv-delta adv-delta--up">4 pts today</span>
+            <span class="adv-muted adv-xs">YES chance</span>
+          </div>
+          <span class="adv-badge adv-badge--open adv-badge--live">live · SSE</span>
+        </div>
+        <div class="adv-chart" style="height:170px" data-adv-live data-value="62">
+          <svg data-adv-chart="44,47,45,50,53,51,49,55,58,56,60,62"></svg>
+          <span class="adv-chart__axis adv-chart__axis--top">100%</span>
+          <span class="adv-chart__axis adv-chart__axis--bottom">0%</span>
+        </div>
+        <div class="adv-chart-frames">
+          <span class="adv-chip">1H</span><span class="adv-chip">6H</span><span class="adv-chip is-active">1D</span><span class="adv-chip">1W</span><span class="adv-chip">ALL</span>
+        </div>
+        <div class="adv-prices" style="margin-top:14px">
+          <div class="adv-pricebox adv-pricebox--yes is-selected" data-price="62">
+            <div class="adv-pricebox__label">Yes</div><div class="adv-pricebox__val adv-num">62%</div><div class="adv-pricebox__sub">62.0¢ · pays 1.61×</div>
+          </div>
+          <div class="adv-pricebox adv-pricebox--no" data-price="38">
+            <div class="adv-pricebox__label">No</div><div class="adv-pricebox__val adv-num">38%</div><div class="adv-pricebox__sub">38.0¢ · pays 2.63×</div>
+          </div>
+        </div>
+        <div class="adv-stats" style="margin-top:16px;border-top:1.5px solid var(--adv-faint);padding-top:14px">
+          <div class="adv-stat"><div class="adv-stat__k">24h volume</div><div class="adv-stat__v adv-num">24,180</div></div>
+          <div class="adv-stat"><div class="adv-stat__k">Liquidity</div><div class="adv-stat__v adv-num">88,400</div></div>
+          <div class="adv-stat"><div class="adv-stat__k">Holders</div><div class="adv-stat__v adv-num">146</div></div>
+          <div class="adv-stat"><div class="adv-stat__k">24h trades</div><div class="adv-stat__v adv-num">512</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CLOB: order book + ticket ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Mechanism — CLOB</div>
+      <h2 class="adv-h1">Order book & bet ticket</h2>
+      <div class="adv-grid" style="grid-template-columns:1fr 1fr">
+        <div class="adv-card">
+          <div class="adv-card__head"><span class="adv-h3">Order book</span><span class="adv-chip" data-mech>CLOB</span></div>
+          <div class="adv-orderbook" id="book"></div>
+        </div>
+        <div class="adv-card adv-ticket" data-adv-ticket style="position:static">
+          <div class="adv-card__head"><span class="adv-h3">Your bet</span></div>
+          <div class="adv-prices" style="margin-bottom:12px">
+            <div class="adv-pricebox adv-pricebox--yes is-selected" data-price="54"><div class="adv-pricebox__label">Yes</div><div class="adv-pricebox__val adv-num">54¢</div></div>
+            <div class="adv-pricebox adv-pricebox--no" data-price="46"><div class="adv-pricebox__label">No</div><div class="adv-pricebox__val adv-num">46¢</div></div>
+          </div>
+          <label class="adv-label">Stake</label>
+          <div class="adv-input-group" style="margin-bottom:10px"><input class="adv-input adv-num" data-ticket-stake value="100" /><span class="adv-input-group__suffix">ADIV</span></div>
+          <div class="adv-chipset" style="margin-bottom:12px">
+            <button class="adv-chip" data-ticket-add="50">50</button>
+            <button class="adv-chip" data-ticket-add="100">100</button>
+            <button class="adv-chip" data-ticket-add="250">250</button>
+            <button class="adv-chip" data-ticket-add="500">Max</button>
+          </div>
+          <div class="adv-ticket__summary"><span class="adv-muted">Avg price</span><span class="adv-num">54¢</span></div>
+          <div class="adv-ticket__summary"><span class="adv-muted">Potential profit</span><span class="adv-num" data-ticket-profit>+85</span></div>
+          <div class="adv-ticket__summary adv-ticket__summary--total"><span>Payout if YES</span><span class="adv-ticket__payout adv-num" data-ticket-payout>185</span></div>
+          <button class="adv-btn adv-btn--yes adv-btn--block adv-btn--lg" style="margin-top:12px">Buy YES · 100 ADIV</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ parimutuel pool ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Mechanism — Parimutuel</div>
+      <h2 class="adv-h1">Pool split</h2>
+      <div class="adv-card">
+        <div class="adv-pool"><div class="adv-pool__yes" style="width:68%">YES 68% · 163k</div><div class="adv-pool__no" style="width:32%">32% · 77k</div></div>
+        <p class="adv-help">Payout depends on the final pool. Your share of the winning pool is paid pro-rata when the market settles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ settlement explainer ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Trust</div>
+      <h2 class="adv-h1">How settlement works</h2>
+      <div class="adv-card" style="margin-bottom:16px">
+        <div class="adv-steps">
+          <div class="adv-step is-done"><div class="adv-step__label">Open<br><span class="adv-muted adv-xs">trading live</span></div></div>
+          <div class="adv-step is-done"><div class="adv-step__label">Closes<br><span class="adv-muted adv-xs">at deadline</span></div></div>
+          <div class="adv-step is-current"><div class="adv-step__label">Resolves<br><span class="adv-muted adv-xs">source checked</span></div></div>
+          <div class="adv-step"><div class="adv-step__label">Settles<br><span class="adv-muted adv-xs">payouts sent</span></div></div>
+        </div>
+      </div>
+      <div class="adv-grid adv-grid--2">
+        <div class="adv-callout adv-callout--accent"><span class="adv-callout__icon">⚖︎</span><div><strong>Resolution source</strong><div class="adv-small adv-muted">Every market publishes its source and criteria up front. A moderator records the outcome against it before any payout.</div></div></div>
+        <div class="adv-callout adv-callout--warn"><span class="adv-callout__icon">⏱</span><div><strong>Disputes</strong><div class="adv-small adv-muted">A short review window lets players flag a wrong outcome before funds are released.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ community / access ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Access</div>
+      <h2 class="adv-h1">Public vs community-restricted</h2>
+      <div class="adv-grid adv-grid--2">
+        <article class="adv-card adv-market">
+          <div class="adv-market__top"><span class="adv-chip adv-chip--solid">🌐 Public</span><span class="adv-badge adv-badge--open">Open</span></div>
+          <div class="adv-market__q">Anyone can browse and bet.</div>
+        </article>
+        <article class="adv-card adv-market">
+          <div class="adv-market__top"><span class="adv-chip adv-chip--solid">👥 Office League</span><span class="adv-badge adv-badge--open">Members</span></div>
+          <div class="adv-market__q">Restricted — visible to community members only.</div>
+          <div class="adv-callout adv-callout--locked"><span class="adv-callout__icon">🔒</span><div class="adv-small">Request access or use an invite link to join and bet.</div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ backoffice ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Operator</div>
+      <h2 class="adv-h1">Backoffice — same tokens, denser</h2>
+      <div class="adv-card adv-card--flush" style="overflow:hidden">
+        <div class="adv-shell" style="min-height:auto">
+          <aside class="adv-sidebar">
+            <div class="adv-sidebar__brand"><span class="adv-nav__mark"></span> Console</div>
+            <a class="adv-sidebar__link is-active" href="#"><span class="adv-sidebar__icon">▦</span> Markets</a>
+            <a class="adv-sidebar__link" href="#"><span class="adv-sidebar__icon">＋</span> Create</a>
+            <a class="adv-sidebar__link" href="#"><span class="adv-sidebar__icon">⚖︎</span> Settle</a>
+            <a class="adv-sidebar__link" href="#"><span class="adv-sidebar__icon">⛲</span> Faucet</a>
+          </aside>
+          <main class="adv-main">
+            <div class="adv-grid adv-grid--4" style="margin-bottom:18px">
+              <div class="adv-statcard"><div class="adv-stat__k">Open markets</div><div class="adv-statcard__v adv-num">34</div></div>
+              <div class="adv-statcard"><div class="adv-stat__k">24h volume</div><div class="adv-statcard__v adv-num">1.2M</div></div>
+              <div class="adv-statcard"><div class="adv-stat__k">Pending faucet</div><div class="adv-statcard__v adv-num">7</div></div>
+              <div class="adv-statcard"><div class="adv-stat__k">To settle</div><div class="adv-statcard__v adv-num">3</div></div>
+            </div>
+            <table class="adv-table">
+              <thead><tr><th>Market</th><th>Mech</th><th>Chance</th><th>Volume</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Will the proposal pass before Q3?</td><td><span class="adv-chip" data-mech>FIXED</span></td><td class="adv-num">62%</td><td class="adv-num">128k</td><td><span class="adv-badge adv-badge--open">Open</span></td><td><button class="adv-btn adv-btn--ghost adv-btn--sm">Edit</button></td></tr>
+                <tr class="is-highlight"><td>BTC above $100k at year end?</td><td><span class="adv-chip" data-mech>CLOB</span></td><td class="adv-num">54¢</td><td class="adv-num">96k</td><td><span class="adv-badge adv-badge--closed">Closed</span></td><td><button class="adv-btn adv-btn--primary adv-btn--sm">Settle</button></td></tr>
+                <tr><td>Home side wins the cup final?</td><td><span class="adv-chip" data-mech>PARI</span></td><td class="adv-num">71%</td><td class="adv-num">240k</td><td><span class="adv-badge adv-badge--settled">Settled</span></td><td><button class="adv-btn adv-btn--ghost adv-btn--sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </main>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ mobile ============ -->
+  <section class="demo-section">
+    <div class="adv-container">
+      <div class="adv-eyebrow">Native mobile</div>
+      <h2 class="adv-h1">Same components, phone frame + bottom sheet</h2>
+      <div class="adv-phone">
+        <div class="adv-phone__screen adv-app" style="background:var(--adv-bg);background-image:var(--adv-bg-grad)">
+          <div class="adv-row adv-row--between" style="padding:14px 16px"><strong>Markets</strong><span class="adv-balance">4,250 <small>ADIV</small></span></div>
+          <div style="padding:0 16px 16px">
+            <article class="adv-card adv-market" style="margin-bottom:12px">
+              <div class="adv-market__top"><span class="adv-badge adv-badge--open adv-badge--live">Live</span><span class="adv-chip adv-chip--accent" data-mech>FIXED</span></div>
+              <div class="adv-market__q">Will the proposal pass before Q3?</div>
+              <div class="adv-probar"><div class="adv-probar__fill" style="width:62%"></div></div>
+              <div class="adv-row adv-row--between"><span class="adv-market__pct adv-num">62%</span><button class="adv-btn adv-btn--primary adv-btn--sm" data-adv-sheet-open="betsheet">Bet</button></div>
+            </article>
+            <article class="adv-card adv-market">
+              <div class="adv-market__top"><span class="adv-badge adv-badge--open">Open</span><span class="adv-chip adv-chip--accent" data-mech>CLOB</span></div>
+              <div class="adv-market__q">BTC above $100k at year end?</div>
+              <div class="adv-probar"><div class="adv-probar__fill" style="width:54%"></div></div>
+              <div class="adv-row adv-row--between"><span class="adv-market__pct adv-num">54¢</span><button class="adv-btn adv-btn--ghost adv-btn--sm" data-adv-sheet-open="betsheet">Bet</button></div>
+            </article>
+          </div>
+          <nav class="adv-tabbar">
+            <span class="adv-tabbar__item is-active"><span class="adv-tabbar__icon">▦</span>Markets</span>
+            <span class="adv-tabbar__item"><span class="adv-tabbar__icon">★</span>Watchlist</span>
+            <span class="adv-tabbar__item"><span class="adv-tabbar__icon">◫</span>Portfolio</span>
+            <span class="adv-tabbar__item"><span class="adv-tabbar__icon">☰</span>More</span>
+          </nav>
+
+          <!-- bet sheet (scoped to the phone via position) -->
+          <div class="adv-sheet" id="betsheet" hidden style="position:absolute" data-adv-ticket>
+            <div class="adv-sheet__grip"></div>
+            <div class="adv-row adv-row--between" style="margin-bottom:10px"><strong>Will the proposal pass?</strong><button class="adv-btn adv-btn--quiet adv-btn--sm" data-adv-sheet-close>✕</button></div>
+            <div class="adv-prices" style="margin-bottom:12px">
+              <div class="adv-pricebox adv-pricebox--yes is-selected" data-price="62"><div class="adv-pricebox__label">Yes</div><div class="adv-pricebox__val adv-num">62¢</div></div>
+              <div class="adv-pricebox adv-pricebox--no" data-price="38"><div class="adv-pricebox__label">No</div><div class="adv-pricebox__val adv-num">38¢</div></div>
+            </div>
+            <div class="adv-input-group" style="margin-bottom:12px"><input class="adv-input adv-num" data-ticket-stake value="100" /><span class="adv-input-group__suffix">ADIV</span></div>
+            <div class="adv-ticket__summary adv-ticket__summary--total"><span>Payout if YES</span><span class="adv-ticket__payout adv-num" data-ticket-payout>161</span></div>
+            <button class="adv-btn adv-btn--yes adv-btn--block adv-btn--lg" style="margin-top:12px">Confirm bet</button>
+          </div>
+        </div>
+      </div>
+      <p class="adv-help">The sheet here is scoped inside the phone for the demo; in the app it uses <code>position:fixed</code> + a full-screen scrim.</p>
+    </div>
+  </section>
+
+  <footer class="adv-container" style="padding:28px 20px 60px;color:var(--adv-muted);font-size:13px">
+    Adivento Design System · toggle the theme in the header · all blocks above are plain HTML + <code>application.css</code>.
+  </footer>
+
+  <script src="assets/adivento.js"></script>
+  <script>
+    // demo-only: render the order book + start the live tick
+    Adivento.orderbook.render(document.getElementById("book"), {
+      asks: [[57, 120], [56, 220], [55, 320]],
+      bids: [[54, 280], [53, 180], [52, 100]],
+      spread: 1, last: 54,
+    });
+    Adivento.live.start(2400);
+  </script>
+</body>
+</html>

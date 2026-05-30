@@ -1,0 +1,34 @@
+<%#
+  Adivento DS — backoffice sidebar
+  Usage (in layouts/backoffice.html.erb, inside a .adv-shell wrapper):
+    <div class="adv-shell adv-app">
+      <%= render "backoffice/shared/sidebar", current: :markets %>
+      <main class="adv-main"><%= yield %></main>
+    </div>
+  Locals:
+    current: :markets | :create | :settle | :faucet | :rbac | nil
+%>
+<%
+  current ||= nil
+  nav = [
+    [:overview, "Overview", "▤", "#"],
+    [:markets,  "Markets",  "▦", backoffice_markets_path],
+    [:create,   "Create",   "＋", "#"],
+    [:settle,   "Settle",   "⚖︎", "#"],
+    [:faucet,   "Faucet",   "⛲", "#"],
+    [:rbac,     "Access",   "🛡", "#"],
+  ]
+%>
+<aside class="adv-sidebar">
+  <div class="adv-sidebar__brand"><span class="adv-nav__mark"></span> Console</div>
+  <div class="adv-sidebar__section">Operate</div>
+  <% nav.each do |key, label, icon, path| %>
+    <%= link_to path, class: "adv-sidebar__link #{'is-active' if current == key}" do %>
+      <span class="adv-sidebar__icon"><%= icon %></span> <%= label %>
+    <% end %>
+  <% end %>
+  <span class="adv-spacer"></span>
+  <button class="adv-btn adv-btn--ghost adv-btn--sm adv-btn--block" data-adv-theme-toggle>
+    ◑ <span data-adv-theme-label>Light</span>
+  </button>
+</aside>
