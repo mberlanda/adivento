@@ -23,11 +23,11 @@ Decision 1 backend correctness is in progress with Claude. The following plannin
 
 | Planning Todo | Decision | Recommended option | Deliverable |
 |---------------|----------|--------------------|-------------|
-| D2-TODO-001 | Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | Spec + implementation plan |
+| D2-TODO-001 | Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | `docs/specs/2026-05-30-market-cancellation.md` + `docs/superpowers/plans/2026-05-30-market-cancellation.md` |
 | D3-TODO-002 | CLOB trading-state guards | Centralize guards in `Clob::OrderMatchingService` | `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md` |
 | D4-TODO-003 | CLOB cancellation locking | Shared `Clob::OrderCancellationService` with row/wallet locks | `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md` |
-| D5-TODO-004 | Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the current four-mechanism product | Rewrite plan |
-| D6-TODO-005 | Price history | Expose existing `PriceSnapshot` endpoint + simple chart now | Spec + implementation plan |
+| D5-TODO-004 | Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the current four-mechanism product | `docs/superpowers/plans/2026-05-30-product-backlog-rewrite.md` |
+| D6-TODO-005 | Price history | Expose existing `PriceSnapshot` endpoint + simple chart now | `docs/specs/2026-05-30-price-history.md` + `docs/superpowers/plans/2026-05-30-price-history.md` |
 | D7-TODO-006 | Resolution transparency | Mandatory resolution note + settlement metadata across all settlement paths | `docs/specs/2026-05-30-resolution-transparency.md` + `docs/superpowers/plans/2026-05-30-resolution-transparency.md` |
 | D8-TODO-007 | Notifications/watchlist | Dedicated notification/watchlist tables | `docs/specs/2026-05-30-watchlists-notifications.md` + `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md` |
 | D9-TODO-008 | Mobile/UX blocker policy | Unblock responsive web/mobile work from communities | Backlog update + mobile plan |
@@ -39,9 +39,9 @@ Decision 1 backend correctness is in progress with Claude. The following plannin
 | Expose LMSR positions on player positions page | TD-014 | P2 — High | Task 2 in 2026-05-29-backend-next-steps.md |
 | Fix leaderboard P&L (CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE) | TD-015 | P3 — Medium | Task 3 in 2026-05-29-backend-next-steps.md |
 | Admin API: permit category and tags in market params | TD-016 | P4 — Medium | Task 4 in 2026-05-29-backend-next-steps.md |
-| MarketCancellationService + backoffice cancel action | TD-017 | P5 — Medium | Task 5 in 2026-05-29-backend-next-steps.md |
-| Add admin CLOB order trading-state guards | TD-020 | P3 — Medium | Needs plan |
-| Lock CLOB order cancellation consistently | TD-021 | P3 — Medium | Needs plan |
+| MarketCancellationService + backoffice cancel action | TD-017 | P5 — Medium | Plan: 2026-05-30-market-cancellation.md (D2) |
+| Add admin CLOB order trading-state guards | TD-020 | P3 — Medium | Plan: 2026-05-30-d3-clob-trading-state-guards.md |
+| Lock CLOB order cancellation consistently | TD-021 | P3 — Medium | Plan: 2026-05-30-d4-clob-order-cancellation-service.md |
 | Clear RuboCop Rails/FilePath offense | TD-022 | P5 — Low | No plan needed |
 
 ---
@@ -96,15 +96,15 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-001 | LMSR individual settlement payouts | High | ✅ done (DD-002, PR #35) |
 | TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
 | TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
-| TD-013 | BetPlacementService wallet lock (race condition) | High | Open — see plan |
+| TD-013 | BetPlacementService wallet lock (race condition) | High | ✅ done (PR #44) |
 | TD-014 | LMSR positions missing from positions page | High | Open — see plan |
 | TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | Open — see plan |
 | TD-016 | Admin API missing category/tags params | Medium | Open — see plan |
-| TD-017 | Market cancellation service + backoffice action | Medium | Open — see plan |
-| TD-018 | CLOB settlement pays sold positions as winners | High | Open — needs plan |
-| TD-019 | CLOB sell orders do not reserve contracts | High | Open — needs plan |
-| TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — needs plan |
-| TD-021 | CLOB order cancellation locking | Medium | Open — needs plan |
+| TD-017 | Market cancellation service + backoffice action | Medium | Open — plan written (D2) |
+| TD-018 | CLOB settlement pays sold positions as winners | High | ✅ done (PR #42) |
+| TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |
+| TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — plan written (D3) |
+| TD-021 | CLOB order cancellation locking | Medium | Open — plan written (D4) |
 | TD-022 | RuboCop Rails/FilePath offense | Low | Open |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |
