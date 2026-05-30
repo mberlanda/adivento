@@ -253,4 +253,39 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_match 'mid-price', flash[:alert]
   end
+
+  test 'admin can cancel an open market via backoffice' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+    market.bets.delete_all
+
+    assert_difference -> { AuditEvent.where(action: 'market.cancel', target_id: market.id).count }, 1 do
+      post "/backoffice/markets/#{market.id}/cancel", params: { reason: 'Event was abandoned due to unforeseen circumstances.' }
+    end
+
+    assert_response :redirect
+    assert_predicate market.reload, :cancelled?
+    assert_match 'cancelled', flash[:notice]
+  end
+
+  test 'moderator without market.cancel permission is redirected with error' do
+    post '/signin', params: { email: users(:moderator).email, password: 'password123' }
+    market = markets(:open_market)
+
+    post "/backoffice/markets/#{market.id}/cancel", params: { reason: 'Reason long enough to pass validation check.' }
+
+    assert_response :redirect
+    assert_not market.reload.cancelled?
+  end
+
+  test 'backoffice cancel shows error when reason is too short' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+
+    post "/backoffice/markets/#{market.id}/cancel", params: { reason: 'short' }
+
+    assert_response :redirect
+    assert_not market.reload.cancelled?
+    assert_match 'Reason is required', flash[:alert]
+  end
 end

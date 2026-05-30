@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :markets, only: %i[index show create update] do
       post :open, on: :member
       post :settle, on: :member
+      post :cancel, on: :member
       post :operator_buyback, on: :member
     end
     resources :faucet_requests, only: [:index] do

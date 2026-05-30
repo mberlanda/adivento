@@ -63,6 +63,22 @@
   <% end %>
 
   <% if @market.open? || @market.closed? %>
+    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;" data-testid="cancel-market-panel">
+      <h4>Cancel market</h4>
+      <p style="color:#9fb2b8;font-size:0.88em;">Cancels the market and refunds all participants. This cannot be undone.</p>
+      <%= form_with url: cancel_backoffice_market_path(@market), method: :post,
+            html: { data: { testid: "cancel-market-form" } } do |f| %>
+        <p><label>Reason (required)</label><br>
+          <%= text_field_tag :reason, nil, required: true, data: { testid: "cancel-market-reason" },
+                style: "width:400px;" %>
+        </p>
+        <%= f.submit "Cancel market", style: "background:#4a2222;",
+              data: { testid: "cancel-market-submit", confirm: "This will cancel the market and refund all participants. Proceed?" } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @market.open? || @market.closed? %>
     <% if @market.closed? %>
       <div style="margin-top:16px;padding:14px;background:#2a1f0a;border:1px solid #f0bc5c;border-radius:8px;" data-testid="market-closed-banner">
         <strong style="color:#f0bc5c;">Closed — awaiting settlement</strong>

@@ -1,7 +1,7 @@
 module Backoffice
   class MarketsController < BaseController
     before_action -> { require_permission!('market.read') }
-    before_action :set_market, only: %i[show open settle update operator_buyback]
+    before_action :set_market, only: %i[show open settle cancel update operator_buyback]
 
     def index
       @page     = [params[:page].to_i, 1].max
@@ -102,6 +102,17 @@ module Backoffice
       else
         redirect_to backoffice_market_path(@market), alert: result.errors.join(', ')
       end
+    end
+
+    def cancel
+      require_permission!('market.cancel')
+      return if performed?
+
+      result = MarketCancellationService.call(market: @market, actor: current_user, reason: params[:reason].to_s)
+      redirect_to backoffice_market_path(@market),
+                  notice: "Market cancelled — refunded #{result.refunded_total_minor} minor"
+    rescue MarketCancellationService::InvalidCancellation => e
+      redirect_to backoffice_market_path(@market), alert: e.message
     end
 
     def settle

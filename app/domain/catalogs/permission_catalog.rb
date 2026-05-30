@@ -19,6 +19,8 @@ module Catalogs
       { key: 'market.leg.create', description: 'Create additional legs for a market', active: true,
         default_roles: %w[admin moderator] },
       { key: 'market.settle', description: 'Settle markets', active: true, default_roles: %w[admin moderator] },
+      { key: 'market.cancel', description: 'Cancel markets and refund all participants', active: true,
+        default_roles: %w[admin] },
       { key: 'wallet.faucet.review', description: 'Approve or reject faucet requests', active: true,
         default_roles: %w[admin moderator] },
       { key: 'template.manage', description: 'Manage market templates', active: true,
