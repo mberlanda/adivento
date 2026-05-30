@@ -139,7 +139,7 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |
 | TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — plan written (D3) |
 | TD-021 | CLOB order cancellation locking | Medium | Open — plan written (D4) |
-| TD-022 | RuboCop Rails/FilePath offense | Low | Open |
+| TD-022 | RuboCop Rails/FilePath offense | Low | ✅ done |
 | TD-034 | Settlement & sell-order concurrency idempotency | Medium | Open — needs plan (relates to D2) |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |

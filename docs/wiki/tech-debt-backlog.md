@@ -193,7 +193,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-022 · RuboCop gate has one autocorrectable offense
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** ✅ Done 2026-05-30. `lib/tasks/db_structure.rake` now uses `Rails.root.join('db/structure.sql')`; RuboCop reports no offenses.
 **Problem:** `bundle exec rubocop --cache false --format simple` reports one `Rails/FilePath` offense in `lib/tasks/db_structure.rake` for the `Rails.root.join('db', 'structure.sql')` path style.
 **Fix:** Apply the autocorrect or change to `Rails.root.join('db/structure.sql')`, then rerun RuboCop.
 **Impact:** Low — validation fails on style even though the test suite is green.

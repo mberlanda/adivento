@@ -38,6 +38,7 @@ class AdminPermissionsTest < ActionDispatch::IntegrationTest
     assert_response :created
 
     market = Market.order(:created_at).last
+
     assert_equal 'sports', market.category
     assert_equal %w[football final], market.tags
   end
