@@ -4,7 +4,7 @@
 
 **Goal:** Require a mandatory resolution note and record a settlement timestamp at the single `SettlementService.settle!` entry point, thread it through the backoffice and admin settle actions, and display it to players on the market page.
 
-**Architecture:** Add `resolution_note` (text) and `settled_at` (datetime) columns to `markets`. Enforce the note centrally in `SettlementService.settle!` (one entry point covering all four mechanisms) inside its existing transaction, set `settled_at`, and add the note to the `market.settle` audit metadata. Controllers pass the note through; the customer view renders it.
+**Architecture:** Add `resolution_note` (text) and `settled_at` (datetime) columns to `markets`. Enforce the note centrally in `SettlementService.settle!` (the only application-level settlement entry point) inside its existing transaction, set `settled_at`, and add a final canonical `market.settle` audit row carrying the full resolution metadata. Controllers pass the note through; customer and backoffice views render it. Existing CLOB/LMSR handler tests may still exercise handler internals directly, but application code and integration tests should settle through `SettlementService` so the note requirement cannot be bypassed.
 
 **Tech Stack:** Rails 8, PostgreSQL, Minitest, existing patterns (see docs/INDEX.md).
 
@@ -20,7 +20,7 @@
 
 **Modify:**
 - `app/services/settlement_service.rb` — require/validate note, persist note + settled_at, audit metadata
-- `app/services/settlement/clob_settlement_handler.rb`, `.../lmsr_settlement_handler.rb` — accept settled_at is set by service (no change needed if service sets it after dispatch; see Task 2)
+- `app/services/settlement/clob_settlement_handler.rb`, `.../lmsr_settlement_handler.rb` — no production logic change if `SettlementService` writes the canonical final `market.settle` audit row; update direct handler tests to cover handler mechanics only and add service-level tests proving no application settlement path bypasses `SettlementService`
 - `app/controllers/backoffice/markets_controller.rb#settle` — pass `resolution_note`
 - `app/controllers/admin/markets_controller.rb#settle` — require `resolution_note`, return it
 - `app/views/backoffice/markets/show.html.erb` — make the reason field `resolution_note` + required
@@ -44,7 +44,7 @@ bin/rails g migration add_resolution_note_and_settled_at_to_markets resolution_n
 - [ ] **Step 1.2: Confirm the migration body**
 
 ```ruby
-class AddResolutionNoteAndSettledAtToMarkets < ActiveRecord::Migration[8.0]
+class AddResolutionNoteAndSettledAtToMarkets < ActiveRecord::Migration[8.1]
   def change
     add_column :markets, :resolution_note, :text
     add_column :markets, :settled_at, :datetime
@@ -106,6 +106,25 @@ test 'market.settle audit event includes the resolution note' do
   ev = AuditEvent.where(action: 'market.settle', target_type: 'Market', target_id: @market.id).last
   assert_equal 'Resolved per official results.', ev.metadata['resolution_note']
 end
+
+test 'persists resolution metadata for every mechanism through SettlementService' do
+  {
+    fixed_odds: markets(:open_market),
+    clob: markets(:clob_market),
+    lmsr: markets(:lmsr_market),
+    parimutuel: markets(:parimutuel_market)
+  }.each do |mechanism, market|
+    note = "Official source confirmed #{mechanism} YES outcome."
+    SettlementService.settle!(market: market, outcome: 'YES', actor: @actor, resolution_note: note)
+
+    market.reload
+    assert_equal note, market.resolution_note
+    assert market.settled_at.present?
+    ev = AuditEvent.where(action: 'market.settle', target_type: 'Market', target_id: market.id).last
+    assert_equal note, ev.metadata['resolution_note']
+    assert_equal market.mechanism_type, ev.metadata['mechanism']
+  end
+end
 ```
 
 Also update the **existing** passing tests in this file to pass `resolution_note: 'Resolved per official results.'` to every `SettlementService.settle!` call (they currently call it with 3 kwargs and will now fail on the missing required kwarg).
@@ -147,12 +166,24 @@ Change the signature and add validation + persistence. The method already wraps 
         settle_fixed_odds!(market: market, outcome: outcome, actor: actor)
       end
 
-      # Centralized note + timestamp + audit metadata — covers every mechanism.
+      # Parimutuel settled the row in its own inner transaction; reload before update!
+      # so we don't write over fresher state.
+      market.reload if market.parimutuel?
+
+      # Centralized note + timestamp, then a canonical `market.settle` audit event that
+      # carries the FULL resolution metadata (spec invariant 4). Using action
+      # `market.settle` (not a separate action) keeps the stated audit contract true:
+      # the last `market.settle` event for the market contains the note.
       market.update!(resolution_note: note, settled_at: Time.current)
       AuditEvent.create!(
-        actor: actor, action: 'market.resolution_note',
+        actor: actor, action: 'market.settle',
         target_type: 'Market', target_id: market.id,
-        reason: note, metadata: { outcome: outcome, resolution_note: note }
+        reason: note,
+        metadata: {
+          outcome: outcome, mechanism: market.mechanism_type,
+          resolution_note: note, resolution_source: market.resolution_source,
+          settled_at: market.settled_at
+        }
       )
     end
 
@@ -160,7 +191,13 @@ Change the signature and add validation + persistence. The method already wraps 
   end
 ```
 
-> Note: the existing per-mechanism `market.settle` audit events remain; this adds one `market.resolution_note` audit event carrying the note (invariant 3). If you prefer to avoid a second audit row, instead inject `resolution_note: note` into each handler's existing `market.settle` metadata — but the centralized row is simpler and uniform. Keep whichever the team prefers; tests assert the note is present on *a* settle-related audit event for the market.
+> The per-mechanism handlers also emit their own `market.settle` audit event; this adds
+> a final canonical `market.settle` row carrying the full resolution metadata, so a test
+> querying the **last** `market.settle` event finds the note (invariant 4). This means the
+> per-mechanism handler audit events are now *not* the last `market.settle` row — that is
+> intentional. **Existing-test impact:** `test/services/settlement_service_test.rb:94-98`
+> asserts `assert_difference('AuditEvent.count', 3)`; the extra canonical event makes it 4 —
+> update that assertion (and any per-mechanism count assertions) as part of Step 2.1.
 
 - [ ] **Step 2.4: Run the full settlement suite**
 
@@ -194,7 +231,9 @@ class ResolutionTransparencyTest < ActionDispatch::IntegrationTest
   setup do
     @market = markets(:open_market)
     @admin = users(:admin)
-    sign_in_backoffice(@admin) # use the project's existing backoffice login helper
+    # Backoffice auth is a session cookie — sign in the way existing backoffice tests do
+    # (no `sign_in_backoffice` helper exists).
+    post '/signin', params: { email: @admin.email, password: 'password123' }
   end
 
   test 'backoffice settle persists and shows the resolution note' do
@@ -208,17 +247,17 @@ class ResolutionTransparencyTest < ActionDispatch::IntegrationTest
   end
 
   test 'admin settle requires a note (422) and returns it on success' do
-    post settle_admin_market_path(@market), params: { outcome: 'YES' }, headers: admin_auth_headers(@admin), as: :json
+    post settle_admin_market_path(@market), params: { outcome: 'YES' }, headers: auth_headers_for(@admin), as: :json
     assert_response :unprocessable_content
 
-    post settle_admin_market_path(@market), params: { outcome: 'YES', resolution_note: 'Resolved per official source.' }, headers: admin_auth_headers(@admin), as: :json
+    post settle_admin_market_path(@market), params: { outcome: 'YES', resolution_note: 'Resolved per official source.' }, headers: auth_headers_for(@admin), as: :json
     assert_response :success
     assert_equal 'Resolved per official source.', JSON.parse(response.body)['resolution_note']
   end
 end
 ```
 
-> Use the project's existing helpers for backoffice session login and admin bearer auth (see other tests in `test/integration/`, e.g. `backoffice_management_test.rb` and `auth_sessions_test.rb`). If no helper exists, sign in via `post '/signin', params: { email:, password: }` for backoffice and pass a JWT `Authorization` header for admin.
+> Auth helpers verified in this repo: backoffice tests sign in via `post '/signin', params: { email:, password: 'password123' }` (session cookie); admin API tests use `auth_headers_for(user)` from `test/test_helper.rb:29`. The `sign_in_backoffice`/`admin_auth_headers` helpers do **not** exist — do not invent them.
 
 - [ ] **Step 3.2: Run to verify failure**
 
@@ -298,7 +337,7 @@ git commit -m "feat(settlement): thread resolution note through backoffice + adm
 ## Task 4: Display the note + settled-at on the customer market page
 
 **Files:**
-- Modify: `app/views/web/markets/show.html.erb`
+- Modify: `app/views/web/markets/show.html.erb`, `app/views/backoffice/markets/show.html.erb`
 - Test: add to `test/integration/resolution_transparency_test.rb`
 
 - [ ] **Step 4.1: Write the failing test**
@@ -320,6 +359,10 @@ bin/rails test test/integration/resolution_transparency_test.rb -n "/resolution 
 ```
 Expected: FAIL (no such elements).
 
+- [ ] **Step 4.2b: Add backoffice display test**
+
+Extend the integration test to assert the backoffice market page also shows the note and settled timestamp after settlement. Spec invariant 5 requires both customer and backoffice surfaces.
+
 - [ ] **Step 4.3: Render in the resolution panel**
 
 In `app/views/web/markets/show.html.erb`, inside the existing `market-resolution-panel` (after the `settled_outcome` block, ~line 247):
@@ -335,6 +378,8 @@ In `app/views/web/markets/show.html.erb`, inside the existing `market-resolution
       <% end %>
 ```
 
+Also render the same fields in the settled-market panel in `app/views/backoffice/markets/show.html.erb`, near the settled outcome display.
+
 - [ ] **Step 4.4: Run to verify passing**
 
 ```bash
@@ -345,7 +390,7 @@ Expected: PASS
 - [ ] **Step 4.5: Commit**
 
 ```bash
-git add app/views/web/markets/show.html.erb test/integration/resolution_transparency_test.rb
+git add app/views/web/markets/show.html.erb app/views/backoffice/markets/show.html.erb test/integration/resolution_transparency_test.rb
 git commit -m "feat(settlement): show resolution note + settled-at on market page (D7)"
 ```
 
@@ -354,8 +399,9 @@ git commit -m "feat(settlement): show resolution note + settled-at on market pag
 ## Task 5: Docs
 
 - [ ] **Step 5.1:** In `docs/wiki/tech-debt-backlog.md`, mark product item **F-010 (resolution transparency)** as delivered by D7 for the mandatory-note path, and add a one-line pointer that the propose/approve/execute workflow remains **SEC-003** (synthesis).
-- [ ] **Step 5.2:** Update `docs/WORK_LOG.md` + `docs/INDEX.md`.
-- [ ] **Step 5.3:** Commit `docs: update INDEX and WORK_LOG after resolution transparency (D7)`.
+- [ ] **Step 5.2:** Update `db/seeds.rb` so any `SettlementService.settle!` calls pass a valid `resolution_note:`; otherwise `db:seed`/`db:prepare` fails once the keyword becomes required.
+- [ ] **Step 5.3:** Update `docs/WORK_LOG.md` + `docs/INDEX.md`.
+- [ ] **Step 5.4:** Commit `docs: update INDEX and WORK_LOG after resolution transparency (D7)`.
 
 ---
 
@@ -363,7 +409,8 @@ git commit -m "feat(settlement): show resolution note + settled-at on market pag
 - [ ] Note required + length-validated at the single `settle!` entry point (Task 2) — every mechanism covered.
 - [ ] `resolution_note` + `settled_at` persisted; audit metadata carries the note (Task 2).
 - [ ] Backoffice + admin pass the note; blank/short note blocks settlement (Task 3).
-- [ ] Customer page shows note + settled-at (Task 4).
+- [ ] Customer and backoffice pages show note + settled-at (Task 4).
+- [ ] `db/seeds.rb` still runs after the required `resolution_note:` keyword is added (Task 5).
 - [ ] Existing settlement tests updated for the new required kwarg (Task 2).
 - [ ] Full suite passes: `bin/rails test`; RuboCop clean.
 - [ ] No placeholder steps remain.

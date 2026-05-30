@@ -194,8 +194,20 @@ In `config/routes.rb`, inside the existing `namespace :web do … resources :mar
 # app/controllers/web/price_history_controller.rb
 module Web
   class PriceHistoryController < BaseController
+    # Public read, like Web::MarketsController#index/show. BaseController authenticates
+    # every action via the Authentication concern, so skip it here and attach the
+    # current user opportunistically (mirrors MarketsController).
+    skip_before_action :authenticate_request!, only: :index
+    before_action :attach_current_user, only: :index
+
     def index
       market = Market.find(params.expect(:market_id))
+      # Guests may only see markets the customer surface exposes; hide draft/cancelled
+      # history exactly as Web::MarketsController#show does.
+      unless current_user || %w[open settled closed].include?(market.status)
+        return head :not_found
+      end
+
       limit = params.fetch(:limit, 500).to_i.clamp(1, 1000)
       snapshots = market.price_snapshots.order(recorded_at: :asc).last(limit)
 
@@ -208,6 +220,10 @@ module Web
   end
 end
 ```
+
+> `attach_current_user` is the same helper `Web::MarketsController` uses to set
+> `@current_user` without forcing auth. Confirm its exact name (`attach_current_user`)
+> in `app/controllers/web/markets_controller.rb` / `Authentication` and reuse it.
 
 Add the association in `app/models/market.rb` (after `has_many :lmsr_positions`):
 
@@ -268,9 +284,36 @@ bin/rails test test/services/price_snapshot_wiring_test.rb -v
 ```
 Expected: FAIL — `No enqueued job found with {job: RecordPriceSnapshotJob, args: [<id>]}`
 
-- [ ] **Step 3.3: Enqueue after commit in `BetPlacementService`**
+- [ ] **Step 3.3: Add a best-effort enqueue wrapper on the job**
 
-In `app/services/bet_placement_service.rb`, the method returns the bet from inside the `ApplicationRecord.transaction do … end` block. Capture the bet, then enqueue after the block:
+Recording is best-effort (spec invariant 4): a queue adapter / serialization / backend error from `perform_later` must never raise into the trade request. Wrap it once, after the transaction has already committed:
+
+```ruby
+# app/jobs/record_price_snapshot_job.rb
+class RecordPriceSnapshotJob < ApplicationJob
+  queue_as :default
+
+  # Enqueue without ever raising into the caller. Recording is best-effort; a queue
+  # backend hiccup must not fail (or roll back) the trade that triggered it.
+  def self.enqueue_best_effort(market_id)
+    perform_later(market_id)
+  rescue StandardError => e
+    Rails.logger.warn("RecordPriceSnapshotJob enqueue failed for market #{market_id}: #{e.class}: #{e.message}")
+    nil
+  end
+
+  def perform(market_id)
+    market = Market.find_by(id: market_id)
+    return unless market&.open?
+
+    PriceSnapshotRecorder.record(market)
+  end
+end
+```
+
+- [ ] **Step 3.4: Enqueue after commit in `BetPlacementService`**
+
+In `app/services/bet_placement_service.rb`, capture the bet from inside the transaction, then enqueue after the block via the best-effort wrapper:
 
 ```ruby
     bet = ApplicationRecord.transaction do
@@ -282,30 +325,48 @@ In `app/services/bet_placement_service.rb`, the method returns the bet from insi
       bet
     end
 
-    RecordPriceSnapshotJob.perform_later(market.id)
+    RecordPriceSnapshotJob.enqueue_best_effort(market.id)
     bet
 ```
 
-- [ ] **Step 3.4: Apply the same after-commit enqueue to the other three services**
+- [ ] **Step 3.5: Apply the same after-commit `enqueue_best_effort` to the other three services**
 
-- `app/services/clob/order_matching_service.rb`: in `call`, after the `ApplicationRecord.transaction do … end` returns its `Result` (assign it to `result`, then `RecordPriceSnapshotJob.perform_later(@market.id) if result.success?`, then `result`). Place it in the `call` method body, **not** inside the `rescue`.
-- `app/services/lmsr/lmsr_trade_service.rb`: after the transaction commits successfully, `RecordPriceSnapshotJob.perform_later(@market.id)`.
-- `app/services/parimutuel/parimutuel_pool_service.rb`: after the stake transaction commits, `RecordPriceSnapshotJob.perform_later(@market.id)`.
+- `app/services/clob/order_matching_service.rb`: in `call`, after the `ApplicationRecord.transaction do … end` returns its `Result` (assign it to `result`, then `RecordPriceSnapshotJob.enqueue_best_effort(@market.id) if result.success?`, then `result`). Place it in the `call` method body, **not** inside the `rescue`.
+- `app/services/lmsr/lmsr_trade_service.rb`: after the transaction commits successfully, `RecordPriceSnapshotJob.enqueue_best_effort(@market.id)`.
+- `app/services/parimutuel/parimutuel_pool_service.rb`: after `Parimutuel::ParimutuelPoolService.add_stake(market:, user:, side:, stake_minor:)` commits successfully, call `RecordPriceSnapshotJob.enqueue_best_effort(market.id)`.
 
 (Read each service first; enqueue on the success path only, after the transaction block.)
 
-- [ ] **Step 3.5: Run the wiring test + the four service test suites**
+- [ ] **Step 3.6: Add a best-effort regression test** (append to `price_snapshot_wiring_test.rb`)
+
+```ruby
+test 'a failing enqueue does not break the triggering trade' do
+  market = markets(:open_market)
+  leg = market.market_legs.find_by!(label: 'YES')
+  user = users(:player)
+  user.wallet.update!(available_minor: 100_000)
+
+  RecordPriceSnapshotJob.stub(:perform_later, ->(*) { raise 'queue down' }) do
+    assert_nothing_raised do
+      bet = BetPlacementService.place!(user: user, market: market, market_leg: leg, stake_minor: 1000)
+      assert_predicate bet, :persisted?
+    end
+  end
+end
+```
+
+- [ ] **Step 3.7: Run the wiring tests + the four service test suites**
 
 ```bash
 bin/rails test test/services/price_snapshot_wiring_test.rb test/services/bet_placement_service_test.rb test/services/clob/order_matching_service_test.rb test/services/lmsr/lmsr_trade_service_test.rb test/services/parimutuel -v
 ```
-Expected: PASS (no regressions; the wiring test passes)
+Expected: PASS (no regressions; both wiring tests pass)
 
-- [ ] **Step 3.6: Commit**
+- [ ] **Step 3.8: Commit**
 
 ```bash
-git add app/services/bet_placement_service.rb app/services/clob/order_matching_service.rb app/services/lmsr/lmsr_trade_service.rb app/services/parimutuel/parimutuel_pool_service.rb test/services/price_snapshot_wiring_test.rb
-git commit -m "feat(price-history): record a price snapshot after each market-mutating trade"
+git add app/jobs/record_price_snapshot_job.rb app/services/bet_placement_service.rb app/services/clob/order_matching_service.rb app/services/lmsr/lmsr_trade_service.rb app/services/parimutuel/parimutuel_pool_service.rb test/services/price_snapshot_wiring_test.rb
+git commit -m "feat(price-history): record a price snapshot (best-effort) after each market-mutating trade"
 ```
 
 ---

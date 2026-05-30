@@ -25,14 +25,14 @@
 - `read_at: datetime`, nullable.
 - `metadata: jsonb`, default `{}`.
 - Timestamps.
-- Indexes on `[user_id, read_at, created_at]` and `[market_id, notification_type]`.
+- Indexes on `[user_id, created_at]` for the feed, a partial unread index on `user_id` where `read_at IS NULL` for the badge count, and `[market_id, notification_type]`.
 
 ## First Notification Triggers
 
 - Watched market settles.
 - Watched market is cancelled, after D2 market cancellation exists.
 - Watched market closes to new trading.
-- Watched market receives a material metadata update, limited to `question`, `description`, `close_at`, `resolution_criteria`, or `resolution_source`.
+- Watched market receives a material metadata update: admin updates may include `question`, `description`, `close_at`, `resolution_criteria`, or `resolution_source`; backoffice updates exclude `question` because the current backoffice update params do not permit it.
 
 ## Routes And UI
 
@@ -47,7 +47,7 @@
 - Email, SMS, push notifications.
 - Price-threshold alerts.
 - User-configurable notification preferences.
-- Notification delivery retries; first implementation writes rows synchronously in the transaction that creates the event.
+- Notification delivery retries; first implementation writes rows synchronously after the event transaction commits, with notifier failures isolated from market/trade/settlement state changes.
 
 ## Acceptance Checks
 

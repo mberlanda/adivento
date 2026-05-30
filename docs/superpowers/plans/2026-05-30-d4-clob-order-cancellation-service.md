@@ -4,7 +4,7 @@
 
 **Goal:** Replace duplicated web/admin CLOB order cancellation code with a shared `Clob::OrderCancellationService` that locks the order and wallet for the whole state transition.
 
-**Architecture:** Introduce one service that owns order cancellation, reservation release, audit logging, and idempotent rejection of already-final orders. Controllers become thin authorization/response adapters. This builds on the partial TD-013 fix where admin cancellation already locks order and wallet, but it removes drift between web/admin paths.
+**Architecture:** Introduce one service that owns order cancellation, reservation release, audit logging, and idempotent rejection of already-final orders. Controllers become thin authorization/response adapters. This builds on the partial TD-013 fix where admin cancellation already locks order and wallet, but it removes drift between web/admin paths. This service is also the canonical single-order cancellation primitive for D2 market cancellation; `MarketCancellationService#refund_clob!` should call it for open/partial orders unless D2 deliberately chooses one larger transaction and documents the trade-off.
 
 **Tech Stack:** Rails 8, Minitest integration/service tests, existing `Order#reserved_minor` helper.
 
@@ -131,6 +131,8 @@ module Clob
       else
         Result.new(success?: true, order: locked, released_minor: released, errors: [])
       end
+    rescue StandardError => e
+      Result.new(success?: false, order: @order, released_minor: 0, errors: [e.message])
     end
 
     private
@@ -223,7 +225,7 @@ test 'admin duplicate cancel does not release funds twice' do
   assert_response :ok
 
   delete "/admin/orders/#{order.id}", headers: auth_headers_for(users(:admin)), as: :json
-  assert_response :unprocessable_entity
+  assert_response :unprocessable_content
 
   assert_equal 100_000, users(:player).wallet.reload.available_minor
   assert_equal 0, users(:player).wallet.reserved_minor
@@ -239,6 +241,8 @@ bin/rails test test/services/clob/order_cancellation_service_test.rb test/integr
 ```
 
 Expected: all pass.
+
+Note: `Web::OrdersController#destroy` currently writes no audit row. Routing web cancellation through this service intentionally adds one `order.cancel` `AuditEvent` for parity with admin cancellation and auditability; keep a web integration assertion for the new audit row, not only the service-level assertion.
 
 ## Task 5: Document and commit
 

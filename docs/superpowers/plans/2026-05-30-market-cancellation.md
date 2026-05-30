@@ -198,7 +198,7 @@ test 'parimutuel refunds every stake and resets pools' do
   market = markets(:parimutuel_market)
   user = users(:player)
   user.wallet.update!(available_minor: 5000)
-  Parimutuel::ParimutuelPoolService.call(market: market, user: user, side: 'YES', amount_minor: 2000)
+  Parimutuel::ParimutuelPoolService.add_stake(market: market, user: user, side: 'YES', stake_minor: 2000)
 
   MarketCancellationService.call(market: market, actor: @actor, reason: 'Event was abandoned.')
 
@@ -311,7 +311,11 @@ end
 
 ```ruby
   def refund_clob!(market)
-    # (a) cancel open/partial orders, release reservations (ClobSettlementHandler Pass 1)
+    # (a) cancel open/partial orders, release reservations.
+    # If D4's Clob::OrderCancellationService has landed, call it here for each
+    # open/partial order so single-order cancellation accounting stays canonical.
+    # If D2 intentionally keeps one larger market-cancellation transaction instead,
+    # copy the same locking/audit semantics and document that trade-off in the PR.
     market.orders.where(status: %w[open partial]).find_each do |order|
       released = order.reserved_minor
       order.update!(cancelled_quantity: order.cancelled_quantity + order.unfilled_quantity, status: :cancelled)

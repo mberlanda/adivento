@@ -48,6 +48,8 @@ bin/rails generate model Notification user:references market:references notifica
 
 - [ ] **Step 2: Edit migrations**
 
+In both migrations, ensure references are `null: false` and have `foreign_key: true`.
+
 In the watchlist migration add:
 
 ```ruby
@@ -58,11 +60,23 @@ In the notifications migration ensure:
 
 ```ruby
 t.jsonb :metadata, null: false, default: {}
-add_index :notifications, %i[user_id read_at created_at]
+add_index :notifications, %i[user_id created_at]
+add_index :notifications, :user_id, where: 'read_at IS NULL', name: 'index_notifications_on_user_id_unread'
 add_index :notifications, %i[market_id notification_type]
 ```
 
-- [ ] **Step 3: Add model associations**
+- [ ] **Step 3: Migrate dev + prepare test DB**
+
+Run:
+
+```bash
+bin/rails db:migrate
+RAILS_ENV=test bin/rails db:prepare
+```
+
+Expected: `db/structure.sql` contains `market_watchlists`, `notifications`, the unique watchlist index, the feed index, and the partial unread notification index.
+
+- [ ] **Step 4: Add model associations**
 
 In `app/models/user.rb`:
 
@@ -107,11 +121,11 @@ class Notification < ApplicationRecord
 end
 ```
 
-- [ ] **Step 4: Add model tests**
+- [ ] **Step 5: Add model tests**
 
 Create `test/models/market_watchlist_test.rb` and `test/models/notification_test.rb` with uniqueness, presence, and unread scope assertions.
 
-- [ ] **Step 5: Run model tests**
+- [ ] **Step 6: Run model tests**
 
 Run:
 
@@ -142,7 +156,7 @@ Create `app/controllers/web/watchlists_controller.rb`:
 module Web
   class WatchlistsController < BaseController
     def index
-      @markets = current_user.watched_markets.includes(:market_legs).order(created_at: :desc)
+      @markets = current_user.watched_markets.order(created_at: :desc)
     end
 
     def create
@@ -319,37 +333,63 @@ end
 
 - [ ] **Step 2: Call after settlement**
 
-In `SettlementService.settle!`, after settlement succeeds and before return:
+In `SettlementService.settle!`, after the settlement transaction has committed and after `market.reload`, call the notifier outside the financial transaction:
 
 ```ruby
-Notifications::WatchedMarketNotifier.market_settled!(market: market.reload)
+begin
+  Notifications::WatchedMarketNotifier.market_settled!(market: market.reload)
+rescue StandardError => e
+  Rails.logger.warn("watched-market settlement notification failed: #{e.class}: #{e.message}")
+end
 ```
+
+Do not call the notifier inside the `ApplicationRecord.transaction` that settles payouts; notification failure must never roll back settlement, ledger, or wallet writes.
 
 - [ ] **Step 3: Call after auto-close**
 
 In `CloseExpiredMarketsJob`, after a market transitions to closed:
 
 ```ruby
-Notifications::WatchedMarketNotifier.market_closed!(market: market.reload)
+begin
+  Notifications::WatchedMarketNotifier.market_closed!(market: market.reload)
+rescue StandardError => e
+  Rails.logger.warn("watched-market close notification failed: #{e.class}: #{e.message}")
+end
 ```
 
 - [ ] **Step 4: Call after material market updates**
 
-In `Backoffice::MarketsController#update` and `Admin::MarketsController#update`, capture important changed fields before save and notify after successful update:
+In `Backoffice::MarketsController#update` and `Admin::MarketsController#update`, capture important changed fields before save and notify after successful update. Use the controller's actual market variable (`@market` in backoffice, local `market` in admin).
+
+Backoffice permits metadata fields but not `question`:
 
 ```ruby
-watched_fields = %w[question description close_at resolution_criteria resolution_source]
-changed_fields = market.changes.keys & watched_fields
-Notifications::WatchedMarketNotifier.market_updated!(market: market.reload, changed_fields: changed_fields)
-```
-
-For backoffice, use `@market.changes.keys` before the successful `@market.update(...)` returns if needed:
-
-```ruby
+watched_fields = %w[description close_at resolution_criteria resolution_source]
 @market.assign_attributes(market_update_params)
 changed_fields = @market.changes.keys & watched_fields
 if @market.save
-  Notifications::WatchedMarketNotifier.market_updated!(market: @market.reload, changed_fields: changed_fields)
+  notify_market_updated(@market, changed_fields)
+end
+```
+
+Admin can update `question`:
+
+```ruby
+watched_fields = %w[question description close_at resolution_criteria resolution_source]
+market.assign_attributes(market_params)
+changed_fields = market.changes.keys & watched_fields
+if market.save
+  notify_market_updated(market, changed_fields)
+end
+```
+
+Use a small private helper in each controller (or one shared helper) that rescues notifier failures:
+
+```ruby
+def notify_market_updated(market, changed_fields)
+  Notifications::WatchedMarketNotifier.market_updated!(market: market.reload, changed_fields: changed_fields)
+rescue StandardError => e
+  Rails.logger.warn("watched-market update notification failed: #{e.class}: #{e.message}")
 end
 ```
 
@@ -396,6 +436,18 @@ Update `docs/product/BACKLOG.md`, `docs/wiki/tech-debt-backlog.md`, `.claude/tas
 Commit:
 
 ```bash
-git add app db config test docs
-git commit -m "feat(web): add watchlists and notifications"
+  git add \
+    app/models/market_watchlist.rb app/models/notification.rb \
+    app/services/notifications/watched_market_notifier.rb \
+    app/controllers/web/watchlists_controller.rb app/controllers/web/notifications_controller.rb \
+    app/views/web/watchlists/index.html.erb app/views/web/notifications/index.html.erb \
+    app/models/user.rb app/models/market.rb app/services/settlement_service.rb \
+    app/jobs/close_expired_markets_job.rb app/controllers/backoffice/markets_controller.rb \
+    app/controllers/admin/markets_controller.rb app/views/layouts/application.html.erb \
+    app/views/web/markets/show.html.erb config/routes.rb db/migrate db/structure.sql \
+    test/models/market_watchlist_test.rb test/models/notification_test.rb \
+    test/integration/web_watchlists_test.rb test/integration/web_notifications_test.rb \
+    test/services/notifications/watched_market_notifier_test.rb \
+    docs/product/BACKLOG.md docs/wiki/tech-debt-backlog.md .claude/tasks/ATTENTION.md docs/WORK_LOG.md
+  git commit -m "feat(web): add watchlists and notifications"
 ```
