@@ -211,6 +211,62 @@ module Clob
       assert_includes second.errors.first, 'Insufficient position'
     end
 
+    test 'rejects order when CLOB market is draft' do
+      @market.update!(status: :draft)
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+      result = nil
+
+      assert_no_difference('Order.count') do
+        result = Clob::OrderMatchingService.call(
+          market: @market,
+          incoming_order_params: {
+            user: @buyer, market_leg: yes_leg,
+            side: 'YES', price_cents: 40, quantity: 1, time_in_force: :gtc
+          }
+        )
+      end
+
+      assert_not result.success?
+      assert_includes result.errors, 'Market is not open'
+    end
+
+    test 'rejects order when CLOB market is past close_at' do
+      @market.update!(close_at: 1.minute.ago)
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+      result = nil
+
+      assert_no_difference('Order.count') do
+        result = Clob::OrderMatchingService.call(
+          market: @market,
+          incoming_order_params: {
+            user: @buyer, market_leg: yes_leg,
+            side: 'YES', price_cents: 40, quantity: 1, time_in_force: :gtc
+          }
+        )
+      end
+
+      assert_not result.success?
+      assert_includes result.errors, 'Market is closed for new bets'
+    end
+
+    test 'rejects order when CLOB market is closed, settled, or cancelled' do
+      yes_leg = @market.market_legs.find_by!(label: 'YES')
+
+      %i[closed settled cancelled].each do |status|
+        @market.update!(status: status, close_at: (status == :closed ? 1.minute.ago : nil))
+        result = Clob::OrderMatchingService.call(
+          market: @market,
+          incoming_order_params: {
+            user: @buyer, market_leg: yes_leg,
+            side: 'YES', price_cents: 40, quantity: 1, time_in_force: :gtc
+          }
+        )
+
+        assert_not result.success?, "expected #{status} market to reject CLOB order"
+        assert_includes result.errors, 'Market is not open'
+      end
+    end
+
     test 'CLOB_SELL_CREDIT ledger entry written on sell fill' do
       yes_leg = @market.market_legs.find_by!(label: 'YES')
 

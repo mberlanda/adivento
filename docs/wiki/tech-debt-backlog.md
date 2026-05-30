@@ -175,10 +175,9 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-020 · Admin CLOB order API skips market trading-state guards
 
-**Status:** Open — **plan written** (D3, 2026-05-30): `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md`.
+**Status:** ✅ Done (wave 2, plan D3). `validate_market_trading_state!` added to `Clob::OrderMatchingService#call`; duplicate controller-level guards removed from `Web::OrdersController`. All callers (web + admin) now share the same lifecycle checks.
 **Problem:** `Web::OrdersController#create` rejects non-open markets and markets past `close_at`, but `Admin::OrdersController#create` only checks `market.clob?`. Admin API callers can place CLOB orders on draft, closed, or settled markets.
-**Fix:** Apply the same `open?` and `close_at` checks in `Admin::OrdersController#create`, or move the trading-state guard into `Clob::OrderMatchingService` so all callers share it. Add admin integration tests for draft, closed, and expired markets.
-**Impact:** Medium — privileged/API flows can mutate markets outside the intended lifecycle.
+**Fix:** Moved trading-state guard into `Clob::OrderMatchingService` so all callers share it. Admin + web integration tests added for draft, closed, and expired markets.
 
 ---
 

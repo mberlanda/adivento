@@ -19,6 +19,18 @@ class WebOrdersTest < ActionDispatch::IntegrationTest
     assert_equal 'open', body['status']
   end
 
+  test 'web order placement surfaces service lifecycle guard for expired CLOB market' do
+    @market.update!(close_at: 1.minute.ago)
+
+    post "/web/markets/#{@market.id}/orders",
+         headers: auth_headers_for(@player),
+         params: { side: 'YES', price_cents: 40, quantity: 5, time_in_force: 'GTC' },
+         as: :json
+
+    assert_response :unprocessable_content
+    assert_includes response.parsed_body['errors'], 'Market is closed for new bets'
+  end
+
   test 'returns 422 for non-CLOB market' do
     post "/web/markets/#{markets(:open_market).id}/orders",
          headers: auth_headers_for(@player),
