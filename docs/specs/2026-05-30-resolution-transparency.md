@@ -5,54 +5,69 @@
 <!-- workflow (SEC-003) is an explicit follow-up, NOT part of this spec. -->
 
 ## Goal
-Every settled market records a mandatory operator-written resolution note and a settlement timestamp, which are shown to players on the market page — so a player who lost a bet can see *why* and *when* the market resolved.
+
+Every settled market records a mandatory operator-written resolution note and a settlement timestamp, which are shown to players on the market page so a player who lost a bet can see why and when the market resolved.
 
 ## Definitions
-- **Resolution note**: free-text explanation (operator-supplied) of why the market resolved to the winning outcome. Stored on `markets.resolution_note`.
-- **Settled-at**: the timestamp settlement executed. Stored on `markets.settled_at`.
-- **Settlement path**: any code path that transitions a market to `settled`. There is exactly one entry point — `SettlementService.settle!` — which dispatches to the four mechanism handlers. This spec enforces the note centrally at that entry point so all mechanisms are covered uniformly.
 
-## Background / current state
-- `markets` has `settled_outcome`, `settled_by_id`, `resolution_criteria`, `resolution_source`, but **no `resolution_note` and no `settled_at`** (verified in `db/structure.sql`).
-- The backoffice settle form already renders a "Reason" text field (`app/views/backoffice/markets/show.html.erb:86`, testid `settle-reason`) but the value is **discarded** — the controller passes only `outcome`.
+- **Resolution note**: free-text explanation of why the market resolved to the winning outcome. Stored on `markets.resolution_note`.
+- **Settled-at**: timestamp settlement executed. Stored on `markets.settled_at`.
+- **Settlement path**: any code path that transitions a market to `settled`. The entry point is `SettlementService.settle!`, which dispatches to the four mechanism handlers.
+
+## Background / Current State
+
+- `markets` has `settled_outcome`, `settled_by_id`, `resolution_criteria`, and `resolution_source`, but no `resolution_note` and no `settled_at`.
+- The backoffice settle form has used a free-text reason in some flows, but the value is not persisted as player-visible resolution metadata.
 - `SettlementService.settle!(market:, outcome:, actor:)` takes no note. `Admin::MarketsController#settle` and `Backoffice::MarketsController#settle` both call it with `outcome` only.
 
 ## Invariants
-1. `SettlementService.settle!` requires a `resolution_note` whose stripped length ≥ 10; otherwise it raises `SettlementService::InvalidSettlement` and the market stays unsettled (transaction rolls back).
-2. On successful settlement, `markets.resolution_note` is persisted and `markets.settled_at` is set to the settlement time, regardless of mechanism (fixed_odds, clob, lmsr, parimutuel).
-3. The `market.settle` `AuditEvent` metadata includes the `resolution_note`.
-4. The customer market page displays the resolution note and settled-at timestamp for any settled market.
-5. The note requirement is enforced at the single `SettlementService.settle!` entry point (no settlement path can bypass it).
+
+1. `SettlementService.settle!` requires a `resolution_note` whose stripped length is at least 20 characters.
+2. Blank or too-short notes raise `SettlementService::InvalidSettlement` and leave the market unsettled.
+3. Successful settlement persists `markets.resolution_note` and `markets.settled_at` for fixed-odds, CLOB, LMSR, and parimutuel markets.
+4. Settlement audit metadata includes `resolution_note`, `resolution_source`, `settled_at`, `outcome`, and `mechanism`.
+5. Customer and backoffice market pages display the resolution note and settled-at timestamp for settled markets.
+6. The note requirement is enforced at `SettlementService.settle!`, so no settlement path can bypass it.
 
 ## API / UI Contract
-**Service** — `SettlementService.settle!(market:, outcome:, actor:, resolution_note:)`
-- New required keyword `resolution_note:`. Validates length ≥ 10 (stripped) before dispatch.
 
-**Backoffice (HTML)** — `POST /backoffice/markets/:id/settle`
-- Existing `reason` field is renamed to `resolution_note` (testid stays `settle-reason`), marked `required`, and passed through. On blank/short note → re-render with the validation error (alert), market unchanged.
+**Service:** `SettlementService.settle!(market:, outcome:, actor:, resolution_note:)`
 
-**Admin (JSON)** — `POST /admin/markets/:id/settle`
-- Request now requires `resolution_note` in params. Missing/short → `422` with `{ "error": "<message>" }`. Success response adds `"resolution_note"` and `"settled_at"`.
+- New required keyword `resolution_note:`.
+- Validates stripped length >= 20 before dispatch.
 
-**Customer market page** — `app/views/web/markets/show.html.erb` resolution panel
-- For settled markets, render the resolution note (testid `market-resolution-note`) and the settled-at timestamp (testid `market-settled-at`) alongside the existing "Settled outcome".
+**Backoffice HTML:** `POST /backoffice/markets/:id/settle`
 
-## Status Taxonomy
-None (no new enums; `settled` already exists).
+- Settle form includes required `resolution_note` textarea.
+- Blank/short note redirects or re-renders with an error and leaves market unchanged.
+
+**Admin JSON:** `POST /admin/markets/:id/settle`
+
+- Request requires `resolution_note`.
+- Missing/short note returns 422 with `{ "error": "<message>" }`.
+- Success response includes `resolution_note` and `settled_at`.
+
+**Customer market page:** `app/views/web/markets/show.html.erb`
+
+- Settled markets render the note and timestamp alongside the existing outcome/source information.
 
 ## Accounting / Ledger
-None new. The existing settlement ledger/audit writes are unchanged except the `market.settle` AuditEvent now carries `resolution_note` in metadata (invariant 3).
+
+No new ledger entries. Existing settlement payout entries are unchanged. Audit metadata is strengthened so settlement evidence is visible without replaying controller params.
 
 ## Test Requirements
-- [ ] `settle!` with a blank or <10-char note raises `InvalidSettlement` and leaves the market unsettled (no payouts, no status change).
-- [ ] `settle!` with a valid note persists `resolution_note` + `settled_at` for each of the 4 mechanisms.
-- [ ] The `market.settle` AuditEvent metadata includes the note.
-- [ ] Backoffice settle with a valid note settles and shows it; backoffice settle with a blank note re-renders an error and does not settle.
-- [ ] Admin settle without a note returns 422; with a note returns the note + settled_at.
-- [ ] Customer market page shows the note + settled-at for a settled market.
 
-## Out of scope
-- Propose → approve → execute resolution workflow, separation of duties, evidence attachments (tracked as **SEC-003** in the synthesis; this spec is the minimal note-only path).
-- Two-step settle confirmation with payout preview (UX-030).
-- Editing/retracting a resolution note after settlement.
+- [ ] `settle!` with blank or less-than-20-character note raises `InvalidSettlement` and leaves market unsettled.
+- [ ] `settle!` with a valid note persists `resolution_note` and `settled_at` for all four mechanisms.
+- [ ] `market.settle` audit metadata includes the note and timestamp.
+- [ ] Backoffice settle with a valid note settles and shows it.
+- [ ] Backoffice settle with a blank note does not settle.
+- [ ] Admin settle without a note returns 422; with a note returns the note and `settled_at`.
+- [ ] Customer market page shows the note and `settled_at` for a settled market.
+
+## Out of Scope
+
+- Propose/approve/execute resolution workflow, separation of duties, and evidence attachments. Track under SEC-003.
+- Two-step settle confirmation with payout preview. Track under UX-030.
+- Editing or retracting a resolution note after settlement.
 - Per-bet "why you lost" breakdown beyond the market-level note.

@@ -24,12 +24,12 @@ Decision 1 backend correctness is in progress with Claude. The following plannin
 | Planning Todo | Decision | Recommended option | Deliverable |
 |---------------|----------|--------------------|-------------|
 | D2-TODO-001 | Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | Spec + implementation plan |
-| D3-TODO-002 | CLOB trading-state guards | Centralize guards in `Clob::OrderMatchingService` | Implementation plan |
-| D4-TODO-003 | CLOB cancellation locking | Shared `Clob::OrderCancellationService` with row/wallet locks | Implementation plan |
+| D3-TODO-002 | CLOB trading-state guards | Centralize guards in `Clob::OrderMatchingService` | `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md` |
+| D4-TODO-003 | CLOB cancellation locking | Shared `Clob::OrderCancellationService` with row/wallet locks | `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md` |
 | D5-TODO-004 | Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the current four-mechanism product | Rewrite plan |
 | D6-TODO-005 | Price history | Expose existing `PriceSnapshot` endpoint + simple chart now | Spec + implementation plan |
-| D7-TODO-006 | Resolution transparency | Mandatory resolution note + settlement metadata across all settlement paths | Spec + implementation plan |
-| D8-TODO-007 | Notifications/watchlist | Dedicated notification/watchlist tables | ADR/spec + implementation plan |
+| D7-TODO-006 | Resolution transparency | Mandatory resolution note + settlement metadata across all settlement paths | `docs/specs/2026-05-30-resolution-transparency.md` + `docs/superpowers/plans/2026-05-30-resolution-transparency.md` |
+| D8-TODO-007 | Notifications/watchlist | Dedicated notification/watchlist tables | `docs/specs/2026-05-30-watchlists-notifications.md` + `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md` |
 | D9-TODO-008 | Mobile/UX blocker policy | Unblock responsive web/mobile work from communities | Backlog update + mobile plan |
 | D10-TODO-009 | Browser test matrix | Chromium per PR; Firefox/WebKit nightly | QA implementation plan |
 | D11-TODO-010 | Docs/review process | Plan reviews for larger work; surgical exception for small fixes | Docs policy update |

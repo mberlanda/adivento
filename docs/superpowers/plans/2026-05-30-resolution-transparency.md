@@ -86,9 +86,9 @@ test 'raises when resolution_note is blank' do
   assert_not @market.reload.settled?
 end
 
-test 'raises when resolution_note is shorter than 10 chars' do
+test 'raises when resolution_note is shorter than 20 chars' do
   assert_raises(SettlementService::InvalidSettlement) do
-    SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor, resolution_note: 'too short')
+    SettlementService.settle!(market: @market, outcome: 'YES', actor: @actor, resolution_note: 'too short for note')
   end
 end
 
@@ -126,7 +126,7 @@ Change the signature and add validation + persistence. The method already wraps 
     raise InvalidSettlement, 'Market must be open or closed to settle' unless market.open? || market.closed?
 
     note = resolution_note.to_s.strip
-    raise InvalidSettlement, 'Resolution note is required (min 10 characters)' if note.length < 10
+    raise InvalidSettlement, 'Resolution note is required (min 20 characters)' if note.length < 20
 
     valid_labels = market.market_legs.pluck(:label)
     unless valid_labels.include?(outcome)
@@ -255,7 +255,7 @@ In `app/views/backoffice/markets/show.html.erb` (the settle form, ~line 86):
 
 ```erb
         <p><label>Resolution note <span style="color:#f44336;">*</span></label><br>
-          <%= text_field_tag :resolution_note, nil, required: true, minlength: 10,
+          <%= text_field_tag :resolution_note, nil, required: true, minlength: 20,
                 data: { testid: "settle-reason" } %></p>
 ```
 

@@ -25,12 +25,12 @@ The user accepted Decision 1 as already in progress with Claude and asked to tra
 | Decision | Approved option | Planning owner lane | Status |
 |----------|-----------------|---------------------|--------|
 | D2 Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | Trust/backend architecture | ✅ Planned — `docs/specs/2026-05-30-market-cancellation.md` + `docs/superpowers/plans/2026-05-30-market-cancellation.md` |
-| D3 CLOB trading-state guards | Centralize guards inside `Clob::OrderMatchingService` | CLOB/backend correctness | Todo |
-| D4 CLOB cancellation locking | Shared cancellation service with row/wallet locks | CLOB/backend correctness | Todo |
+| D3 CLOB trading-state guards | Centralize guards inside `Clob::OrderMatchingService` | CLOB/backend correctness | ✅ Planned — `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md` |
+| D4 CLOB cancellation locking | Shared cancellation service with row/wallet locks | CLOB/backend correctness | ✅ Planned — `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md` |
 | D5 Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the four-mechanism product | Product/docs | ✅ Planned — `docs/superpowers/plans/2026-05-30-product-backlog-rewrite.md` |
 | D6 Price history | Expose existing `PriceSnapshot` with endpoint and simple chart now | Product/UX/backend | ✅ Planned — `docs/specs/2026-05-30-price-history.md` + `docs/superpowers/plans/2026-05-30-price-history.md` |
 | D7 Resolution transparency | Require resolution note and settlement metadata across all settlement paths | Trust/product/backend | ✅ Planned — `docs/specs/2026-05-30-resolution-transparency.md` + `docs/superpowers/plans/2026-05-30-resolution-transparency.md` |
-| D8 Notifications/watchlist | Dedicated notification/watchlist tables | Product/backend | Todo |
+| D8 Notifications/watchlist | Dedicated notification/watchlist tables | Product/backend | ✅ Planned — `docs/specs/2026-05-30-watchlists-notifications.md` + `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md` |
 | D9 Mobile/UX blocker policy | Unblock responsive web/mobile work from community features | UX/mobile | Todo |
 | D10 Browser test matrix | Chromium per PR, Firefox/WebKit nightly | QA/release | Todo |
 | D11 Docs/review process | Plan reviews for larger work, lightweight exception for surgical fixes | Docs/process | Todo |
@@ -90,8 +90,8 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/architecture.md`
 
 **Required planning artifacts:**
-- [ ] Create an implementation plan for moving open/close_at lifecycle checks into `Clob::OrderMatchingService`.
-- [ ] Include admin and web controller regression tests for draft, closed, settled, cancelled, and expired markets.
+- [x] Create an implementation plan for moving open/close_at lifecycle checks into `Clob::OrderMatchingService`: `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md`.
+- [x] Include admin and web controller regression tests for draft, closed, settled, cancelled, and expired markets.
 - [ ] Update TD-020 with the selected centralized-service approach.
 
 **Acceptance check:** The plan makes web/admin/API callers share one service-level lifecycle guard and prevents future privileged bypasses.
@@ -106,8 +106,8 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/data-postgres.md`
 
 **Required planning artifacts:**
-- [ ] Create an implementation plan for a shared cancellation service used by web and admin controllers.
-- [ ] Include a concurrency regression test for double-cancel attempts.
+- [x] Create an implementation plan for a shared cancellation service used by web and admin controllers: `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md`.
+- [x] Include a regression test for double-cancel attempts.
 - [ ] Update TD-021 with the selected shared-service locking policy.
 
 **Acceptance check:** The plan keeps order state transition, reserved-fund release, audit logging, and authorization boundaries explicit.
@@ -174,9 +174,9 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/data-postgres.md`
 
 **Required planning artifacts:**
-- [ ] Create an ADR or spec choosing dedicated tables instead of repurposing `audit_events`.
-- [ ] Define first notification triggers: watched market close, settlement, cancellation, and material market update.
-- [ ] Create an implementation plan for watchlist persistence, notification records, and a simple profile notification surface.
+- [x] Create an ADR or spec choosing dedicated tables instead of repurposing `audit_events`: `docs/specs/2026-05-30-watchlists-notifications.md`.
+- [x] Define first notification triggers: watched market close, settlement, cancellation, and material market update.
+- [x] Create an implementation plan for watchlist persistence, notification records, and a simple profile notification surface: `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md`.
 
 **Acceptance check:** Audit logging remains operator/trust infrastructure; player notifications get their own queryable product model.
 
@@ -244,3 +244,4 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 
 - 2026-05-30: Created tracker from the approved recommended options for Decisions 2-11. Decision 1 intentionally left out because Claude is already progressing it.
 - 2026-05-30 (Claude): Planned D2, D5, D6, D7 in detail. Artifacts: D2 spec+plan (`market-cancellation`), D5 rewrite plan (`product-backlog-rewrite`), D6 spec+plan (`price-history`), D7 spec+plan (`resolution-transparency`). D3, D4, D8–D11 remain Todo.
+- 2026-05-30: Planned D3, D4, and D8 in detail. Refined D7 spec/plan consistency to the 20-character mandatory-note rule.
