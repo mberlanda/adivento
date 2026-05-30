@@ -18,7 +18,7 @@ module Clob
     test 'cancels open order and releases reserved funds under lock' do
       result = Clob::OrderCancellationService.call(order: @order, actor: @actor)
 
-      assert result.success?
+      assert_predicate result, :success?
       assert_equal 200, result.released_minor
       assert_predicate @order.reload, :cancelled?
       assert_equal 100_000, @user.wallet.reload.available_minor

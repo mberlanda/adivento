@@ -7,7 +7,8 @@ class MarketCancellationServiceTest < ActiveSupport::TestCase
     market = markets(:open_market)
     assert_difference -> { AuditEvent.where(action: 'market.cancel', target_id: market.id).count }, 1 do
       result = MarketCancellationService.call(market: market, actor: @actor, reason: 'Event was abandoned.')
-      assert result.success?
+
+      assert_predicate result, :success?
     end
     assert_predicate market.reload, :cancelled?
   end
@@ -64,12 +65,14 @@ class MarketCancellationServiceTest < ActiveSupport::TestCase
     before = user.wallet.available_minor
     Lmsr::LmsrTradeService.call(market: market, user: user, side: 'YES', quantity: 5)
     spent = before - user.wallet.reload.available_minor
-    assert spent.positive?
+
+    assert_predicate spent, :positive?
 
     MarketCancellationService.call(market: market, actor: @actor, reason: 'Event was abandoned.')
 
     refunded = LedgerEntry.where(user: user, entry_type: 'MARKET_CANCEL_REFUND').sum(:amount_minor)
     staked = LedgerEntry.where(user: user, entry_type: 'LMSR_TRADE_STAKE').sum(:amount_minor)
+
     assert_equal staked, refunded
     assert_equal 0, LmsrPosition.for_market(market).where(user: user).sum(:contracts)
   end
@@ -79,14 +82,15 @@ class MarketCancellationServiceTest < ActiveSupport::TestCase
     buyer = users(:player)
     buyer.wallet.update!(available_minor: 500_000, reserved_minor: 0)
     Clob::OrderMatchingService.call(market: market, incoming_order_params: {
-      user: buyer, side: 'YES', price_cents: 40, quantity: 5,
-      market_leg: market.market_legs.find_by!(label: 'YES'), time_in_force: :gtc
-    })
+                                      user: buyer, side: 'YES', price_cents: 40, quantity: 5,
+                                      market_leg: market.market_legs.find_by!(label: 'YES'), time_in_force: :gtc
+                                    })
+
     assert_operator buyer.wallet.reload.reserved_minor, :>, 0
 
     MarketCancellationService.call(market: market, actor: @actor, reason: 'Event was abandoned.')
 
     assert_equal 0, buyer.wallet.reload.reserved_minor
-    assert market.reload.orders.where(status: %w[open partial]).none?
+    assert_predicate market.reload.orders.where(status: %w[open partial]), :none?
   end
 end
