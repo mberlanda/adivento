@@ -1,7 +1,7 @@
 <div data-testid="positions-page">
   <h1>My Positions</h1>
 
-  <% if @positions.empty? && @clob_positions.empty? %>
+  <% if @positions.empty? && @clob_positions.empty? && @lmsr_positions.empty? %>
     <div class="card" style="color:#9fb2b8;" data-testid="no-positions">
       <p>No open positions.</p>
     </div>
@@ -56,6 +56,30 @@
               <td><%= cp[:no_contracts] %></td>
               <td><%= cp[:avg_yes_price_cents] ? "#{cp[:avg_yes_price_cents]}¢" : '—' %></td>
               <td><%= cp[:unrealised_value_minor] ? "#{number_with_delimiter(cp[:unrealised_value_minor])} ADIV" : '—' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if @lmsr_positions.any? %>
+    <div class="card">
+      <h3>LMSR Positions</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Side</th>
+            <th>Contracts</th>
+          </tr>
+        </thead>
+        <tbody data-testid="lmsr-positions-list">
+          <% @lmsr_positions.each do |position| %>
+            <tr data-testid="lmsr-position-row-<%= position[:market_id] %>-<%= position[:side] %>">
+              <td><%= link_to position[:market_question], web_market_path(position[:market_id]), style: 'color:#9fb2b8;' %></td>
+              <td><strong><%= position[:side] %></strong></td>
+              <td><%= number_with_delimiter(position[:contracts]) %></td>
             </tr>
           <% end %>
         </tbody>

@@ -6,9 +6,16 @@ module Web
                 .order(created_at: :desc)
       @positions = bets.map { |b| serialize_position(b) }
       @clob_positions = clob_contract_positions
+      @lmsr_positions = lmsr_contract_positions
       respond_to do |format|
         format.html
-        format.json { render json: { positions: @positions, clob_positions: @clob_positions } }
+        format.json do
+          render json: {
+            positions: @positions,
+            clob_positions: @clob_positions,
+            lmsr_positions: @lmsr_positions
+          }
+        end
       end
     end
 
@@ -120,6 +127,22 @@ module Web
           unrealised_value_minor: unrealised
         }
       end
+    end
+
+    def lmsr_contract_positions
+      LmsrPosition
+        .includes(:market)
+        .where(user: current_user)
+        .holding
+        .order(:market_id, :side)
+        .map do |position|
+          {
+            market_id: position.market_id,
+            market_question: position.market.question,
+            side: position.side,
+            contracts: position.contracts
+          }
+        end
     end
   end
 end
