@@ -4,6 +4,17 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — docs(pm): project-management sync of trackers
+
+- Restructured `.claude/tasks/ATTENTION.md` "Ready for Autonomous Work" into a **dependency-ordered execution plan** (Waves 1–5). Each item is tagged with an **owner** (🔴 Opus 4.8 = financial/concurrency/cross-system; 🟢 Sonnet = feature slices; 🔵 Codex = trivial fixes + docs/planning), a **complexity** (XS–L), and explicit **Depends on**. Merged each `D#` plan with its `TD-###` (same work).
+- Added a **Backlog trackers (sources of truth)** table (one concern per file) so status changes land in the owning tracker.
+- Added missing `TD-034` to the ATTENTION index.
+- Fixed `docs/INDEX.md` staleness: TD-013/018/019 are done; F-004/F-008/F-010 are now planned (D6/D8/D7); added D2/D5/D6 plan rows.
+- `tech-debt-backlog.md`: TD-020/TD-021 now reference their D3/D4 plans.
+- Key files: `.claude/tasks/ATTENTION.md`, `docs/INDEX.md`, `docs/wiki/tech-debt-backlog.md`, `docs/WORK_LOG.md`
+
+---
+
 ## 2026-05-30 — docs(planning): detailed plans for D3, D4, D7, D8
 
 - Added executable plans for D3 CLOB trading-state guards and D4 shared CLOB order cancellation service.

@@ -175,7 +175,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-020 · Admin CLOB order API skips market trading-state guards
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** Open — **plan written** (D3, 2026-05-30): `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md`.
 **Problem:** `Web::OrdersController#create` rejects non-open markets and markets past `close_at`, but `Admin::OrdersController#create` only checks `market.clob?`. Admin API callers can place CLOB orders on draft, closed, or settled markets.
 **Fix:** Apply the same `open?` and `close_at` checks in `Admin::OrdersController#create`, or move the trading-state guard into `Clob::OrderMatchingService` so all callers share it. Add admin integration tests for draft, closed, and expired markets.
 **Impact:** Medium — privileged/API flows can mutate markets outside the intended lifecycle.
@@ -184,7 +184,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-021 · CLOB order cancellation is not consistently locked
 
-**Status:** Open. Identified 2026-05-29 codebase review.
+**Status:** Open — **plan written** (D4, 2026-05-30): `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md`. (Admin `destroy` already locks order+wallet as a partial TD-013 follow-up; D4 extracts the shared service.)
 **Problem:** `Web::OrdersController#destroy` calls `Order.lock.find` before entering the transaction, and `Admin::OrdersController#destroy` does not lock the order or wallet. Two concurrent cancellations can both compute the same `reserved_minor` and release funds twice unless the order row is locked for the whole state transition.
 **Fix:** Move `Order.lock.find` and wallet `lock!` inside the transaction in both controllers. Add a service object for order cancellation so web/admin/settlement release logic uses one implementation.
 **Impact:** Medium — duplicate cancellation can corrupt wallet reserved/available balances under concurrent requests.
