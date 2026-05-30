@@ -3,9 +3,7 @@
 Last updated: 2026-05-30
 
 This file is the single index of open items. Check it at the start of each session.
-Full tech-debt details + design decision options: `docs/wiki/tech-debt-backlog.md`.
-Backend next-steps plan: `docs/superpowers/plans/2026-05-29-backend-next-steps.md`
-Decision planning dispatch tracker: `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md`
+See **Backlog trackers** below for the other source-of-truth files and what each owns.
 
 ---
 
@@ -15,34 +13,70 @@ _No blocked items. All pending design decisions have been resolved._
 
 ---
 
+## Backlog trackers (sources of truth)
+
+One concern per file. When you change status, update the tracker that **owns** the item, then reflect it here.
+
+| Tracker | Owns | File |
+|---------|------|------|
+| **ATTENTION.md** (this file) | the single open-items index + the execution waves below | `.claude/tasks/ATTENTION.md` |
+| Tech-debt backlog | `TD-###` engineering-debt detail + design options | `docs/wiki/tech-debt-backlog.md` |
+| Decision dispatch | `D2–D11` decision plans + approved options | `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md` |
+| UX backlog | `UX-###` gaps + the PR A–D slices | `docs/wiki/UX_BACKLOG.md` |
+| Product backlog | `PROD/F-###` product features (rewrite pending **D5**) | `docs/product/BACKLOG.md` |
+| Deep-review synthesis | consolidated Tier 0–3 findings (read-only record) | `docs/reviews/2026-05-29-deep-review/synthesis.md` |
+| Status index | implemented vs planned map | `docs/INDEX.md` |
+| Work log | dated build history | `docs/WORK_LOG.md` |
+
+---
+
 ## 🟡 Ready for Autonomous Work
 
-Recommended order: finish the backend correctness tasks first, then move to the planned UX slices in `docs/wiki/UX_BACKLOG.md`.
+**Owner key** (who should execute):
+- 🔴 **Opus 4.8** — financial correctness, concurrency/locking, ledger, settlement, cross-system architecture. Most complex.
+- 🟢 **Sonnet** — standard feature slices, controllers/views, moderate planning.
+- 🔵 **Codex** — trivial fixes (one file / params / lint) and docs/process planning.
 
-Decision 1 backend correctness is in progress with Claude. The following planning todos track the approved recommended options for Decisions 2-11 and are ready to dispatch to specialist planning agents.
+Execute waves in order; within a wave, respect **Depends on**. `D#` and its `TD-###` are the **same work** (the plan implements the debt).
 
-| Planning Todo | Decision | Recommended option | Deliverable |
-|---------------|----------|--------------------|-------------|
-| D2-TODO-001 | Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | `docs/specs/2026-05-30-market-cancellation.md` + `docs/superpowers/plans/2026-05-30-market-cancellation.md` |
-| D3-TODO-002 | CLOB trading-state guards | Centralize guards in `Clob::OrderMatchingService` | `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md` |
-| D4-TODO-003 | CLOB cancellation locking | Shared `Clob::OrderCancellationService` with row/wallet locks | `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md` |
-| D5-TODO-004 | Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the current four-mechanism product | `docs/superpowers/plans/2026-05-30-product-backlog-rewrite.md` |
-| D6-TODO-005 | Price history | Expose existing `PriceSnapshot` endpoint + simple chart now | `docs/specs/2026-05-30-price-history.md` + `docs/superpowers/plans/2026-05-30-price-history.md` |
-| D7-TODO-006 | Resolution transparency | Mandatory resolution note + settlement metadata across all settlement paths | `docs/specs/2026-05-30-resolution-transparency.md` + `docs/superpowers/plans/2026-05-30-resolution-transparency.md` |
-| D8-TODO-007 | Notifications/watchlist | Dedicated notification/watchlist tables | `docs/specs/2026-05-30-watchlists-notifications.md` + `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md` |
-| D9-TODO-008 | Mobile/UX blocker policy | Unblock responsive web/mobile work from communities | Backlog update + mobile plan |
-| D10-TODO-009 | Browser test matrix | Chromium per PR; Firefox/WebKit nightly | QA implementation plan |
-| D11-TODO-010 | Docs/review process | Plan reviews for larger work; surgical exception for small fixes | Docs policy update |
+### Wave 1 — Backend quick wins (no dependencies)
+| Item | ID | Plan | Owner | Cx | Depends on |
+|------|----|------|-------|----|-----------|
+| Admin API: permit `category` + `tags` | TD-016 | backend-next-steps T4 | 🔵 Codex | XS | — |
+| Clear RuboCop `Rails/FilePath` offense | TD-022 | none needed | 🔵 Codex | XS | — |
+| Leaderboard P&L entry-type constants (`CLOB_SELL_CREDIT`, `LMSR_FEE`, `CLOB_FEE`) | TD-015 | backend-next-steps T3 | 🟢 Sonnet | S | — |
+| Expose LMSR positions on positions page | TD-014 | backend-next-steps T2 | 🟢 Sonnet | S | — |
 
-| Task | ID | Priority | Plan |
-|------|----|----------|------|
-| Expose LMSR positions on player positions page | TD-014 | P2 — High | Task 2 in 2026-05-29-backend-next-steps.md |
-| Fix leaderboard P&L (CLOB_SELL_CREDIT, LMSR_FEE, CLOB_FEE) | TD-015 | P3 — Medium | Task 3 in 2026-05-29-backend-next-steps.md |
-| Admin API: permit category and tags in market params | TD-016 | P4 — Medium | Task 4 in 2026-05-29-backend-next-steps.md |
-| MarketCancellationService + backoffice cancel action | TD-017 | P5 — Medium | Plan: 2026-05-30-market-cancellation.md (D2) |
-| Add admin CLOB order trading-state guards | TD-020 | P3 — Medium | Plan: 2026-05-30-d3-clob-trading-state-guards.md |
-| Lock CLOB order cancellation consistently | TD-021 | P3 — Medium | Plan: 2026-05-30-d4-clob-order-cancellation-service.md |
-| Clear RuboCop Rails/FilePath offense | TD-022 | P5 — Low | No plan needed |
+### Wave 2 — CLOB correctness (plans written; order matters)
+| Item | ID / D | Plan | Owner | Cx | Depends on |
+|------|--------|------|-------|----|-----------|
+| Centralize CLOB trading-state guards | TD-020 / D3 | `2026-05-30-d3-clob-trading-state-guards.md` | 🟢 Sonnet | M | — (land first) |
+| Shared `Clob::OrderCancellationService` (order + wallet locks) | TD-021 / D4 | `2026-05-30-d4-clob-order-cancellation-service.md` | 🔴 Opus | M | D3 |
+| `MarketCancellationService` + backoffice cancel (cross-mechanism refunds) | TD-017 / D2 | `2026-05-30-market-cancellation.md` | 🔴 Opus | L | D4 (reuse cancel service); ledger taxonomy note |
+| Settlement & sell-order concurrency idempotency | TD-034 | needs plan | 🔴 Opus | M | D2 |
+
+### Wave 3 — Trust & product features (plans written)
+| Item | D | Plan | Owner | Cx | Depends on |
+|------|---|------|-------|----|-----------|
+| Resolution transparency (mandatory note + `settled_at` + audit) | D7 | `2026-05-30-resolution-transparency.md` (+spec) | 🔴 Opus | M | — |
+| Price history endpoint + chart + wire snapshot recording | D6 | `2026-05-30-price-history.md` (+spec) | 🟢 Sonnet | M | — |
+| Watchlists + notifications tables/surface | D8 | `2026-05-30-d8-watchlists-notifications.md` (+spec) | 🟢 Sonnet | M | D7 (settle events), D2 (cancel events) |
+
+### Wave 4 — Planning & process (produce docs; can run anytime)
+| Item | D | Deliverable | Owner | Cx |
+|------|---|-------------|-------|----|
+| Product backlog rewrite (four-mechanism, `PROD-###` scheme) | D5 | execute `2026-05-30-product-backlog-rewrite.md` | 🔵 Codex | S |
+| Unblock responsive web/mobile from communities + first slice | D9 | backlog update + mobile plan | 🔵 Codex | S |
+| Browser matrix: Chromium per PR, FF/WebKit nightly | D10 / TD-006 | QA implementation plan | 🟢 Sonnet | S |
+| Plan-review policy (review-required vs surgical exception) | D11 | docs policy update | 🔵 Codex | XS |
+
+### Wave 5 — UX slices (after their backend deps land)
+| Slice | Plan | Owner | Depends on |
+|-------|------|-------|-----------|
+| PR A — market browse + detail | `2026-05-29-ux-market-browse-detail.md` | 🟢 Sonnet | D6 (price chart) |
+| PR B — leaderboard/profile/auth/positions | `2026-05-29-ux-leaderboard-profile-auth.md` | 🟢 Sonnet | TD-014, TD-015 |
+| PR C — settlement explainer page | `2026-05-29-ux-settlement-explainer-page.md` | 🟢 Sonnet | D7 |
+| PR D — backoffice dashboard/settle/faucet | `2026-05-29-ux-backoffice-dashboard-settle.md` | 🟢 Sonnet | D2 (cancel UI), D7 (settle preview) |
 
 ---
 
@@ -106,6 +140,7 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — plan written (D3) |
 | TD-021 | CLOB order cancellation locking | Medium | Open — plan written (D4) |
 | TD-022 | RuboCop Rails/FilePath offense | Low | Open |
+| TD-034 | Settlement & sell-order concurrency idempotency | Medium | Open — needs plan (relates to D2) |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |
 | TD-006 | E2E browser matrix (Firefox/WebKit) | Low | Deferred |
@@ -120,10 +155,7 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 
 ## Product / UX Backlog Pointers
 
-| Area | Next action |
-|------|-------------|
-| UX market browse/detail | Execute PR A in `docs/wiki/UX_BACKLOG.md` |
-| UX leaderboard/profile/auth/positions | Execute PR B in `docs/wiki/UX_BACKLOG.md` |
-| Settlement explainer | Execute PR C in `docs/wiki/UX_BACKLOG.md` |
-| Backoffice dashboard/settle/faucet | Execute PR D in `docs/wiki/UX_BACKLOG.md` |
-| Price history, watchlists, resolution notes, activity feed, responsible-gaming controls | Create specs/plans from `docs/product/BACKLOG.md` |
+UX slices PR A–D are now scheduled in **Wave 5** above (with owners + backend deps).
+Detail lives in `docs/wiki/UX_BACKLOG.md`. Remaining un-planned product features
+(activity feed, responsible-gaming controls) still need specs/plans from
+`docs/product/BACKLOG.md` — author after the **D5** rewrite so they use the `PROD-###` scheme.

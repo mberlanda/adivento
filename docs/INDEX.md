@@ -145,11 +145,10 @@ Plan approved?
 - **DD-006: CLOB sell orders + operator buyback** — `direction` column on orders; sell limit order matching against resting buy orders; `NetPositionService`; `ClobCashoutService`; `OperatorBuybackService` (mid-price from book); backoffice buyback UI; web clob_cashout action (PR #36, `8a67f3c`)
 
 ### ⏳ Next
-- Execute `docs/superpowers/plans/2026-05-29-backend-next-steps.md` first: TD-013 through TD-017 are the highest-confidence planned backend correctness gaps.
-- Dispatch planning agents from `docs/superpowers/plans/2026-05-30-decision-planning-dispatch.md` for approved Decisions 2-11.
-- Create follow-up plans for TD-018 through TD-022 from `docs/wiki/tech-debt-backlog.md`.
-- Then schedule the planned UX slices in `docs/wiki/UX_BACKLOG.md`.
-- Larger product gaps still need specs/plans: F-004 price history, F-008 watchlists/notifications, F-010 resolution notes, F-011 activity feed, F-012 responsible-gaming controls.
+- **The execution plan now lives in `.claude/tasks/ATTENTION.md`** (Waves 1–5, each item tagged with owner — 🔴 Opus / 🟢 Sonnet / 🔵 Codex — complexity, and dependencies). Start there.
+- TD-013/TD-018/TD-019 are **done** (PRs #44/#42/#46). Remaining backend correctness: TD-014/015/016 (quick wins), TD-017/020/021 (CLOB, plans D2/D3/D4 written), TD-022 (lint), TD-034 (settlement concurrency — needs plan).
+- Decisions D2–D8 are **planned** (specs/plans written); D9–D11 are planning todos. See the dispatch tracker.
+- Product gaps now planned: **F-004 price history → D6**, **F-008 watchlists → D8**, **F-010 resolution notes → D7**. Still un-planned: F-011 activity feed, F-012 responsible-gaming controls (author after the **D5** backlog rewrite, using `PROD-###`).
 
 ### Plans + Reviews
 
@@ -167,10 +166,13 @@ Plan approved?
 | F-006: Backoffice market create UX | [plan](superpowers/plans/2026-05-28-f006-backoffice-market-create-ux.md) | — | ✅ implemented |
 | Dockerise E2E suite | [plan](superpowers/plans/2026-05-28-dockerise-e2e-suite.md) | — | ✅ implemented |
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
-| Backend next steps (TD-013–TD-017) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned |
-| Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ planning todos |
+| Backend next steps (TD-014–TD-016) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned (TD-013/017 split out) |
+| Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ D2–D8 planned, D9–D11 todos |
+| D2: Market cancellation | [spec](specs/2026-05-30-market-cancellation.md) · [plan](superpowers/plans/2026-05-30-market-cancellation.md) | — | ⏳ planned |
 | D3: CLOB trading-state guards | [plan](superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md) | — | ⏳ planned |
 | D4: CLOB order cancellation service | [plan](superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md) | — | ⏳ planned |
+| D5: Product backlog rewrite | [plan](superpowers/plans/2026-05-30-product-backlog-rewrite.md) | — | ⏳ planned |
+| D6: Price history | [spec](specs/2026-05-30-price-history.md) · [plan](superpowers/plans/2026-05-30-price-history.md) | — | ⏳ planned |
 | D7: Resolution transparency | [spec](specs/2026-05-30-resolution-transparency.md) · [plan](superpowers/plans/2026-05-30-resolution-transparency.md) | — | ⏳ planned |
 | D8: Watchlists and notifications | [spec](specs/2026-05-30-watchlists-notifications.md) · [plan](superpowers/plans/2026-05-30-d8-watchlists-notifications.md) | — | ⏳ planned |
 
