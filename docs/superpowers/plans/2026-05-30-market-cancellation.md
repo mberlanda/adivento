@@ -83,7 +83,10 @@ Expected: FAIL — `uninitialized constant MarketCancellationService`
 class MarketCancellationService
   class InvalidCancellation < StandardError; end
 
-  Result = Struct.new(:success?, :refunded_total_minor, :errors, keyword_init: true)
+  # Track refunds and clawbacks SEPARATELY so refunded_total_minor is always the gross
+  # amount credited back (never netted against clawbacks, never negative).
+  Result = Struct.new(:success?, :refunded_total_minor, :clawed_back_minor,
+                      :clawback_shortfall_minor, :errors, keyword_init: true)
 
   def self.call(**) = new(**).call
 
@@ -91,31 +94,38 @@ class MarketCancellationService
     @market = market
     @actor = actor
     @reason = reason.to_s.strip
+    @refunded_minor = 0
+    @clawed_back_minor = 0
+    @clawback_shortfall_minor = 0
   end
 
   def call
     raise InvalidCancellation, 'Reason is required (min 10 characters)' if @reason.length < 10
 
-    refunded = 0
     ApplicationRecord.transaction do
       m = Market.lock.find(@market.id)
       raise InvalidCancellation, 'Market cannot be cancelled' unless m.open? || m.closed?
 
-      refunded += refund_fixed_odds!(m) if m.fixed_odds?
-      refunded += refund_parimutuel!(m) if m.parimutuel?
-      refunded += refund_lmsr!(m)       if m.lmsr?
-      refunded += refund_clob!(m)       if m.clob?
+      refund_fixed_odds!(m) if m.fixed_odds?
+      refund_parimutuel!(m) if m.parimutuel?
+      refund_lmsr!(m)       if m.lmsr?
+      refund_clob!(m)       if m.clob?
 
       m.update!(status: :cancelled)
       AuditEvent.create!(
         actor: @actor, action: 'market.cancel',
         target_type: 'Market', target_id: m.id,
-        reason: @reason, metadata: { refunded_total_minor: refunded, mechanism: m.mechanism_type }
+        reason: @reason, metadata: {
+          mechanism: m.mechanism_type, refunded_total_minor: @refunded_minor,
+          clawed_back_minor: @clawed_back_minor, clawback_shortfall_minor: @clawback_shortfall_minor
+        }
       )
       @market = m
     end
 
-    Result.new(success?: true, refunded_total_minor: refunded, errors: [])
+    Result.new(success?: true, refunded_total_minor: @refunded_minor,
+               clawed_back_minor: @clawed_back_minor,
+               clawback_shortfall_minor: @clawback_shortfall_minor, errors: [])
   end
 
   private
@@ -134,7 +144,25 @@ class MarketCancellationService
     LedgerEntry.create!(user: user, actor: @actor, entry_type: 'MARKET_CANCEL_REFUND',
                         direction: 'credit', amount_minor: amount,
                         metadata: { market_id: @market.id, mechanism: mechanism })
+    @refunded_minor += amount
     amount
+  end
+
+  # Clawback for CLOB net sellers. Floored at available balance; the shortfall is recorded
+  # (not silently dropped). Accumulated separately from refunds.
+  def clawback!(user, amount)
+    return 0 unless amount.positive?
+
+    wallet = user.wallet.lock!
+    taken = [amount, wallet.available_minor].min
+    wallet.update!(available_minor: wallet.available_minor - taken)
+    LedgerEntry.create!(user: user, actor: @actor, entry_type: 'MARKET_CANCEL_CLAWBACK',
+                        direction: 'debit', amount_minor: taken,
+                        metadata: { market_id: @market.id, mechanism: 'clob',
+                                    requested_minor: amount, shortfall_minor: amount - taken })
+    @clawed_back_minor += taken
+    @clawback_shortfall_minor += (amount - taken)
+    taken
   end
 end
 ```
@@ -156,6 +184,9 @@ git commit -m "feat(cancel): MarketCancellationService skeleton with idempotent 
 ```ruby
 test 'fixed_odds refunds each open bet stake and voids the bet' do
   market = markets(:open_market)
+  # `bets.yml` seeds open bets on open_market (player_yes_open_bet stake 100, plus a
+  # moderator bet); delete them so this test only sees its own controlled bet.
+  market.bets.delete_all
   user = users(:player)
   user.wallet.update!(available_minor: 0)
   bet = Bet.create!(user: user, market: market, market_leg: market.market_legs.find_by!(label: 'YES'),
@@ -325,38 +356,35 @@ end
       w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
     end
 
-    # (b) net cash per user from fills: Σ ORDER_FILL_STAKE − Σ CLOB_SELL_CREDIT
+    # (b) net cash outlay per user from fills. BOTH fill types put cash into the market:
+    #   - cross-side buy match (execute_fill!): taker writes ORDER_FILL_STAKE, the resting
+    #     maker's reservation is consumed and recorded as ORDER_FILL_CREDIT (maker_stake);
+    #   - sell match (execute_sell_fill!): buyer writes ORDER_FILL_STAKE, seller takes
+    #     CLOB_SELL_CREDIT as proceeds (cash out).
+    # So net outlay = Σ(ORDER_FILL_STAKE + ORDER_FILL_CREDIT) − Σ CLOB_SELL_CREDIT.
     net = Hash.new(0)
-    LedgerEntry.where(entry_type: 'ORDER_FILL_STAKE').where("metadata->>'market_id' = ?", market.id.to_s)
+    LedgerEntry.where(entry_type: %w[ORDER_FILL_STAKE ORDER_FILL_CREDIT])
+               .where("metadata->>'market_id' = ?", market.id.to_s)
                .find_each { |e| net[e.user_id] += e.amount_minor }
     LedgerEntry.where(entry_type: 'CLOB_SELL_CREDIT').where("metadata->>'market_id' = ?", market.id.to_s)
                .find_each { |e| net[e.user_id] -= e.amount_minor }
 
-    total = 0
     net.each do |user_id, amount|
       user = User.find(user_id)
       if amount.positive?
-        total += credit!(user, amount, 'clob')              # net buyer: refund
+        credit!(user, amount, 'clob')   # net buyer: refund (accumulates @refunded_minor)
       elsif amount.negative?
-        total -= clawback!(user, -amount)                   # net seller: claw back (floored)
+        clawback!(user, -amount)        # net seller: claw back, floored (accumulates @clawed_back_minor)
       end
     end
-    total
-  end
-
-  def clawback!(user, amount)
-    wallet = user.wallet.lock!
-    taken = [amount, wallet.available_minor].min
-    wallet.update!(available_minor: wallet.available_minor - taken)
-    LedgerEntry.create!(user: user, actor: @actor, entry_type: 'MARKET_CANCEL_CLAWBACK',
-                        direction: 'debit', amount_minor: taken,
-                        metadata: { market_id: @market.id, mechanism: 'clob', requested_minor: amount,
-                                    shortfall_minor: amount - taken })
-    taken
   end
 ```
 
-> Both `ORDER_FILL_STAKE` and `CLOB_SELL_CREDIT` already carry `market_id` in metadata (`order_matching_service.rb`), so the scoping queries work today. Record any `shortfall_minor > 0` — the cancellation AuditEvent metadata should aggregate it (extend Task 1's audit `metadata` with `clawback_shortfall_minor` summed across users).
+> `ORDER_FILL_STAKE`, `ORDER_FILL_CREDIT`, and `CLOB_SELL_CREDIT` all carry `market_id` in
+> metadata (`order_matching_service.rb`), so the scoping queries work today. `clawback!` is
+> defined once in the skeleton (Task 1); it floors at the available balance and accumulates
+> `@clawed_back_minor` / `@clawback_shortfall_minor`, which the `market.cancel` audit event
+> and the `Result` report separately from `refunded_total_minor` (never netted).
 
 - [ ] **Step 5.4: Run → PASS; Step 5.5: Commit** `feat(cancel): release CLOB reservations and net-cash refund/clawback`
 
