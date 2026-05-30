@@ -24,12 +24,12 @@ The user accepted Decision 1 as already in progress with Claude and asked to tra
 
 | Decision | Approved option | Planning owner lane | Status |
 |----------|-----------------|---------------------|--------|
-| D2 Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | Trust/backend architecture | Todo |
+| D2 Market cancellation scope | Full cross-mechanism atomic cancellation/refund service | Trust/backend architecture | ✅ Planned — `docs/specs/2026-05-30-market-cancellation.md` + `docs/superpowers/plans/2026-05-30-market-cancellation.md` |
 | D3 CLOB trading-state guards | Centralize guards inside `Clob::OrderMatchingService` | CLOB/backend correctness | Todo |
 | D4 CLOB cancellation locking | Shared cancellation service with row/wallet locks | CLOB/backend correctness | Todo |
-| D5 Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the four-mechanism product | Product/docs | Todo |
-| D6 Price history | Expose existing `PriceSnapshot` with endpoint and simple chart now | Product/UX/backend | Todo |
-| D7 Resolution transparency | Require resolution note and settlement metadata across all settlement paths | Trust/product/backend | Todo |
+| D5 Product roadmap source of truth | Rewrite `docs/product/BACKLOG.md` around the four-mechanism product | Product/docs | ✅ Planned — `docs/superpowers/plans/2026-05-30-product-backlog-rewrite.md` |
+| D6 Price history | Expose existing `PriceSnapshot` with endpoint and simple chart now | Product/UX/backend | ✅ Planned — `docs/specs/2026-05-30-price-history.md` + `docs/superpowers/plans/2026-05-30-price-history.md` |
+| D7 Resolution transparency | Require resolution note and settlement metadata across all settlement paths | Trust/product/backend | ✅ Planned — `docs/specs/2026-05-30-resolution-transparency.md` + `docs/superpowers/plans/2026-05-30-resolution-transparency.md` |
 | D8 Notifications/watchlist | Dedicated notification/watchlist tables | Product/backend | Todo |
 | D9 Mobile/UX blocker policy | Unblock responsive web/mobile work from community features | UX/mobile | Todo |
 | D10 Browser test matrix | Chromium per PR, Firefox/WebKit nightly | QA/release | Todo |
@@ -74,11 +74,11 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/market-mechanics.md`
 
 **Required planning artifacts:**
-- [ ] Create or update a spec for market cancellation semantics under `docs/specs/`.
-- [ ] Create an implementation plan for `MarketCancellationService`, backoffice cancel action, and tests under `docs/superpowers/plans/`.
-- [ ] Update TD-017 in `docs/wiki/tech-debt-backlog.md` with the selected full-service policy.
+- [x] Spec: `docs/specs/2026-05-30-market-cancellation.md`.
+- [x] Implementation plan: `docs/superpowers/plans/2026-05-30-market-cancellation.md` (`MarketCancellationService`, per-mechanism refund tasks, backoffice cancel action, tests).
+- [x] TD-017 updated in `docs/wiki/tech-debt-backlog.md` (plan-written, full-service policy).
 
-**Acceptance check:** The plan covers fixed-odds open bets, CLOB resting orders/reservations, LMSR positions/cost refunds, parimutuel stakes, idempotency, audit events, and wallet locking.
+**Acceptance check:** ✅ The plan covers fixed-odds open bets, CLOB resting orders/reservations + filled-position net-cash refund/clawback, LMSR positions/cost refunds, parimutuel stakes, idempotency (locked market row), audit events, and wallet locking. CLOB filled-position refund documents its TD-023 ledger-taxonomy dependency.
 
 ### D3-TODO-002: Plan centralized CLOB trading-state guards
 
@@ -124,11 +124,11 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/docs-handoff.md`
 
 **Required planning artifacts:**
-- [ ] Create a rewrite plan for `docs/product/BACKLOG.md` that removes fixed-odds-only assumptions.
-- [ ] Define the current roadmap hierarchy across CLOB, LMSR, parimutuel, and fixed-odds.
-- [ ] Propose ID cleanup rules so product feature IDs do not collide with tech-debt IDs.
+- [x] Rewrite plan: `docs/superpowers/plans/2026-05-30-product-backlog-rewrite.md` (removes fixed-odds-only assumptions).
+- [x] Roadmap hierarchy defined (Now/Next/Later tiers + four-mechanism status matrix in the target structure).
+- [x] ID cleanup rules proposed (`PROD-###` namespace, retire bare `F-###`, legacy map, INDEX legend).
 
-**Acceptance check:** A future agent can update the product backlog without re-reading every historical plan.
+**Acceptance check:** ✅ The target structure + legacy `F-### → PROD-###` map lets a future agent update the backlog without re-reading historical plans.
 
 ### D6-TODO-005: Plan PriceSnapshot endpoint and simple chart
 
@@ -141,11 +141,11 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/architecture.md`
 
 **Required planning artifacts:**
-- [ ] Create or refresh the product spec for price history using the existing `PriceSnapshot` model.
-- [ ] Create an implementation plan for a web JSON endpoint and simple market-detail chart.
-- [ ] Track a separate follow-up for retention/pruning policy instead of blocking the chart.
+- [x] Spec: `docs/specs/2026-05-30-price-history.md` (normalization rule per mechanism).
+- [x] Implementation plan: `docs/superpowers/plans/2026-05-30-price-history.md` (JSON endpoint + server-side SVG chart + **wiring snapshot recording**, which is currently dead code).
+- [x] Retention/pruning deferred as TD-035 (called out in the plan), not blocking the chart.
 
-**Acceptance check:** The first implementation plan is demo-useful and scoped to existing data, while explicitly deferring retention aggregation.
+**Acceptance check:** ✅ Scoped to existing `PriceSnapshot` data; retention explicitly deferred to TD-035. **Key finding:** the recorder/job are never enqueued today, so the plan also wires recording into the four mutating services.
 
 ### D7-TODO-006: Plan resolution transparency across settlement paths
 
@@ -158,11 +158,11 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 - `docs/reviews/2026-05-29-deep-review/ux-research-ia.md`
 
 **Required planning artifacts:**
-- [ ] Create a spec for mandatory `resolution_note`, settlement timestamp display, source citation, and audit metadata.
-- [ ] Decide whether this is a migration-only change or part of a broader propose/approve/execute workflow.
-- [ ] Create an implementation plan for the minimal mandatory-note path, with the broader workflow as a follow-up if needed.
+- [x] Spec: `docs/specs/2026-05-30-resolution-transparency.md` (mandatory note, `settled_at`, audit metadata, customer display).
+- [x] Decision recorded: **minimal mandatory-note path** (migration + central enforcement in `SettlementService.settle!`); the propose/approve/execute workflow is explicitly deferred to **SEC-003**.
+- [x] Implementation plan: `docs/superpowers/plans/2026-05-30-resolution-transparency.md`.
 
-**Acceptance check:** Every settlement mechanism has an auditable explanation visible to operators and players.
+**Acceptance check:** ✅ Enforced at the single `SettlementService.settle!` entry point, so every mechanism (fixed_odds/clob/lmsr/parimutuel) gets an auditable, player-visible explanation.
 
 ### D8-TODO-007: Plan dedicated notifications and watchlists
 
@@ -243,3 +243,4 @@ Checked against the current branch after merging `origin/main` on 2026-05-30. No
 ## Status Log
 
 - 2026-05-30: Created tracker from the approved recommended options for Decisions 2-11. Decision 1 intentionally left out because Claude is already progressing it.
+- 2026-05-30 (Claude): Planned D2, D5, D6, D7 in detail. Artifacts: D2 spec+plan (`market-cancellation`), D5 rewrite plan (`product-backlog-rewrite`), D6 spec+plan (`price-history`), D7 spec+plan (`resolution-transparency`). D3, D4, D8–D11 remain Todo.
