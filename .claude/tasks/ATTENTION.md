@@ -131,27 +131,15 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
 | TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
 | TD-013 | BetPlacementService wallet lock (race condition) | High | ✅ done (PR #44) |
-<<<<<<< HEAD
-| TD-014 | LMSR positions missing from positions page | High | ✅ done |
-| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | ✅ done |
-| TD-016 | Admin API missing category/tags params | Medium | ✅ done |
-| TD-017 | Market cancellation service + backoffice action | Medium | Open — plan written (D2) |
-| TD-018 | CLOB settlement pays sold positions as winners | High | ✅ done (PR #42) |
-| TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |
-| TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — plan written (D3) |
-| TD-021 | CLOB order cancellation locking | Medium | Open — plan written (D4) |
-| TD-022 | RuboCop Rails/FilePath offense | Low | ✅ done |
-=======
-| TD-014 | LMSR positions missing from positions page | High | Open — see plan |
-| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | Open — see plan |
-| TD-016 | Admin API missing category/tags params | Medium | Open — see plan |
+| TD-014 | LMSR positions missing from positions page | High | ✅ done (wave 1) |
+| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | ✅ done (wave 1) |
+| TD-016 | Admin API missing category/tags params | Medium | ✅ done (wave 1) |
 | TD-017 | Market cancellation service + backoffice action | Medium | ✅ done (wave 2, D2) |
 | TD-018 | CLOB settlement pays sold positions as winners | High | ✅ done (PR #42) |
 | TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |
 | TD-020 | Admin CLOB orders skip trading-state guards | Medium | ✅ done (wave 2, D3) |
 | TD-021 | CLOB order cancellation locking | Medium | ✅ done (wave 2, D4) |
-| TD-022 | RuboCop Rails/FilePath offense | Low | Open |
->>>>>>> 35fa62f (docs: update INDEX, WORK_LOG, and ATTENTION after wave 2 (D2/D3/D4))
+| TD-022 | RuboCop Rails/FilePath offense | Low | ✅ done (wave 1) |
 | TD-034 | Settlement & sell-order concurrency idempotency | Medium | Open — needs plan (relates to D2) |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |
