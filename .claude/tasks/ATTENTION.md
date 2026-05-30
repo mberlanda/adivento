@@ -40,12 +40,8 @@ One concern per file. When you change status, update the tracker that **owns** t
 Execute waves in order; within a wave, respect **Depends on**. `D#` and its `TD-###` are the **same work** (the plan implements the debt).
 
 ### Wave 1 — Backend quick wins (no dependencies)
-| Item | ID | Plan | Owner | Cx | Depends on |
-|------|----|------|-------|----|-----------|
-| Admin API: permit `category` + `tags` | TD-016 | backend-next-steps T4 | 🔵 Codex | XS | — |
-| Clear RuboCop `Rails/FilePath` offense | TD-022 | none needed | 🔵 Codex | XS | — |
-| Leaderboard P&L entry-type constants (`CLOB_SELL_CREDIT`, `LMSR_FEE`, `CLOB_FEE`) | TD-015 | backend-next-steps T3 | 🟢 Sonnet | S | — |
-| Expose LMSR positions on positions page | TD-014 | backend-next-steps T2 | 🟢 Sonnet | S | — |
+
+✅ Completed 2026-05-30 on branch `codex/wave-1-backend-quick-wins`.
 
 ### Wave 2 — CLOB correctness (plans written; order matters)
 | Item | ID / D | Plan | Owner | Cx | Depends on |
@@ -84,6 +80,7 @@ Execute waves in order; within a wave, respect **Depends on**. `D#` and its `TD-
 
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
+| Wave 1 backend quick wins: TD-014/015/016/022 | 2026-05-30 | branch `codex/wave-1-backend-quick-wins` |
 | UX-036/UX-023 web registration form + session login | 2026-05-30 | branch `feat/ux-036-web-registration` |
 | TD-013 lock wallet rows across all mutation paths | 2026-05-29 | branch `fix/td-013-wallet-locking` |
 | TD-019 reserve contracts for open CLOB sell orders | 2026-05-29 | branch `fix/td-019-clob-sell-reservation` |
@@ -131,9 +128,9 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
 | TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
 | TD-013 | BetPlacementService wallet lock (race condition) | High | ✅ done (PR #44) |
-| TD-014 | LMSR positions missing from positions page | High | Open — see plan |
-| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | Open — see plan |
-| TD-016 | Admin API missing category/tags params | Medium | Open — see plan |
+| TD-014 | LMSR positions missing from positions page | High | ✅ done |
+| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | ✅ done |
+| TD-016 | Admin API missing category/tags params | Medium | ✅ done |
 | TD-017 | Market cancellation service + backoffice action | Medium | Open — plan written (D2) |
 | TD-018 | CLOB settlement pays sold positions as winners | High | ✅ done (PR #42) |
 | TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |

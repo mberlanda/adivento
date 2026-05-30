@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — Wave 1 backend quick wins
+
+- TD-016: Admin JSON API now permits `category` and `tags: []` on market create/update; added regression coverage for categorized/tagged API market creation.
+- TD-022: RuboCop file-path/style gate is clean; tracked the `Rails/FilePath` item as resolved.
+- TD-015: Leaderboard P&L now counts `CLOB_SELL_CREDIT` and `PARIMUTUEL_REFUND` as returns, and `LMSR_FEE`/`CLOB_FEE` as costs.
+- TD-014: Player positions page and JSON response now include LMSR holdings from `lmsr_positions`.
+- Key files: `app/controllers/admin/markets_controller.rb`, `app/controllers/web/leaderboard_controller.rb`, `app/controllers/web/positions_controller.rb`, `app/views/web/positions/index.html.erb`, `test/integration/admin_permissions_test.rb`, `test/integration/web_leaderboard_test.rb`, `test/integration/web_positions_test.rb`
+
+---
+
 ## 2026-05-30 — docs(pm): project-management sync of trackers
 
 - Restructured `.claude/tasks/ATTENTION.md` "Ready for Autonomous Work" into a **dependency-ordered execution plan** (Waves 1–5). Each item is tagged with an **owner** (🔴 Opus 4.8 = financial/concurrency/cross-system; 🟢 Sonnet = feature slices; 🔵 Codex = trivial fixes + docs/planning), a **complexity** (XS–L), and explicit **Depends on**. Merged each `D#` plan with its `TD-###` (same work).
