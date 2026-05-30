@@ -83,6 +83,23 @@ class WebLeaderboardTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='leaderboard-pnl-#{player.id}']", /\+75 ADIV/
   end
 
+  test 'leaderboard counts PARIMUTUEL_REFUND as returned value' do
+    LedgerEntry.delete_all
+
+    player = users(:player)
+    LedgerEntry.create!(user: player, actor: player, entry_type: 'PARIMUTUEL_STAKE',
+                        amount_minor: 400, direction: 'debit', metadata: {})
+    LedgerEntry.create!(user: player, actor: player, entry_type: 'PARIMUTUEL_REFUND',
+                        amount_minor: 150, direction: 'credit', metadata: {})
+
+    get '/web/leaderboard'
+
+    assert_response :success
+    assert_select "[data-testid='leaderboard-row-#{player.id}']", /400 ADIV/
+    assert_select "[data-testid='leaderboard-row-#{player.id}']", /150 ADIV/
+    assert_select "[data-testid='leaderboard-pnl-#{player.id}']", /-250 ADIV/
+  end
+
   test 'leaderboard is accessible while authenticated' do
     post '/signin', params: { email: users(:player).email, password: 'password123' }
     get '/web/leaderboard'

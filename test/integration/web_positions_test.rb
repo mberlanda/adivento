@@ -64,4 +64,17 @@ class WebPositionsTest < ActionDispatch::IntegrationTest
 
     assert_equal 3, lmsr_position['contracts']
   end
+
+  test 'positions page excludes LMSR positions for settled markets' do
+    player = users(:player)
+    market = markets(:lmsr_market)
+    market.update_columns(status: Market.statuses[:settled])
+    LmsrPosition.where(user: player, market: market, side: 'YES').delete_all
+    LmsrPosition.create!(user: player, market: market, side: 'YES', contracts: 5)
+
+    get '/web/positions', headers: auth_headers_for(player)
+
+    assert_response :success
+    assert_select "[data-testid='lmsr-position-row-#{market.id}-YES']", count: 0
+  end
 end

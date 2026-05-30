@@ -132,7 +132,9 @@ module Web
     def lmsr_contract_positions
       LmsrPosition
         .includes(:market)
+        .joins(:market)
         .where(user: current_user)
+        .where(markets: { status: Market.statuses.values_at(:open, :closed) })
         .holding
         .order(:market_id, :side)
         .map do |position|
