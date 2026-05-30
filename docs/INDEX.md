@@ -169,6 +169,10 @@ Plan approved?
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
 | Backend next steps (TD-013–TD-017) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ⏳ planned |
 | Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ planning todos |
+| D3: CLOB trading-state guards | [plan](superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md) | — | ⏳ planned |
+| D4: CLOB order cancellation service | [plan](superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md) | — | ⏳ planned |
+| D7: Resolution transparency | [spec](specs/2026-05-30-resolution-transparency.md) · [plan](superpowers/plans/2026-05-30-resolution-transparency.md) | — | ⏳ planned |
+| D8: Watchlists and notifications | [spec](specs/2026-05-30-watchlists-notifications.md) · [plan](superpowers/plans/2026-05-30-d8-watchlists-notifications.md) | — | ⏳ planned |
 
 ---
 

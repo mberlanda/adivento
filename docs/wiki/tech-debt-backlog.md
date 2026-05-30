@@ -148,7 +148,7 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-017 · Market cancellation (no service, no controller action)
 
-**Status:** Open. Identified 2026-05-29.
+**Status:** Open — **plan written** (D2, 2026-05-30): spec `docs/specs/2026-05-30-market-cancellation.md` + plan `docs/superpowers/plans/2026-05-30-market-cancellation.md`. Full cross-mechanism atomic cancellation/refund service with backoffice cancel action and `market.cancel` permission. Ready to implement.
 **Problem:** `Market` has a `cancelled: 3` enum value but no `MarketCancellationService` exists. Operators cannot void a market and refund all bets/positions. There is no recovery path for bad questions or externally cancelled events.
 **Fix:** Implement `MarketCancellationService` (atomically refund fixed_odds bets, release CLOB reservations, refund LMSR net costs from audit events, refund parimutuel stakes, mark market `cancelled`). Add `POST /backoffice/markets/:id/cancel` route and action.
 **Impact:** Medium — no hard bug now, but no operational safety net.

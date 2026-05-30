@@ -4,6 +4,16 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — docs(planning): detailed plans for D3, D4, D7, D8
+
+- Added executable plans for D3 CLOB trading-state guards and D4 shared CLOB order cancellation service.
+- Added a dedicated-table spec and executable plan for D8 watchlists/notifications.
+- Refined the existing D7 resolution transparency spec/plan to use the same 20-character mandatory-note rule.
+- Updated `.claude/tasks/ATTENTION.md`, the decision dispatch tracker, and `docs/INDEX.md` with the new artifact links.
+- Key files: `docs/superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md`, `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md`, `docs/specs/2026-05-30-watchlists-notifications.md`, `docs/superpowers/plans/2026-05-30-d8-watchlists-notifications.md`
+
+---
+
 ## 2026-05-30 — docs(planning): decision planning dispatch todos
 
 - Recorded approved recommended options for Decisions 2-11 as dispatchable planning todos.
