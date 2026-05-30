@@ -37,6 +37,7 @@
   --adv-yes:          #0e7c66;       /* YES = brand teal in light */
   --adv-yes-soft:     #d8ece4;
   --adv-no:           #b4541f;       /* NO  = warm clay */
+  --adv-no-ink:       #ffffff;       /* text on NO */
   --adv-no-soft:      #f4e2d4;
   --adv-pos:          #1f8a5b;       /* gains */
   --adv-neg:          #c2452f;       /* losses */
@@ -93,6 +94,7 @@
   --adv-yes:          #5cc491;
   --adv-yes-soft:     #16332a;
   --adv-no:           #e58178;
+  --adv-no-ink:       #ffffff;
   --adv-no-soft:      #3a241f;
   --adv-pos:          #5cc491;
   --adv-neg:          #e58178;

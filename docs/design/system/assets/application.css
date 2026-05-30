@@ -78,7 +78,7 @@
 .adv-btn--ghost { --_bg: transparent; --_fg: var(--adv-ink); --_bd: var(--adv-line); }
 .adv-btn--quiet { --_bg: transparent; --_fg: var(--adv-muted); --_bd: transparent; padding-inline: 10px; }
 .adv-btn--yes { --_bg: var(--adv-yes); --_fg: var(--adv-accent-ink); --_bd: var(--adv-yes); }
-.adv-btn--no  { --_bg: var(--adv-no);  --_fg: #fff; --_bd: var(--adv-no); }
+.adv-btn--no  { --_bg: var(--adv-no);  --_fg: var(--adv-no-ink); --_bd: var(--adv-no); }
 .adv-btn--danger { --_bg: var(--adv-neg); --_fg: #fff; --_bd: var(--adv-neg); }
 .adv-btn--sm { padding: 7px 12px; font-size: 12.5px; }
 .adv-btn--lg { padding: 14px 24px; font-size: 15px; }

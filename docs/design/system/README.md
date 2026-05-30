@@ -1,4 +1,4 @@
-# Adivento Design System (PR3)
+# Adivento Design System
 
 Themeable, framework-agnostic component kit for the customer web, mobile web, and
 backoffice. **One set of components, two pickable themes** — `light` ("Fantasy",

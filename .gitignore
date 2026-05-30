@@ -13,6 +13,7 @@
 /coverage/
 /vendor/bundle
 /.DS_Store
+/.claude/tasks/
 
 # Playwright test artifacts
 e2e/playwright/playwright-report/

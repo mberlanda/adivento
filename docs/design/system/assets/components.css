@@ -126,7 +126,7 @@
 /* ---- pool bar (parimutuel) ----------------------------------------------- */
 .adv-pool { display: flex; height: 40px; border-radius: var(--adv-r-md); overflow: hidden; font-weight: 700; font-size: 13px; }
 .adv-pool__yes { background: var(--adv-yes); color: var(--adv-accent-ink); display: flex; align-items: center; padding: 0 12px; }
-.adv-pool__no  { background: var(--adv-no);  color: #fff; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; }
+.adv-pool__no  { background: var(--adv-no);  color: var(--adv-no-ink); display: flex; align-items: center; justify-content: flex-end; padding: 0 12px; }
 
 /* ---- data table (backoffice) -------------------------------------------- */
 .adv-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
@@ -157,7 +157,7 @@
 .adv-sheet[hidden] { display: block; transform: translateY(110%); }
 .adv-sheet__grip { width: 92px; height: 5px; border-radius: 3px; background: var(--adv-faint); margin: 0 auto 12px; }
 .adv-scrim { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 55; opacity: 1; transition: opacity .25s ease; }
-.adv-scrim[hidden] { display: block; opacity: 0; pointer-events: none; }
+.adv-scrim[hidden] { display: block; opacity: 0; pointer-events: none; } /* display:block keeps the fade-out transition active. */
 
 /* ---- phone frame (for demo / native mockups) ---------------------------- */
 .adv-phone { width: 360px; max-width: 100%; border-radius: 40px; border: 10px solid var(--adv-ink); background: var(--adv-bg); overflow: hidden; position: relative; box-shadow: var(--adv-shadow-lg); }
