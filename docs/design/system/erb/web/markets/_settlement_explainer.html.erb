@@ -1,0 +1,45 @@
+<%#
+  Adivento DS — "How settlement works" explainer
+  Drop on the market page (collapsible) or a standalone /how-it-works page.
+  Locals:
+    stage: :open | :closed | :resolving | :settled  (highlights the stepper)
+    source: String — the market's resolution source/criteria (optional)
+%>
+<%
+  stage  ||= :resolving
+  order  = [:open, :closed, :resolving, :settled]
+  idx    = order.index(stage) || 0
+  steps  = [["Open", "trading live"], ["Closes", "at deadline"],
+            ["Resolves", "source checked"], ["Settles", "payouts sent"]]
+  source = defined?(source) ? source : nil
+%>
+<section class="adv-card">
+  <div class="adv-h2" style="margin-bottom:16px">How settlement works</div>
+
+  <div class="adv-steps" style="margin-bottom:18px">
+    <% steps.each_with_index do |(label, sub), i| %>
+      <div class="adv-step <%= 'is-done' if i < idx %> <%= 'is-current' if i == idx %>">
+        <div class="adv-step__label"><%= label %><br><span class="adv-muted adv-xs"><%= sub %></span></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="adv-grid adv-grid--2">
+    <div class="adv-callout adv-callout--accent">
+      <span class="adv-callout__icon">⚖︎</span>
+      <div>
+        <strong>Resolution source</strong>
+        <div class="adv-small adv-muted">
+          <%= source || "Every market publishes its source and criteria up front. A moderator records the outcome against it before any payout." %>
+        </div>
+      </div>
+    </div>
+    <div class="adv-callout adv-callout--warn">
+      <span class="adv-callout__icon">⏱</span>
+      <div>
+        <strong>Disputes</strong>
+        <div class="adv-small adv-muted">A short review window lets players flag a wrong outcome before funds are released.</div>
+      </div>
+    </div>
+  </div>
+</section>

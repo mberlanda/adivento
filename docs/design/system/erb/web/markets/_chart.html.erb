@@ -1,0 +1,50 @@
+<%#
+  Adivento DS — price history chart + decision stats
+  Usage: <%= render "web/markets/chart", points: market.price_history,
+                     value: market.yes_pct, delta_label: "4 pts today",
+                     stats: [["24h volume","24,180"],["Liquidity","88,400"],
+                             ["Holders","146"],["24h trades","512"]] %>
+  Locals:
+    points: Array<Numeric 0-100> (price history) — rendered by adivento.js
+    value:  current YES chance (Numeric)
+    delta_label: String (optional)
+    stats:  Array of [key, value] pairs
+    height: px (default 170)
+%>
+<%
+  height ||= 170
+  delta_label = defined?(delta_label) ? delta_label : nil
+  stats ||= []
+%>
+<div class="adv-card">
+  <div class="adv-row adv-row--between" style="margin-bottom:12px">
+    <div class="adv-row" style="align-items:baseline;gap:10px">
+      <span class="adv-num" style="font-size:30px;font-weight:800;color:var(--adv-accent)" data-live-pct><%= value %>%</span>
+      <% if delta_label %><span class="adv-delta adv-delta--up"><%= delta_label %></span><% end %>
+      <span class="adv-muted adv-xs">YES chance</span>
+    </div>
+    <span class="adv-badge adv-badge--open adv-badge--live">live · SSE</span>
+  </div>
+
+  <div class="adv-chart" style="height: <%= height %>px" data-adv-live data-value="<%= value %>">
+    <svg data-adv-chart="<%= points.join(',') %>" aria-hidden="true"></svg>
+    <span class="adv-chart__axis adv-chart__axis--top">100%</span>
+    <span class="adv-chart__axis adv-chart__axis--bottom">0%</span>
+  </div>
+  <div class="adv-chart-frames">
+    <% %w[1H 6H 1D 1W ALL].each_with_index do |f, i| %>
+      <span class="adv-chip <%= 'is-active' if i == 2 %>"><%= f %></span>
+    <% end %>
+  </div>
+
+  <% if stats.any? %>
+    <div class="adv-stats" style="margin-top:16px;border-top:1.5px solid var(--adv-faint);padding-top:14px">
+      <% stats.each do |k, v| %>
+        <div class="adv-stat">
+          <div class="adv-stat__k"><%= k %></div>
+          <div class="adv-stat__v adv-num"><%= v %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

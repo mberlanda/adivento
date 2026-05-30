@@ -1,0 +1,32 @@
+<%#
+  Adivento DS — shared button partial
+  Usage:
+    <%= render "shared/adv_button", label: "Place bet", variant: "primary" %>
+    <%= render "shared/adv_button", label: "Buy YES", variant: "yes", size: "lg", block: true %>
+  Locals:
+    label:   String (required)
+    variant: nil | "primary" | "ghost" | "quiet" | "yes" | "no" | "danger"
+    size:    nil | "sm" | "lg"
+    block:   Boolean (full width)
+    href:    String (renders <a> instead of <button>)
+    type:    String (button type, default "button")
+    html:    Hash of extra attributes
+%>
+<%
+  variant ||= nil
+  size    ||= nil
+  block   ||= false
+  href    ||= nil
+  type    ||= "button"
+  html    ||= {}
+  classes = ["adv-btn"]
+  classes << "adv-btn--#{variant}" if variant
+  classes << "adv-btn--#{size}"    if size
+  classes << "adv-btn--block"      if block
+  classes << html.delete(:class)   if html[:class]
+%>
+<% if href %>
+  <%= link_to label, href, { class: classes.join(" ") }.merge(html) %>
+<% else %>
+  <%= content_tag :button, label, { type: type, class: classes.join(" ") }.merge(html) %>
+<% end %>

@@ -1,0 +1,18 @@
+<%#
+  Adivento DS — parimutuel pool split
+  Usage: <%= render "web/markets/pool", yes_amount: 163000, no_amount: 77000 %>
+%>
+<%
+  total = (yes_amount + no_amount).to_f
+  total = 1.0 if total.zero?
+  yes_w = (yes_amount / total * 100).round
+  no_w  = 100 - yes_w
+%>
+<div class="adv-card">
+  <div class="adv-card__head"><span class="adv-h3">Pool</span><%= render "shared/adv_mech_chip", mechanism: "parimutuel" %></div>
+  <div class="adv-pool">
+    <div class="adv-pool__yes" style="width: <%= yes_w %>%">YES <%= yes_w %>% · <%= number_with_delimiter(yes_amount) %></div>
+    <div class="adv-pool__no"  style="width: <%= no_w %>%"><%= no_w %>% · <%= number_with_delimiter(no_amount) %></div>
+  </div>
+  <p class="adv-help">Payout depends on the final pool. Your share of the winning side is paid pro-rata at settlement.</p>
+</div>

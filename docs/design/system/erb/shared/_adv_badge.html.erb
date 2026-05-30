@@ -1,0 +1,16 @@
+<%#
+  Adivento DS — status badge
+  Usage: <%= render "shared/adv_badge", status: market.status, live: market.live? %>
+  Locals:
+    status: "draft" | "open" | "closed" | "settled"
+    label:  optional override text (defaults to humanized status)
+    live:   Boolean (adds pulsing dot, only meaningful for open)
+%>
+<%
+  status ||= "open"
+  live   = defined?(live) ? live : false
+  label  = defined?(label) && label ? label : status.to_s.humanize
+  classes = ["adv-badge", "adv-badge--#{status}"]
+  classes << "adv-badge--live" if live
+%>
+<span class="<%= classes.join(' ') %>"><%= live ? "Live" : label %></span>
