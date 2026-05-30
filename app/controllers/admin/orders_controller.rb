@@ -29,35 +29,17 @@ module Admin
 
     def destroy
       order = Order.find(params.expect(:id))
-      unless order.open? || order.partial?
-        return render json: { error: 'Order cannot be cancelled' },
-                      status: :unprocessable_content
+      result = Clob::OrderCancellationService.call(order: order, actor: current_user)
+
+      unless result.success?
+        return render json: { error: result.errors.join(', ') }, status: :unprocessable_content
       end
 
-      released = nil
-      ApplicationRecord.transaction do
-        # Re-load and lock the order inside the transaction so a concurrent fill or
-        # duplicate cancel cannot release the same funds twice (TD-013).
-        locked = Order.lock.find(order.id)
-        raise ActiveRecord::Rollback unless locked.open? || locked.partial?
-
-        released = locked.reserved_minor
-        locked.cancelled_quantity += locked.unfilled_quantity
-        locked.status = :cancelled
-        locked.save!
-        w = locked.user.wallet.lock!
-        w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
-        AuditEvent.create!(
-          action: 'order.cancel',
-          actor: current_user,
-          target_type: 'Order', target_id: locked.id,
-          metadata: { released_minor: released }
-        )
-      end
-
-      return render json: { error: 'Order cannot be cancelled' }, status: :unprocessable_content if released.nil?
-
-      render json: { order_id: order.id, status: 'cancelled', released_minor: released }
+      render json: {
+        order_id: result.order.id,
+        status: result.order.status,
+        released_minor: result.released_minor
+      }
     end
 
     private

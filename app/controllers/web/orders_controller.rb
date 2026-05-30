@@ -41,23 +41,16 @@ module Web
     end
 
     def destroy
-      order = Order.lock.find(params.expect(:id))
+      order = Order.find(params.expect(:id))
       return render json: { error: 'Forbidden' }, status: :forbidden unless order.user_id == current_user.id
-      unless order.open? || order.partial?
-        return render json: { error: 'Order cannot be cancelled' },
-                      status: :unprocessable_content
+
+      result = Clob::OrderCancellationService.call(order: order, actor: current_user)
+
+      unless result.success?
+        return render json: { error: result.errors.join(', ') }, status: :unprocessable_content
       end
 
-      released = order.reserved_minor
-      ApplicationRecord.transaction do
-        order.cancelled_quantity += order.unfilled_quantity
-        order.status = :cancelled
-        order.save!
-        wallet = current_user.wallet.lock!
-        wallet.update!(reserved_minor: wallet.reserved_minor - released, available_minor: wallet.available_minor + released)
-      end
-
-      render json: { order_id: order.id, status: 'cancelled' }
+      render json: { order_id: result.order.id, status: result.order.status }
     end
   end
 end

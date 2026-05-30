@@ -68,6 +68,24 @@ class ClobOrdersTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'admin duplicate cancel does not release funds twice' do
+    order = Order.create!(
+      market: @market, market_leg: @leg, user: users(:player),
+      side: 'YES', price_cents: 40, quantity: 5,
+      status: :open, time_in_force: :gtc
+    )
+    users(:player).wallet.update!(available_minor: 99_800, reserved_minor: 200)
+
+    delete "/admin/orders/#{order.id}", headers: auth_headers_for(users(:admin)), as: :json
+    assert_response :ok
+
+    delete "/admin/orders/#{order.id}", headers: auth_headers_for(users(:admin)), as: :json
+    assert_response :unprocessable_content
+
+    assert_equal 100_000, users(:player).wallet.reload.available_minor
+    assert_equal 0, users(:player).wallet.reserved_minor
+  end
+
   test 'admin can cancel order via DELETE /admin/orders/:id' do
     order = Order.create!(
       market: @market, market_leg: @leg, user: users(:player),

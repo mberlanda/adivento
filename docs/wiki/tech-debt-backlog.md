@@ -183,10 +183,9 @@ Update this file when a gap is closed or a decision is made.
 
 ### TD-021 · CLOB order cancellation is not consistently locked
 
-**Status:** Open — **plan written** (D4, 2026-05-30): `docs/superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md`. (Admin `destroy` already locks order+wallet as a partial TD-013 follow-up; D4 extracts the shared service.)
-**Problem:** `Web::OrdersController#destroy` calls `Order.lock.find` before entering the transaction, and `Admin::OrdersController#destroy` does not lock the order or wallet. Two concurrent cancellations can both compute the same `reserved_minor` and release funds twice unless the order row is locked for the whole state transition.
-**Fix:** Move `Order.lock.find` and wallet `lock!` inside the transaction in both controllers. Add a service object for order cancellation so web/admin/settlement release logic uses one implementation.
-**Impact:** Medium — duplicate cancellation can corrupt wallet reserved/available balances under concurrent requests.
+**Status:** ✅ Done (wave 2, plan D4). `Clob::OrderCancellationService` created; both `Admin::OrdersController#destroy` and `Web::OrdersController#destroy` now delegate to it. Order + wallet locked inside the transaction. `order.cancel` `AuditEvent` written for all callers (including web, which previously wrote none).
+**Problem:** `Web::OrdersController#destroy` called `Order.lock.find` before entering the transaction, and admin locking was partial. Two concurrent cancellations could release funds twice.
+**Fix:** Shared service owns locking, reservation release, and audit. Duplicate-cancel regression test added.
 
 ---
 
