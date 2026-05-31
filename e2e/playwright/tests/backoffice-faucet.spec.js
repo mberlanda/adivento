@@ -31,7 +31,7 @@ test.describe('Backoffice faucet request approval', () => {
     await approveBtn.click();
     await page.waitForURL(/backoffice\/faucet_requests/);
 
-    await expect(page.locator('.notice')).toContainText('Faucet request approved');
+    await expect(page.getByTestId('flash-notice')).toContainText('Faucet request approved');
     await expect(page.locator('h2').filter({ hasText: /Recently Processed/ })).toBeVisible();
   });
 
@@ -45,7 +45,7 @@ test.describe('Backoffice faucet request approval', () => {
     await rejectBtn.click();
     await page.waitForURL(/backoffice\/faucet_requests/);
 
-    await expect(page.locator('.notice')).toContainText('Faucet request rejected');
+    await expect(page.getByTestId('flash-notice')).toContainText('Faucet request rejected');
   });
 
   test('player cannot access backoffice faucet requests', async ({ page }) => {

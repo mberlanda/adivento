@@ -89,6 +89,6 @@ test.describe('Backoffice market cancellation', () => {
 
     // Should redirect back with an alert — market still open
     await expect(page.locator('.adv-badge', { hasText: /open/i }).first()).toBeVisible();
-    await expect(page.locator('.alert, [data-testid="flash-alert"]').first()).toBeVisible();
+    await expect(page.getByTestId('flash-alert')).toBeVisible();
   });
 });

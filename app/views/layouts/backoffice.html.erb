@@ -10,10 +10,10 @@
       <%= render "backoffice/shared/sidebar" %>
       <main class="adv-main">
         <% if notice.present? %>
-          <div class="adv-callout adv-callout--accent notice" style="margin-bottom:16px;"><%= notice %></div>
+          <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
         <% end %>
         <% if alert.present? %>
-          <div class="adv-callout adv-callout--warn alert" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
+          <div class="adv-callout adv-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
         <% end %>
         <%= yield %>
       </main>

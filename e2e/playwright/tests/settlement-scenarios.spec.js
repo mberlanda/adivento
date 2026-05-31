@@ -171,7 +171,7 @@ test.describe('LMSR market settlement scenarios', () => {
       await page.getByTestId('bet-leg-yes').check();
       await page.getByTestId('bet-stake').fill('5');
       await page.getByTestId('bet-submit').click();
-      await expect(page.locator('.notice')).toContainText('Trade placed on YES');
+      await expect(page.getByTestId('flash-notice')).toContainText('Trade placed on YES');
 
       // 3. Settle via admin API
       const api = await request.newContext({ baseURL });
@@ -222,7 +222,7 @@ test.describe('Parimutuel market settlement scenarios', () => {
       await page.getByTestId('bet-leg-yes').check();
       await page.getByTestId('bet-stake').fill('100');
       await page.getByTestId('bet-submit').click();
-      await expect(page.locator('.notice')).toContainText('Stake placed on YES');
+      await expect(page.getByTestId('flash-notice')).toContainText('Stake placed on YES');
 
       // 3. Settle via admin API
       const api = await request.newContext({ baseURL });
