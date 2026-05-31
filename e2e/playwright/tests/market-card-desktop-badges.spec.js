@@ -1,4 +1,6 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect, request } = require('@playwright/test');
+const { loginApi, createMarketViaAdminApi } = require('./helpers/api');
+const { USERS, assertOk } = require('./helpers/common');
 
 test.beforeEach(async ({ page }) => {
   page.on('console', (msg) => process.stdout.write(`[browser:${msg.type()}] ${msg.text()}\n`));
@@ -7,8 +9,27 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Market card desktop badges', () => {
-  test('settled cards render one non-overflowing settled badge', async ({ page }) => {
+  test('settled cards render one non-overflowing settled badge', async ({ page, baseURL }) => {
+    const { context: loginContext, token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const question = `Desktop settled badge E2E ${Date.now()}`;
+    const { context: marketContext, payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
+      question,
+      description: 'Settled badge layout regression fixture',
+    });
+    const settleContext = await request.newContext({ baseURL });
+
+    const settleResp = await settleContext.post(`/admin/markets/${market.id}/settle`, {
+      data: { outcome: 'YES', reason: 'badge-layout-e2e' },
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    await assertOk(settleResp, 'settle badge fixture market');
+
+    await loginContext.dispose();
+    await marketContext.dispose();
+    await settleContext.dispose();
+
     await page.goto('/web/markets');
+    await expect(page.getByText(question)).toBeVisible();
 
     const issues = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('.adv-market')).flatMap((card) => {

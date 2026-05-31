@@ -57,17 +57,17 @@ test.describe('Backoffice desktop presentation', () => {
     await signInUi(page, USERS.admin.email, USERS.admin.password);
     await page.goto('/backoffice/markets');
 
-    await page.evaluate(() => {
-      const label = document.createElement('button');
-      label.type = 'button';
-      label.setAttribute('data-adv-theme-label', '');
-      label.textContent = 'Theme label';
-      document.body.appendChild(label);
-    });
+    const toggle = page.locator('[data-adv-theme-toggle]').first();
+    const label = page.locator('[data-adv-theme-label]').first();
 
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-    await page.locator('[data-adv-theme-label]', { hasText: 'Theme label' }).click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(label).toHaveText('Dark');
+
+    await label.click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(label).toHaveText('Light');
 
     const colors = await page.evaluate(() => {
       const link = document.createElement('a');

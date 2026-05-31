@@ -34,7 +34,11 @@
     init() {
       let saved;
       try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-      if (saved) this.set(saved);
+      if (saved) {
+        this.set(saved);
+      } else {
+        syncThemeControls(this.get());
+      }
       document.addEventListener("click", (e) => {
         const t = e.target.closest("[data-adv-theme-toggle], [data-adv-theme-label]");
         if (t) { e.preventDefault(); this.toggle(); }
