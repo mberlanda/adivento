@@ -2,32 +2,33 @@
   <h1>My Positions</h1>
 
   <% if @positions.empty? && @clob_positions.empty? && @lmsr_positions.empty? %>
-    <div class="card" style="color:#9fb2b8;" data-testid="no-positions">
-      <p>No open positions.</p>
+    <div class="adv-card" style="text-align:center;padding:40px 20px;" data-testid="no-positions">
+      <p class="adv-muted">No open positions.</p>
+      <%= link_to "Browse markets", web_markets_path, class: "adv-btn adv-btn--primary" %>
     </div>
   <% end %>
 
   <% if @positions.any? %>
-    <div class="card">
-      <h3>Fixed-Odds & Parimutuel Bets</h3>
-      <table>
+    <div class="adv-card adv-card--flush" style="margin-bottom:16px;">
+      <div class="adv-card__head"><h3 style="margin:0;">Fixed-Odds &amp; Parimutuel Bets</h3></div>
+      <table class="adv-table">
         <thead>
           <tr>
             <th>Market</th>
             <th>Side</th>
-            <th>Stake</th>
-            <th>Potential payout</th>
-            <th>Odds</th>
+            <th style="text-align:right;">Stake</th>
+            <th style="text-align:right;">Potential payout</th>
+            <th style="text-align:right;">Odds</th>
           </tr>
         </thead>
         <tbody data-testid="positions-list">
           <% @positions.each do |p| %>
             <tr data-testid="position-row-<%= p[:bet_id] %>">
-              <td><%= link_to p[:market_question], web_market_path(p[:market_id]), style: 'color:#9fb2b8;' %></td>
+              <td><%= link_to p[:market_question], web_market_path(p[:market_id]), class: "adv-muted" %></td>
               <td><strong><%= p[:leg_label] %></strong></td>
-              <td><%= number_with_delimiter(p[:stake_minor]) %> ADIV</td>
-              <td><%= number_with_delimiter(p[:potential_payout_minor]) %> ADIV</td>
-              <td><%= (p[:odds_minor] / 100.0).round(0) %>%</td>
+              <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(p[:stake_minor]) %> ADIV</td>
+              <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(p[:potential_payout_minor]) %> ADIV</td>
+              <td class="adv-num" style="text-align:right;"><%= (p[:odds_minor] / 100.0).round(0) %>%</td>
             </tr>
           <% end %>
         </tbody>
@@ -36,26 +37,26 @@
   <% end %>
 
   <% if @clob_positions.any? %>
-    <div class="card">
-      <h3>CLOB Positions</h3>
-      <table>
+    <div class="adv-card adv-card--flush" style="margin-bottom:16px;">
+      <div class="adv-card__head"><h3 style="margin:0;">CLOB Positions</h3></div>
+      <table class="adv-table">
         <thead>
           <tr>
             <th>Market</th>
-            <th>YES contracts</th>
-            <th>NO contracts</th>
-            <th>Avg YES price</th>
-            <th>Unrealised value</th>
+            <th style="text-align:right;">YES contracts</th>
+            <th style="text-align:right;">NO contracts</th>
+            <th style="text-align:right;">Avg YES price</th>
+            <th style="text-align:right;">Unrealised value</th>
           </tr>
         </thead>
         <tbody data-testid="clob-positions-list">
           <% @clob_positions.each do |cp| %>
             <tr data-testid="clob-position-row-<%= cp[:market_id] %>">
-              <td><%= link_to cp[:market_question], web_market_path(cp[:market_id]), style: 'color:#9fb2b8;' %></td>
-              <td><%= cp[:yes_contracts] %></td>
-              <td><%= cp[:no_contracts] %></td>
-              <td><%= cp[:avg_yes_price_cents] ? "#{cp[:avg_yes_price_cents]}¢" : '—' %></td>
-              <td><%= cp[:unrealised_value_minor] ? "#{number_with_delimiter(cp[:unrealised_value_minor])} ADIV" : '—' %></td>
+              <td><%= link_to cp[:market_question], web_market_path(cp[:market_id]), class: "adv-muted" %></td>
+              <td class="adv-num" style="text-align:right;"><%= cp[:yes_contracts] %></td>
+              <td class="adv-num" style="text-align:right;"><%= cp[:no_contracts] %></td>
+              <td class="adv-num" style="text-align:right;"><%= cp[:avg_yes_price_cents] ? "#{cp[:avg_yes_price_cents]}¢" : '—' %></td>
+              <td class="adv-num" style="text-align:right;"><%= cp[:unrealised_value_minor] ? "#{number_with_delimiter(cp[:unrealised_value_minor])} ADIV" : '—' %></td>
             </tr>
           <% end %>
         </tbody>
@@ -64,22 +65,22 @@
   <% end %>
 
   <% if @lmsr_positions.any? %>
-    <div class="card">
-      <h3>LMSR Positions</h3>
-      <table>
+    <div class="adv-card adv-card--flush" style="margin-bottom:16px;">
+      <div class="adv-card__head"><h3 style="margin:0;">LMSR Positions</h3></div>
+      <table class="adv-table">
         <thead>
           <tr>
             <th>Market</th>
             <th>Side</th>
-            <th>Contracts</th>
+            <th style="text-align:right;">Contracts</th>
           </tr>
         </thead>
         <tbody data-testid="lmsr-positions-list">
           <% @lmsr_positions.each do |position| %>
             <tr data-testid="lmsr-position-row-<%= position[:market_id] %>-<%= position[:side] %>">
-              <td><%= link_to position[:market_question], web_market_path(position[:market_id]), style: 'color:#9fb2b8;' %></td>
+              <td><%= link_to position[:market_question], web_market_path(position[:market_id]), class: "adv-muted" %></td>
               <td><strong><%= position[:side] %></strong></td>
-              <td><%= number_with_delimiter(position[:contracts]) %></td>
+              <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(position[:contracts]) %></td>
             </tr>
           <% end %>
         </tbody>
@@ -87,5 +88,5 @@
     </div>
   <% end %>
 
-  <p><%= link_to "← Back to markets", web_markets_path %></p>
+  <p><%= link_to "← Back to markets", web_markets_path, class: "adv-muted" %></p>
 </div>
