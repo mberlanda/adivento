@@ -1,0 +1,34 @@
+<%#
+  Backoffice sidebar. Locals:
+    current: :markets | :dashboard | :faucet | :grants | :templates | :permissions | nil
+%>
+<%
+  current ||= nil
+  nav = [
+    [:dashboard,   "Dashboard",       "▤", backoffice_root_path],
+    [:markets,     "Markets",         "▦", backoffice_markets_path],
+    [:faucet,      "Faucet Requests", "⛲", backoffice_faucet_requests_path],
+    [:grants,      "Grants",          "✦", backoffice_grants_path],
+    [:templates,   "Templates",       "◫", backoffice_templates_path],
+    [:permissions, "Access",          "🛡", backoffice_permissions_path],
+  ]
+%>
+<aside class="adv-sidebar">
+  <div class="adv-sidebar__brand">
+    <span class="adv-nav__mark"></span> Console
+  </div>
+  <div class="adv-sidebar__section">Operate</div>
+  <% nav.each do |key, label, icon, path| %>
+    <%= link_to path, class: "adv-sidebar__link #{'is-active' if current == key}",
+          data: { testid: "nav-#{key}" } do %>
+      <span class="adv-sidebar__icon"><%= icon %></span> <%= label %>
+    <% end %>
+  <% end %>
+  <span class="adv-spacer"></span>
+  <button class="adv-btn adv-btn--ghost adv-btn--sm adv-btn--block" data-adv-theme-toggle>
+    ◑ <span data-adv-theme-label>Dark</span>
+  </button>
+  <div style="margin-top:12px;">
+    <%= link_to "← Customer site", root_path, class: "adv-muted adv-xs" %>
+  </div>
+</aside>

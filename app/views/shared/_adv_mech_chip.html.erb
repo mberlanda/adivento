@@ -1,0 +1,9 @@
+<%
+  # Adivento DS — mechanism chip. Renders the short uppercase tag (FIXED / CLOB / LMSR / PARI).
+  # Locals: mechanism (String)
+  mechanism ||= "fixed"
+  map = { "fixed" => "FIXED", "fixed_odds" => "FIXED", "clob" => "CLOB",
+          "lmsr" => "LMSR", "parimutuel" => "PARI", "pari" => "PARI" }
+  short = map[mechanism.to_s] || mechanism.to_s.upcase
+%>
+<span class="adv-chip adv-chip--accent" data-mech><%= short %></span>
