@@ -143,12 +143,17 @@
   font-size: 15px;
   line-height: 1.45;
 }
-.adv-app a { color: var(--adv-accent); text-decoration: none; }
-.adv-app a:hover { text-decoration: underline; }
-/* <a> elements styled as buttons must use the button's own foreground token,
-   not the global link colour (.adv-app a has higher specificity than .adv-btn). */
-.adv-app a.adv-btn { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
-.adv-app a.adv-btn:hover { text-decoration: none; }
+/* Only bare, unclassed anchor tags get the accent link colour.
+   Component links (adv-btn, adv-nav__link, adv-sidebar__link, adv-muted…)
+   own their foreground token and must not be overridden here. */
+.adv-app a:not([class]) { color: var(--adv-accent); text-decoration: none; }
+.adv-app a:not([class]):hover { text-decoration: underline; }
+/* Belt-and-braces for the most common classed link patterns */
+.adv-app a.adv-btn         { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
+.adv-app a[class]:hover    { text-decoration: none; }
 
 /* during a theme swap, freeze transitions so var()-based backgrounds don't
    stick mid-interpolation (Chromium quirk). adivento.js toggles this class. */
