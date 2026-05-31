@@ -3,43 +3,21 @@
   <head>
     <title>Adivento Backoffice</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>
-      :root { --bg: #11171d; --panel: #182129; --ink: #ecf4f6; --accent: #f0bc5c; --muted: #9fb2b8; }
-      body { margin:0; font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: linear-gradient(140deg,#0f1419 0%,#16222f 100%); color: var(--ink); }
-      header { padding: 16px 24px; border-bottom: 1px solid #32424a; display:flex; justify-content:space-between; }
-      .shell { display:grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 62px); }
-      aside { border-right: 1px solid #32424a; padding: 20px; }
-      aside a { display:block; color: #d8e5e8; margin: 0 0 10px 0; }
-      main { padding: 20px; }
-      .panel { background: var(--panel); border: 1px solid #33434c; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
-      table { width: 100%; border-collapse: collapse; }
-      th, td { border-bottom: 1px solid #2e3e47; padding: 8px; text-align: left; }
-      input, select, textarea, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #50626b; background: #0f171d; color: #edf3f5; }
-      button { background: var(--accent); color: #1a1a1a; border: none; font-weight: 600; cursor: pointer; }
-      .flash { margin: 12px 0; padding: 10px 12px; border-radius: 10px; }
-      .notice { background: #1e3a2f; }
-      .alert { background: #4a2222; }
-    </style>
+    <link rel="stylesheet" href="/adivento.css">
   </head>
-  <body>
-    <header>
-      <strong><a href="/backoffice" style="color:#f0bc5c;text-decoration:none;">Adivento Backoffice</a></strong>
-      <div><a href="/" style="color:#d8e5e8;">Customer site</a></div>
-    </header>
-    <div class="shell">
-      <aside>
-        <a href="/backoffice">Dashboard</a>
-        <a href="/backoffice/permissions">Permissions</a>
-        <a href="/backoffice/grants">Ad hoc grants</a>
-        <a href="/backoffice/templates">Templates</a>
-        <a href="/backoffice/markets">Markets</a>
-        <a href="/backoffice/faucet_requests" data-testid="nav-faucet-requests">Faucet Requests</a>
-      </aside>
-      <main>
-        <% if notice.present? %><div class="flash notice"><%= notice %></div><% end %>
-        <% if alert.present? %><div class="flash alert"><%= alert %></div><% end %>
+  <body class="adv-app" data-theme="dark">
+    <div class="adv-shell">
+      <%= render "backoffice/shared/sidebar" %>
+      <main class="adv-main">
+        <% if notice.present? %>
+          <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
+        <% end %>
+        <% if alert.present? %>
+          <div class="adv-callout adv-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
+        <% end %>
         <%= yield %>
       </main>
     </div>
+    <script src="/adivento.js" defer></script>
   </body>
 </html>

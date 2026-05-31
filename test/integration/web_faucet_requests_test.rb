@@ -21,7 +21,7 @@ class WebFaucetRequestsTest < ActionDispatch::IntegrationTest
     assert_redirected_to '/web/profile'
     follow_redirect!
 
-    assert_select '.notice', /Token request submitted/
+    assert_select '[data-testid="flash-notice"]', /Token request submitted/
 
     req = FaucetRequest.last
 

@@ -1,121 +1,132 @@
 <h1 data-testid="market-title"><%= @market.question %></h1>
-<p style="color:#9fb2b8;"><%= @market.description %></p>
+<p class="adv-muted"><%= @market.description %></p>
 
-<div class="panel">
-  <h3>Status</h3>
-  <p>Status: <strong style="text-transform:uppercase;"><%= @market.status %></strong> &nbsp;
-     Mechanism: <%= @market.mechanism_type %> &nbsp;
-     Category: <strong><%= @market.category.capitalize %></strong> &nbsp;
-     Fee: <%= @market.fee_bps %>bps &nbsp;
-     Liability cap: <%= @market.liability_cap_minor %></p>
-  <% if @market.tags.any? %>
-    <p>Tags: <%= safe_join(@market.tags.map { |t| content_tag(:span, t, style: 'background:#1a2e38;padding:2px 6px;border-radius:3px;') }, ' ') %></p>
-  <% end %>
-  <% if @market.settled? %>
-    <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
-  <% end %>
-  <% if @market.close_at.present? %>
-    <p>Closes: <strong><%= @market.close_at.strftime('%Y-%m-%d %H:%M UTC') %></strong>
-      <% if @market.open? && @market.close_at > Time.current %>
-        <span style="color:#f0bc5c;">(in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
-      <% elsif @market.open? || @market.closed? %>
-        <span style="color:#f44336;">(closed for new bets)</span>
-      <% end %>
+<div class="adv-card" style="margin-bottom:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">Status</h3></div>
+  <div style="padding-top:12px;">
+    <p>
+      Status: <%= render "shared/adv_badge", status: @market.status %> &nbsp;
+      <%= render "shared/adv_mech_chip", mechanism: @market.mechanism_type %> &nbsp;
+      Category: <strong><%= @market.category.capitalize %></strong> &nbsp;
+      Fee: <span class="adv-muted"><%= @market.fee_bps %>bps</span>
     </p>
-  <% end %>
-  <% if @market.resolution_criteria.present? %>
-    <p><strong>Resolution criteria:</strong><br><span style="color:#9fb2b8;font-size:0.92em;"><%= @market.resolution_criteria %></span></p>
-  <% end %>
-  <% if @market.resolution_source.present? %>
-    <p><strong>Resolution source:</strong> <span style="color:#9fb2b8;"><%= @market.resolution_source %></span></p>
-  <% end %>
-
-  <% if @market.draft? %>
-    <%= form_with url: open_backoffice_market_path(@market), method: :post,
-          html: { style: "display:inline;", data: { testid: "open-market-form" } } do |f| %>
-      <%= f.submit "Open market for betting", data: { testid: "open-market-submit" } %>
+    <% if @market.tags.any? %>
+      <p>Tags: <%= safe_join(@market.tags.map { |t| content_tag(:span, t, class: 'adv-chip adv-chip--accent') }, ' ') %></p>
     <% end %>
-  <% end %>
-
-  <% if @market.clob? && @market.open? %>
-    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;" data-testid="operator-buyback-panel">
-      <h4>Operator buyback</h4>
-      <p style="color:#9fb2b8;font-size:0.88em;">
-        Place a buy order at the current mid-price to provide immediate liquidity for players who want to sell.
+    <% if @market.settled? %>
+      <p>Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
+    <% end %>
+    <% if @market.close_at.present? %>
+      <p>Closes: <strong><%= @market.close_at.strftime('%Y-%m-%d %H:%M UTC') %></strong>
+        <% if @market.open? && @market.close_at > Time.current %>
+          <span class="adv-muted">(in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
+        <% elsif @market.open? || @market.closed? %>
+          <span style="color:var(--adv-accent);">(closed for new bets)</span>
+        <% end %>
       </p>
-      <%= form_with url: operator_buyback_backoffice_market_path(@market), method: :post,
-            html: { data: { testid: "operator-buyback-form" } } do |f| %>
-        <p>
-          <label>Side</label>
-          <select name="side" data-testid="buyback-side" style="margin-left:8px;">
-            <% @market.market_legs.each do |leg| %>
-              <option value="<%= leg.label %>"><%= leg.label %></option>
-            <% end %>
-          </select>
-        </p>
-        <p>
-          <label>Contracts</label>
-          <%= number_field_tag :contracts, 10, min: 1, data: { testid: "buyback-contracts" }, style: "margin-left:8px;width:80px;" %>
-        </p>
-        <%= f.submit "Trigger buyback at mid-price", data: { testid: "buyback-submit" } %>
-      <% end %>
-    </div>
-  <% end %>
+    <% end %>
+    <% if @market.resolution_criteria.present? %>
+      <p><strong>Resolution criteria:</strong><br>
+        <span class="adv-muted" style="font-size:0.92em;"><%= @market.resolution_criteria %></span></p>
+    <% end %>
+    <% if @market.resolution_source.present? %>
+      <p><strong>Resolution source:</strong> <span class="adv-muted"><%= @market.resolution_source %></span></p>
+    <% end %>
 
-  <% if @market.open? || @market.closed? %>
-    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;" data-testid="cancel-market-panel">
-      <h4>Cancel market</h4>
-      <p style="color:#9fb2b8;font-size:0.88em;">Cancels the market and refunds all participants. This cannot be undone.</p>
-      <%= form_with url: cancel_backoffice_market_path(@market), method: :post,
-            html: { data: { testid: "cancel-market-form" } } do |f| %>
-        <p><label>Reason (required)</label><br>
-          <%= text_field_tag :reason, nil, required: true, data: { testid: "cancel-market-reason" },
-                style: "width:400px;" %>
-        </p>
-        <%= f.submit "Cancel market", style: "background:#4a2222;",
-              data: { testid: "cancel-market-submit", confirm: "This will cancel the market and refund all participants. Proceed?" } %>
+    <% if @market.draft? %>
+      <%= form_with url: open_backoffice_market_path(@market), method: :post,
+            html: { style: "display:inline;", data: { testid: "open-market-form" } } do |f| %>
+        <%= f.submit "Open market for betting", class: "adv-btn adv-btn--primary",
+              data: { testid: "open-market-submit" } %>
       <% end %>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if @market.open? || @market.closed? %>
-    <% if @market.closed? %>
-      <div style="margin-top:16px;padding:14px;background:#2a1f0a;border:1px solid #f0bc5c;border-radius:8px;" data-testid="market-closed-banner">
-        <strong style="color:#f0bc5c;">Closed — awaiting settlement</strong>
-        <span style="color:#9fb2b8;font-size:0.88em;margin-left:8px;">
-          Market closed for new bets on <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
-        </span>
+    <% if @market.clob? && @market.open? %>
+      <div style="margin-top:16px;border-top:1px solid var(--adv-border);padding-top:14px;"
+           data-testid="operator-buyback-panel">
+        <h4>Operator buyback</h4>
+        <p class="adv-muted" style="font-size:0.88em;">
+          Place a buy order at the current mid-price to provide immediate liquidity for players who want to sell.
+        </p>
+        <%= form_with url: operator_buyback_backoffice_market_path(@market), method: :post,
+              html: { data: { testid: "operator-buyback-form" } } do |f| %>
+          <p>
+            <label>Side</label>
+            <select name="side" class="adv-select" data-testid="buyback-side" style="margin-left:8px;width:auto;">
+              <% @market.market_legs.each do |leg| %>
+                <option value="<%= leg.label %>"><%= leg.label %></option>
+              <% end %>
+            </select>
+          </p>
+          <p>
+            <label>Contracts</label>
+            <%= number_field_tag :contracts, 10, min: 1, class: "adv-input",
+                  data: { testid: "buyback-contracts" }, style: "margin-left:8px;width:80px;" %>
+          </p>
+          <%= f.submit "Trigger buyback at mid-price", class: "adv-btn adv-btn--primary",
+                data: { testid: "buyback-submit" } %>
+        <% end %>
       </div>
     <% end %>
-    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;">
-      <h4>Settle market</h4>
-      <%= form_with url: settle_backoffice_market_path(@market), method: :post,
-            html: { data: { testid: "settle-market-form" } } do |f| %>
-        <p>
-          <label>Winning outcome</label>
-          <select name="outcome" data-testid="settle-outcome" style="margin-left:8px;">
-            <% @market.market_legs.each do |leg| %>
-              <option value="<%= leg.label %>"><%= leg.label %></option>
-            <% end %>
-          </select>
-        </p>
-        <p><label>Reason</label><br><%= text_field_tag :reason, nil, data: { testid: "settle-reason" } %></p>
-        <%= f.submit "Settle market", style: "background:#4a2222;",
-              data: { testid: "settle-market-submit", confirm: "This will settle all bets. Proceed?" } %>
+
+    <% if @market.open? || @market.closed? %>
+      <div style="margin-top:16px;border-top:1px solid var(--adv-border);padding-top:14px;"
+           data-testid="cancel-market-panel">
+        <h4>Cancel market</h4>
+        <p class="adv-muted" style="font-size:0.88em;">Cancels the market and refunds all participants. This cannot be undone.</p>
+        <%= form_with url: cancel_backoffice_market_path(@market), method: :post,
+              html: { data: { testid: "cancel-market-form" } } do |f| %>
+          <p><label>Reason (required)</label><br>
+            <%= text_field_tag :reason, nil, required: true, class: "adv-input",
+                  data: { testid: "cancel-market-reason" }, style: "max-width:400px;" %>
+          </p>
+          <%= f.submit "Cancel market", class: "adv-btn adv-btn--danger",
+                data: { testid: "cancel-market-submit", confirm: "This will cancel the market and refund all participants. Proceed?" } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @market.open? || @market.closed? %>
+      <% if @market.closed? %>
+        <div class="adv-callout adv-callout--locked" style="margin-top:16px;" data-testid="market-closed-banner">
+          <strong>Closed — awaiting settlement</strong>
+          <span class="adv-muted" style="font-size:0.88em;margin-left:8px;">
+            Market closed for new bets on <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
+          </span>
+        </div>
       <% end %>
-    </div>
-  <% end %>
+      <div style="margin-top:16px;border-top:1px solid var(--adv-border);padding-top:14px;">
+        <h4>Settle market</h4>
+        <%= form_with url: settle_backoffice_market_path(@market), method: :post,
+              html: { data: { testid: "settle-market-form" } } do |f| %>
+          <p>
+            <label>Winning outcome</label>
+            <select name="outcome" class="adv-select" data-testid="settle-outcome" style="margin-left:8px;width:auto;">
+              <% @market.market_legs.each do |leg| %>
+                <option value="<%= leg.label %>"><%= leg.label %></option>
+              <% end %>
+            </select>
+          </p>
+          <p><label>Reason</label><br>
+            <%= text_field_tag :reason, nil, class: "adv-input", data: { testid: "settle-reason" } %>
+          </p>
+          <%= f.submit "Settle market", class: "adv-btn adv-btn--danger",
+                data: { testid: "settle-market-submit", confirm: "This will settle all bets. Proceed?" } %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
-<div class="panel">
-  <h3>Lines / Legs</h3>
-  <table>
+<div class="adv-card adv-card--flush" style="margin-bottom:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">Lines / Legs</h3></div>
+  <table class="adv-table">
     <thead><tr><th>Label</th><th>Odds (minor)</th><th>Active</th></tr></thead>
     <tbody data-testid="market-legs-list">
       <% @market.market_legs.each do |leg| %>
         <tr data-testid="leg-row-<%= leg.id %>">
           <td><strong><%= leg.label %></strong></td>
-          <td><%= leg.odds_minor %></td>
+          <td class="adv-num"><%= leg.odds_minor %></td>
           <td><%= leg.active? ? "Yes" : "No" %></td>
         </tr>
       <% end %>
@@ -123,64 +134,69 @@
   </table>
 </div>
 
-<div class="panel">
-  <h3>Bets (<%= @bets.size %>)</h3>
+<div class="adv-card adv-card--flush" style="margin-bottom:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">Bets (<%= @bets.size %>)</h3></div>
   <% if @bets.any? %>
-    <table>
+    <table class="adv-table">
       <thead>
         <tr><th>ID</th><th>User</th><th>Leg</th><th>Stake</th><th>Payout</th><th>Status</th></tr>
       </thead>
       <tbody>
         <% @bets.each do |bet| %>
           <tr data-testid="bet-row-<%= bet.id %>">
-            <td><%= bet.id %></td>
-            <td><%= bet.user.email %></td>
+            <td class="adv-num"><%= bet.id %></td>
+            <td class="adv-muted"><%= bet.user.email %></td>
             <td><%= bet.market_leg.label %></td>
-            <td><%= bet.stake_minor %></td>
-            <td><%= bet.potential_payout_minor %></td>
-            <td><%= bet.status %></td>
+            <td class="adv-num"><%= bet.stake_minor %></td>
+            <td class="adv-num"><%= bet.potential_payout_minor %></td>
+            <td><%= render "shared/adv_badge", status: bet.status.sub('settled_', '') %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% else %>
-    <p style="color:#9fb2b8;">No bets placed yet.</p>
+    <p class="adv-muted" style="padding:16px;">No bets placed yet.</p>
   <% end %>
 </div>
 
-<div class="panel">
-  <h3>Edit Details</h3>
-  <%= form_with url: backoffice_market_path(@market), method: :patch,
-        html: { data: { testid: 'edit-market-form' } } do |f| %>
-    <p><label>Description</label><br>
-      <%= text_area_tag :description, @market.description,
-            rows: 3, data: { testid: 'edit-market-description' } %>
-    </p>
-    <p>
-      <label>Category</label><br>
-      <%= select_tag :category,
-            options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, @market.category),
-            data: { testid: 'edit-market-category' } %>
-    </p>
-    <p><label>Tags (comma-separated)</label><br>
-      <%= text_field_tag :tags_input, @market.tags.join(', '),
-            data: { testid: 'edit-market-tags' } %>
-    </p>
-    <p><label>Close date/time</label><br>
-      <%= datetime_local_field_tag :close_at,
-            (@market.close_at&.strftime('%Y-%m-%dT%H:%M') || ''),
-            data: { testid: 'edit-market-close-at' } %>
-    </p>
-    <p><label>Resolution criteria</label><br>
-      <%= text_area_tag :resolution_criteria, @market.resolution_criteria,
-            rows: 3, data: { testid: 'edit-market-resolution-criteria' } %>
-    </p>
-    <p><label>Resolution source</label><br>
-      <%= text_field_tag :resolution_source, @market.resolution_source,
-            data: { testid: 'edit-market-resolution-source' } %>
-    </p>
-    <%= f.submit 'Save Changes', data: { testid: 'edit-market-submit' } %>
-  <% end %>
+<div class="adv-card" style="margin-bottom:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">Edit Details</h3></div>
+  <div style="padding-top:12px;">
+    <%= form_with url: backoffice_market_path(@market), method: :patch,
+          html: { data: { testid: 'edit-market-form' } } do |f| %>
+      <p><label>Description</label><br>
+        <%= text_area_tag :description, @market.description,
+              rows: 3, class: "adv-textarea", data: { testid: 'edit-market-description' } %>
+      </p>
+      <p>
+        <label>Category</label><br>
+        <%= select_tag :category,
+              options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, @market.category),
+              class: "adv-select",
+              data: { testid: 'edit-market-category' } %>
+      </p>
+      <p><label>Tags (comma-separated)</label><br>
+        <%= text_field_tag :tags_input, @market.tags.join(', '),
+              class: "adv-input", data: { testid: 'edit-market-tags' } %>
+      </p>
+      <p><label>Close date/time</label><br>
+        <%= datetime_local_field_tag :close_at,
+              (@market.close_at&.strftime('%Y-%m-%dT%H:%M') || ''),
+              class: "adv-input",
+              data: { testid: 'edit-market-close-at' } %>
+      </p>
+      <p><label>Resolution criteria</label><br>
+        <%= text_area_tag :resolution_criteria, @market.resolution_criteria,
+              rows: 3, class: "adv-textarea", data: { testid: 'edit-market-resolution-criteria' } %>
+      </p>
+      <p><label>Resolution source</label><br>
+        <%= text_field_tag :resolution_source, @market.resolution_source,
+              class: "adv-input", data: { testid: 'edit-market-resolution-source' } %>
+      </p>
+      <%= f.submit 'Save Changes', class: "adv-btn adv-btn--primary",
+            data: { testid: 'edit-market-submit' } %>
+    <% end %>
+  </div>
 </div>
 
-<p><%= link_to "Back to markets", backoffice_markets_path %></p>
+<p><%= link_to "← Back to markets", backoffice_markets_path, class: "adv-muted" %></p>

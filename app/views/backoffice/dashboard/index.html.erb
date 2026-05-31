@@ -1,6 +1,15 @@
 <h1>Operations Dashboard</h1>
-<div class="panel">
-  <p>Open markets: <strong><%= @open_markets %></strong></p>
-  <p>Pending faucet requests: <strong><%= @pending_faucet_requests %></strong></p>
-  <p>Active templates: <strong><%= @active_templates %></strong></p>
+<div class="adv-grid adv-grid--auto" style="margin-top:16px;">
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Open markets</div>
+    <div class="adv-statcard__v adv-num"><%= @open_markets %></div>
+  </div>
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Pending faucet requests</div>
+    <div class="adv-statcard__v adv-num"><%= @pending_faucet_requests %></div>
+  </div>
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Active templates</div>
+    <div class="adv-statcard__v adv-num"><%= @active_templates %></div>
+  </div>
 </div>

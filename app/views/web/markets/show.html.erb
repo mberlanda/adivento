@@ -1,280 +1,289 @@
 <div style="margin-bottom:8px;">
-  <%= link_to "← All Markets", web_markets_path, class: "muted" %>
+  <%= link_to "← All Markets", web_markets_path, class: "adv-muted" %>
 </div>
 
-<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;" data-testid="market-meta">
-  <span class="badge badge-status"><%= @market.status.capitalize %></span>
-  <span class="badge" data-testid="market-category"><%= @market.category.capitalize %></span>
-  <span class="badge badge-status"><%= @market.mechanism_type.upcase %></span>
+<div class="adv-row adv-row--wrap" style="gap:6px;margin-bottom:10px;" data-testid="market-meta">
+  <%= render "shared/adv_badge", status: @market.status, live: @market.open? %>
+  <span class="adv-badge" data-testid="market-category"><%= @market.category.capitalize %></span>
+  <%= render "shared/adv_mech_chip", mechanism: @market.mechanism_type %>
   <% if @market.settled_outcome.present? %>
-    <span class="badge" style="background:#fef3e2;color:#8a5c10;">Settled: <%= @market.settled_outcome %></span>
+    <span class="adv-badge adv-badge--settled">Settled: <%= @market.settled_outcome %></span>
   <% end %>
 </div>
 
 <h1 style="margin:0 0 8px;font-size:1.5rem;line-height:1.3;" data-testid="market-title"><%= @market.question %></h1>
-<p class="muted" style="margin:0 0 20px;"><%= @market.description %></p>
+<p class="adv-muted" style="margin:0 0 20px;"><%= @market.description %></p>
 
 <% if @market.tags.any? %>
   <div style="margin-bottom:16px;" data-testid="market-tags">
-    <%= safe_join(@market.tags.map { |t| content_tag(:span, t, class: 'badge badge-tag') }, ' ') %>
+    <%= safe_join(@market.tags.map { |t| content_tag(:span, t, class: 'adv-chip adv-chip--accent') }, ' ') %>
   </div>
 <% end %>
 
-<div class="stat-grid" data-testid="market-stats">
-  <div class="stat-card">
-    <div class="stat-label">Volume</div>
-    <div class="stat-value" data-testid="market-volume"><%= number_with_delimiter(@volume_minor) %> ADIV</div>
+<div class="adv-grid adv-grid--auto" style="margin-bottom:20px;" data-testid="market-stats">
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Volume</div>
+    <div class="adv-statcard__v adv-num" data-testid="market-volume"><%= number_with_delimiter(@volume_minor) %> ADIV</div>
   </div>
-  <div class="stat-card">
-    <div class="stat-label">Open Positions</div>
-    <div class="stat-value" data-testid="market-open-bets"><%= number_with_delimiter(@open_bet_count) %></div>
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Open Positions</div>
+    <div class="adv-statcard__v adv-num" data-testid="market-open-bets"><%= number_with_delimiter(@open_bet_count) %></div>
   </div>
-  <div class="stat-card">
-    <div class="stat-label">Creator</div>
-    <div class="stat-value" style="font-size:0.85rem;"><%= @market.created_by.email.split('@').first %></div>
+  <div class="adv-statcard">
+    <div class="adv-stat__k">Creator</div>
+    <div class="adv-statcard__v" style="font-size:0.85rem;"><%= @market.created_by.email.split('@').first %></div>
   </div>
 </div>
 
-<section class="card" style="margin-bottom:16px;" data-testid="market-price-panel">
-  <h3 style="margin-top:0;">Current Price</h3>
+<section class="adv-card" style="margin-bottom:16px;" data-testid="market-price-panel">
+  <div class="adv-card__head"><h3 style="margin:0;">Current Price</h3></div>
   <% case @market.mechanism_type %>
   <% when 'fixed_odds' %>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <div class="adv-prices">
       <% @market.market_legs.each do |leg| %>
-        <div style="flex:1;min-width:100px;background:#f4f9f7;border:1px solid #d0e8de;border-radius:10px;padding:14px;text-align:center;">
-          <div style="font-size:0.85rem;color:var(--muted);margin-bottom:4px;"><%= leg.label %></div>
-          <div style="font-size:2rem;font-weight:800;color:var(--accent);"><%= (leg.odds_minor / 100.0).round(0) %>%</div>
-          <div class="muted" style="font-size:0.75rem;"><%= (leg.odds_minor / 100.0).round(1) %>¢</div>
+        <div class="adv-pricebox adv-pricebox--<%= leg.label.downcase == 'yes' ? 'yes' : 'no' %>">
+          <div class="adv-pricebox__label"><%= leg.label %></div>
+          <div class="adv-pricebox__val adv-num"><%= (leg.odds_minor / 100.0).round(0) %>%</div>
+          <div class="adv-pricebox__sub adv-muted"><%= (leg.odds_minor / 100.0).round(1) %>¢</div>
         </div>
       <% end %>
     </div>
 
   <% when 'clob' %>
-    <div class="clob-display" data-testid="clob-price-display">
+    <div data-testid="clob-price-display">
       <% book = @market.pricing_engine.order_book_summary %>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">
-        <div style="flex:1;min-width:100px;background:#f4f9f7;border:1px solid #d0e8de;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">Best Bid (YES)</div>
-          <div style="font-size:2rem;font-weight:800;color:var(--accent);"><%= book[:bid] ? "#{book[:bid]}¢" : "—" %></div>
+      <div class="adv-prices" style="margin-bottom:12px;">
+        <div class="adv-pricebox adv-pricebox--yes">
+          <div class="adv-pricebox__label">Best Bid (YES)</div>
+          <div class="adv-pricebox__val adv-num"><%= book[:bid] ? "#{book[:bid]}¢" : "—" %></div>
         </div>
-        <div style="flex:1;min-width:100px;background:#fff8f0;border:1px solid #f0dfc0;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">Best Ask (NO)</div>
-          <div style="font-size:2rem;font-weight:800;color:#8a5c10;"><%= book[:ask] ? "#{book[:ask]}¢" : "—" %></div>
+        <div class="adv-pricebox adv-pricebox--no">
+          <div class="adv-pricebox__label">Best Ask (NO)</div>
+          <div class="adv-pricebox__val adv-num"><%= book[:ask] ? "#{book[:ask]}¢" : "—" %></div>
         </div>
       </div>
       <% if book[:spread] %>
-        <p class="muted">Spread: <%= book[:spread] %>¢<% if @market.last_fill_price_cents %> &nbsp;·&nbsp; Last trade: <%= @market.last_fill_price_cents %>¢<% end %></p>
+        <p class="adv-muted">Spread: <%= book[:spread] %>¢<% if @market.last_fill_price_cents %> &nbsp;·&nbsp; Last trade: <%= @market.last_fill_price_cents %>¢<% end %></p>
       <% elsif book[:bid].nil? && book[:ask].nil? %>
-        <p class="muted">No open orders yet — place the first order to establish prices.</p>
+        <p class="adv-muted">No open orders yet — place the first order to establish prices.</p>
       <% end %>
     </div>
 
   <% when 'lmsr' %>
-    <div class="lmsr-display" data-testid="lmsr-price-display">
+    <div data-testid="lmsr-price-display">
       <% engine = @market.pricing_engine %>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:100px;background:#f4f9f7;border:1px solid #d0e8de;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">YES</div>
-          <div style="font-size:2rem;font-weight:800;color:var(--accent);"><%= engine.yes_probability %>%</div>
+      <div class="adv-prices">
+        <div class="adv-pricebox adv-pricebox--yes">
+          <div class="adv-pricebox__label">YES</div>
+          <div class="adv-pricebox__val adv-num"><%= engine.yes_probability %>%</div>
         </div>
-        <div style="flex:1;min-width:100px;background:#fff8f0;border:1px solid #f0dfc0;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">NO</div>
-          <div style="font-size:2rem;font-weight:800;color:#8a5c10;"><%= engine.no_probability %>%</div>
+        <div class="adv-pricebox adv-pricebox--no">
+          <div class="adv-pricebox__label">NO</div>
+          <div class="adv-pricebox__val adv-num"><%= engine.no_probability %>%</div>
         </div>
       </div>
     </div>
 
   <% when 'parimutuel' %>
-    <div class="parimutuel-display" data-testid="parimutuel-price-display">
+    <div data-testid="parimutuel-price-display">
       <% yes_pct = Parimutuel::ParimutuelPoolService.yes_probability(@market) %>
       <% no_pct  = Parimutuel::ParimutuelPoolService.no_probability(@market) %>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-        <div style="flex:1;min-width:100px;background:#f4f9f7;border:1px solid #d0e8de;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">YES Pool</div>
-          <div style="font-size:2rem;font-weight:800;color:var(--accent);"><%= yes_pct %>%</div>
-          <div class="muted" style="font-size:0.75rem;"><%= number_with_delimiter(@market.parimutuel_pool_yes_minor) %> ADIV</div>
+      <div class="adv-prices" style="margin-bottom:10px;">
+        <div class="adv-pricebox adv-pricebox--yes">
+          <div class="adv-pricebox__label">YES Pool</div>
+          <div class="adv-pricebox__val adv-num"><%= yes_pct %>%</div>
+          <div class="adv-pricebox__sub adv-muted"><%= number_with_delimiter(@market.parimutuel_pool_yes_minor) %> ADIV</div>
         </div>
-        <div style="flex:1;min-width:100px;background:#fff8f0;border:1px solid #f0dfc0;border-radius:10px;padding:14px;text-align:center;">
-          <div class="muted" style="font-size:0.8rem;">NO Pool</div>
-          <div style="font-size:2rem;font-weight:800;color:#8a5c10;"><%= no_pct %>%</div>
-          <div class="muted" style="font-size:0.75rem;"><%= number_with_delimiter(@market.parimutuel_pool_no_minor) %> ADIV</div>
+        <div class="adv-pricebox adv-pricebox--no">
+          <div class="adv-pricebox__label">NO Pool</div>
+          <div class="adv-pricebox__val adv-num"><%= no_pct %>%</div>
+          <div class="adv-pricebox__sub adv-muted"><%= number_with_delimiter(@market.parimutuel_pool_no_minor) %> ADIV</div>
         </div>
       </div>
-      <p class="muted" style="font-size:0.82rem;">Parimutuel — odds shift as pool fills. Takeout: <%= (@market.takeout_bps.to_i / 100.0).round(1) %>%</p>
+      <p class="adv-muted" style="font-size:0.82rem;">Parimutuel — odds shift as pool fills. Takeout: <%= (@market.takeout_bps.to_i / 100.0).round(1) %>%</p>
     </div>
   <% end %>
 </section>
 
-<section class="card" style="margin-bottom:16px;" data-testid="market-legs-panel">
-  <h3 style="margin-top:0;">Outcomes</h3>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+<section class="adv-card" style="margin-bottom:16px;" data-testid="market-legs-panel">
+  <div class="adv-card__head"><h3 style="margin:0;">Outcomes</h3></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;">
     <% @market.market_legs.each do |leg| %>
-      <div style="flex:1;min-width:120px;border:1px solid var(--border);border-radius:8px;padding:10px 14px;" data-testid="market-leg-<%= leg.id %>">
+      <div style="flex:1;min-width:120px;border:1px solid var(--adv-border);border-radius:8px;padding:10px 14px;"
+           data-testid="market-leg-<%= leg.id %>">
         <strong><%= leg.label %></strong>
-        <span class="muted" style="font-size:0.82rem;margin-left:6px;"><%= (leg.odds_minor / 100.0).round(1) %>% implied</span>
+        <span class="adv-muted" style="font-size:0.82rem;margin-left:6px;"><%= (leg.odds_minor / 100.0).round(1) %>% implied</span>
       </div>
     <% end %>
   </div>
 </section>
 
 <% if @market.closed? %>
-  <div style="background:#2a1f0a;border:1px solid #f0bc5c;border-radius:8px;padding:12px 16px;margin-bottom:16px;"
-       data-testid="market-closed-notice">
-    <strong style="color:#f0bc5c;">This market is closed for new bets.</strong>
-    <span style="color:#9fb2b8;font-size:0.88em;margin-left:6px;">Awaiting settlement by a moderator.</span>
+  <div class="adv-callout adv-callout--locked" style="margin-bottom:16px;" data-testid="market-closed-notice">
+    <strong>This market is closed for new bets.</strong>
+    <span class="adv-muted" style="font-size:0.88em;margin-left:6px;">Awaiting settlement by a moderator.</span>
   </div>
 <% end %>
 
 <% if @market.open? %>
   <% if current_user %>
     <% if @market.fixed_odds? %>
-      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
-        <h3 style="margin-top:0;">Place a Bet</h3>
-        <%= form_with url: web_market_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-            <% @market.market_legs.each do |leg| %>
-              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
-                <%= radio_button_tag :market_leg_id, leg.id, false, required: true, data: { testid: "bet-leg-#{leg.label.downcase}" } %>
-                <strong style="margin-left:4px;"><%= leg.label %></strong>
-                <span class="muted" style="font-size:0.82rem;"> (<%= (leg.odds_minor / 100.0).round(0) %>%)</span>
-              </label>
-            <% end %>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <label style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
-            <%= number_field_tag :stake_minor, 100, min: 1, style: 'width:120px;', required: true,
-                  data: { testid: 'bet-stake' } %>
-            <%= f.submit 'Place Bet', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
-          </div>
-        <% end %>
+      <section class="adv-card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <div class="adv-card__head"><h3 style="margin:0;">Place a Bet</h3></div>
+        <div style="padding-top:12px;">
+          <%= form_with url: web_market_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <% @market.market_legs.each do |leg| %>
+                <label style="flex:1;min-width:100px;border:2px solid var(--adv-border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                  <%= radio_button_tag :market_leg_id, leg.id, false, required: true, data: { testid: "bet-leg-#{leg.label.downcase}" } %>
+                  <strong style="margin-left:4px;"><%= leg.label %></strong>
+                  <span class="adv-muted" style="font-size:0.82rem;"> (<%= (leg.odds_minor / 100.0).round(0) %>%)</span>
+                </label>
+              <% end %>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label class="adv-muted" style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
+              <%= number_field_tag :stake_minor, 100, min: 1, class: "adv-input", style: 'width:120px;',
+                    required: true, data: { testid: 'bet-stake' } %>
+              <%= f.submit 'Place Bet', class: "adv-btn adv-btn--yes", style: 'white-space:nowrap;',
+                    data: { testid: 'bet-submit' } %>
+            </div>
+          <% end %>
+        </div>
       </section>
     <% elsif @market.parimutuel? %>
-      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
-        <h3 style="margin-top:0;">Place a Pool Bet</h3>
-        <%= form_with url: web_market_parimutuel_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-            <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
-              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
-                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
-                <strong style="margin-left:4px;"><%= label %> Pool</strong>
-              </label>
-            <% end %>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <label style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
-            <%= number_field_tag :stake_minor, 100, min: 1, style: 'width:120px;', required: true,
-                  data: { testid: 'bet-stake' } %>
-            <%= f.submit 'Place Stake', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
-          </div>
-        <% end %>
+      <section class="adv-card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <div class="adv-card__head"><h3 style="margin:0;">Place a Pool Bet</h3></div>
+        <div style="padding-top:12px;">
+          <%= form_with url: web_market_parimutuel_bets_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
+                <label style="flex:1;min-width:100px;border:2px solid var(--adv-border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                  <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                  <strong style="margin-left:4px;"><%= label %> Pool</strong>
+                </label>
+              <% end %>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label class="adv-muted" style="font-size:0.88rem;white-space:nowrap;">Stake (ADIV):</label>
+              <%= number_field_tag :stake_minor, 100, min: 1, class: "adv-input", style: 'width:120px;',
+                    required: true, data: { testid: 'bet-stake' } %>
+              <%= f.submit 'Place Stake', class: "adv-btn adv-btn--primary", style: 'white-space:nowrap;',
+                    data: { testid: 'bet-submit' } %>
+            </div>
+          <% end %>
+        </div>
       </section>
     <% elsif @market.clob? %>
-      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
-        <h3 style="margin-top:0;">Place Limit Order</h3>
-        <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">CLOB — set your price and quantity. Order stays open until filled or cancelled.</p>
-        <%= form_with url: web_market_orders_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-            <% [['YES (Buy)', 'yes'], ['NO (Sell)', 'no']].each do |label, val| %>
-              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
-                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
-                <strong style="margin-left:4px;"><%= label %></strong>
-              </label>
-            <% end %>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <label style="font-size:0.88rem;white-space:nowrap;">Price (¢):</label>
-            <%= number_field_tag :price_cents, 50, min: 1, max: 99, style: 'width:80px;', required: true,
-                  data: { testid: 'bet-stake' } %>
-            <label style="font-size:0.88rem;white-space:nowrap;">Qty:</label>
-            <%= number_field_tag :quantity, 10, min: 1, style: 'width:80px;', required: true %>
-            <%= f.submit 'Place Order', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
-          </div>
-        <% end %>
+      <section class="adv-card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <div class="adv-card__head"><h3 style="margin:0;">Place Limit Order</h3></div>
+        <div style="padding-top:12px;">
+          <p class="adv-muted" style="font-size:0.82rem;margin-bottom:12px;">CLOB — set your price and quantity. Order stays open until filled or cancelled.</p>
+          <%= form_with url: web_market_orders_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <% [['YES (Buy)', 'yes'], ['NO (Sell)', 'no']].each do |label, val| %>
+                <label style="flex:1;min-width:100px;border:2px solid var(--adv-border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                  <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                  <strong style="margin-left:4px;"><%= label %></strong>
+                </label>
+              <% end %>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <label class="adv-muted" style="font-size:0.88rem;white-space:nowrap;">Price (¢):</label>
+              <%= number_field_tag :price_cents, 50, min: 1, max: 99, class: "adv-input",
+                    style: 'width:80px;', required: true, data: { testid: 'bet-stake' } %>
+              <label class="adv-muted" style="font-size:0.88rem;white-space:nowrap;">Qty:</label>
+              <%= number_field_tag :quantity, 10, min: 1, class: "adv-input", style: 'width:80px;', required: true %>
+              <%= f.submit 'Place Order', class: "adv-btn adv-btn--primary", style: 'white-space:nowrap;',
+                    data: { testid: 'bet-submit' } %>
+            </div>
+          <% end %>
+        </div>
       </section>
     <% elsif @market.lmsr? %>
-      <section class="card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
-        <h3 style="margin-top:0;">Buy Shares</h3>
-        <p class="muted" style="font-size:0.82rem;margin-bottom:12px;">LMSR — prices adjust automatically as you trade.</p>
-        <%= form_with url: web_market_lmsr_trades_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-            <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
-              <label style="flex:1;min-width:100px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
-                <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
-                <strong style="margin-left:4px;"><%= label %></strong>
-              </label>
-            <% end %>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <label style="font-size:0.88rem;white-space:nowrap;">Shares:</label>
-            <%= number_field_tag :quantity, 10, min: 1, style: 'width:120px;', required: true,
-                  data: { testid: 'bet-stake' } %>
-            <%= f.submit 'Buy Shares', style: 'white-space:nowrap;', data: { testid: 'bet-submit' } %>
-          </div>
-        <% end %>
+      <section class="adv-card" style="margin-bottom:16px;" data-testid="quick-bet-panel">
+        <div class="adv-card__head"><h3 style="margin:0;">Buy Shares</h3></div>
+        <div style="padding-top:12px;">
+          <p class="adv-muted" style="font-size:0.82rem;margin-bottom:12px;">LMSR — prices adjust automatically as you trade.</p>
+          <%= form_with url: web_market_lmsr_trades_path(@market), method: :post, data: { testid: 'quick-bet-form' } do |f| %>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+              <% [['YES', 'yes'], ['NO', 'no']].each do |label, val| %>
+                <label style="flex:1;min-width:100px;border:2px solid var(--adv-border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:center;">
+                  <%= radio_button_tag :side, val, false, required: true, data: { testid: "bet-leg-#{val}" } %>
+                  <strong style="margin-left:4px;"><%= label %></strong>
+                </label>
+              <% end %>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label class="adv-muted" style="font-size:0.88rem;white-space:nowrap;">Shares:</label>
+              <%= number_field_tag :quantity, 10, min: 1, class: "adv-input", style: 'width:120px;',
+                    required: true, data: { testid: 'bet-stake' } %>
+              <%= f.submit 'Buy Shares', class: "adv-btn adv-btn--yes", style: 'white-space:nowrap;',
+                    data: { testid: 'bet-submit' } %>
+            </div>
+          <% end %>
+        </div>
       </section>
     <% end %>
   <% else %>
-    <div class="card" style="margin-bottom:16px;text-align:center;padding:20px;" data-testid="bet-signin-prompt">
-      <p class="muted" style="margin:0 0 12px;">Sign in to participate in this market.</p>
-      <%= link_to 'Sign In', '/signin', class: 'pill pill-active' %>
+    <div class="adv-card" style="margin-bottom:16px;text-align:center;padding:20px;" data-testid="bet-signin-prompt">
+      <p class="adv-muted" style="margin:0 0 12px;">Sign in to participate in this market.</p>
+      <%= link_to 'Sign In', '/signin', class: 'adv-btn adv-btn--primary' %>
     </div>
   <% end %>
 <% end %>
 
 <% if @market.resolution_criteria.present? || @market.close_at.present? || @market.settled_outcome.present? %>
-  <section class="card" style="margin-bottom:16px;" data-testid="market-resolution-panel">
-    <h3 style="margin-top:0;">Resolution Details</h3>
-    <% if @market.close_at.present? %>
-      <div class="stat-card" style="margin-bottom:10px;">
-        <div class="stat-label">Closes</div>
-        <div style="font-size:0.95rem;font-weight:600;color:var(--ink);" data-testid="market-close-at">
-          <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
-          <% if @market.open? && @market.close_at > Time.current %>
-            <span class="muted" style="font-weight:400;"> (in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
-          <% end %>
+  <section class="adv-card" style="margin-bottom:16px;" data-testid="market-resolution-panel">
+    <div class="adv-card__head"><h3 style="margin:0;">Resolution Details</h3></div>
+    <div style="padding-top:12px;">
+      <% if @market.close_at.present? %>
+        <div class="adv-statcard" style="margin-bottom:10px;">
+          <div class="adv-stat__k">Closes</div>
+          <div style="font-size:0.95rem;font-weight:600;" data-testid="market-close-at">
+            <%= @market.close_at.strftime('%b %d, %Y at %H:%M UTC') %>
+            <% if @market.open? && @market.close_at > Time.current %>
+              <span class="adv-muted" style="font-weight:400;"> (in <%= distance_of_time_in_words(Time.current, @market.close_at) %>)</span>
+            <% end %>
+          </div>
         </div>
-      </div>
-    <% end %>
-    <% if @market.resolution_criteria.present? %>
-      <p style="margin:0 0 8px;font-size:0.88rem;"><strong>Resolution criteria</strong></p>
-      <p class="muted" style="font-size:0.88rem;margin:0 0 10px;" data-testid="market-resolution-criteria"><%= @market.resolution_criteria %></p>
-    <% end %>
-    <% if @market.resolution_source.present? %>
-      <p style="margin:0;font-size:0.88rem;" class="muted">Source: <strong style="color:var(--ink);" data-testid="market-resolution-source"><%= @market.resolution_source %></strong></p>
-    <% end %>
-    <% if @market.settled_outcome.present? %>
-      <div style="background:#e6f7f1;border:1px solid #b8e6d6;border-radius:8px;padding:12px;margin-top:10px;">
-        <strong>Settled outcome: <%= @market.settled_outcome %></strong>
-      </div>
-    <% end %>
+      <% end %>
+      <% if @market.resolution_criteria.present? %>
+        <p style="margin:0 0 8px;font-size:0.88rem;"><strong>Resolution criteria</strong></p>
+        <p class="adv-muted" style="font-size:0.88rem;margin:0 0 10px;" data-testid="market-resolution-criteria"><%= @market.resolution_criteria %></p>
+      <% end %>
+      <% if @market.resolution_source.present? %>
+        <p style="margin:0;font-size:0.88rem;" class="adv-muted">Source: <strong data-testid="market-resolution-source"><%= @market.resolution_source %></strong></p>
+      <% end %>
+      <% if @market.settled_outcome.present? %>
+        <div class="adv-callout adv-callout--accent" style="margin-top:10px;">
+          <strong>Settled outcome: <%= @market.settled_outcome %></strong>
+        </div>
+      <% end %>
+    </div>
   </section>
 <% end %>
 
 <% if current_user && @user_bets.any? %>
-  <section class="card" style="margin-bottom:16px;" data-testid="user-bets-panel">
-    <h3 style="margin-top:0;">Your Bets</h3>
-    <table style="width:100%;border-collapse:collapse;">
+  <section class="adv-card" style="margin-bottom:16px;" data-testid="user-bets-panel">
+    <div class="adv-card__head"><h3 style="margin:0;">Your Bets</h3></div>
+    <table class="adv-table" style="margin-top:0;">
       <thead>
-        <tr style="border-bottom:1px solid var(--border);">
-          <th style="padding:6px 0;font-size:0.8rem;color:var(--muted);text-align:left;">Outcome</th>
-          <th style="padding:6px 8px;font-size:0.8rem;color:var(--muted);text-align:right;">Stake</th>
-          <th style="padding:6px 8px;font-size:0.8rem;color:var(--muted);text-align:right;">Payout</th>
-          <th style="padding:6px 0;font-size:0.8rem;color:var(--muted);text-align:right;">Status</th>
+        <tr>
+          <th>Outcome</th>
+          <th style="text-align:right;">Stake</th>
+          <th style="text-align:right;">Payout</th>
+          <th style="text-align:right;">Status</th>
         </tr>
       </thead>
       <tbody>
         <% @user_bets.each do |bet| %>
-          <tr style="border-bottom:1px solid var(--border);" data-testid="user-bet-<%= bet.id %>">
-            <td style="padding:6px 0;font-size:0.88rem;"><strong><%= bet.market_leg.label %></strong></td>
-            <td style="padding:6px 8px;font-size:0.88rem;text-align:right;"><%= number_with_delimiter(bet.net_stake_minor) %> ADIV</td>
-            <td style="padding:6px 8px;font-size:0.88rem;text-align:right;"><%= number_with_delimiter(bet.potential_payout_minor) %> ADIV</td>
-            <td style="padding:6px 0;font-size:0.82rem;text-align:right;">
-              <% status_color = case bet.status
-                                when 'open' then 'var(--accent)'
-                                when 'settled_win' then 'var(--accent)'
-                                when 'settled_loss' then '#d9534f'
-                                else 'var(--muted)' end %>
-              <span style="color:<%= status_color %>;"><%= bet.status.gsub('_', ' ').capitalize %></span>
+          <tr data-testid="user-bet-<%= bet.id %>">
+            <td><strong><%= bet.market_leg.label %></strong></td>
+            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(bet.net_stake_minor) %> ADIV</td>
+            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(bet.potential_payout_minor) %> ADIV</td>
+            <td style="text-align:right;font-size:0.82rem;">
+              <%= render "shared/adv_badge", status: bet.status.sub('settled_', '') %>
             </td>
           </tr>
         <% end %>
@@ -283,13 +292,15 @@
   </section>
 <% end %>
 
-<section class="card" style="margin-bottom:16px;" data-testid="market-trust-panel">
-  <h3 style="margin-top:0;">About this market</h3>
-  <p class="muted" style="font-size:0.85rem;">Status: <strong><%= @market.status %></strong> &nbsp;&bull;&nbsp; Created by <%= @market.created_by.email.split('@').first %></p>
-  <% if @market.settled_outcome.present? %>
-    <p style="font-size:0.88rem;margin:6px 0 0;">Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
-  <% end %>
-  <p class="muted" style="font-size:0.78rem;margin-top:8px;">
-    Live SSE stream: <a href="/sse/markets/<%= @market.id %>">/sse/markets/<%= @market.id %></a>
-  </p>
+<section class="adv-card" style="margin-bottom:16px;" data-testid="market-trust-panel">
+  <div class="adv-card__head"><h3 style="margin:0;">About this market</h3></div>
+  <div style="padding-top:12px;">
+    <p class="adv-muted" style="font-size:0.85rem;">Status: <strong><%= @market.status %></strong> &nbsp;&bull;&nbsp; Created by <%= @market.created_by.email.split('@').first %></p>
+    <% if @market.settled_outcome.present? %>
+      <p style="font-size:0.88rem;margin:6px 0 0;">Settled outcome: <strong><%= @market.settled_outcome %></strong></p>
+    <% end %>
+    <p class="adv-muted adv-xs" style="margin-top:8px;">
+      SSE: <a href="/sse/markets/<%= @market.id %>" class="adv-muted">/sse/markets/<%= @market.id %></a>
+    </p>
+  </div>
 </section>

@@ -1,57 +1,60 @@
 <h1 style="margin-bottom:20px;" data-testid="profile-title">My Profile</h1>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px;">
-  <section class="card" data-testid="wallet-balance-panel">
-    <h3 style="margin-top:0;">Wallet</h3>
-    <div class="stat-grid" style="margin:0 0 12px;">
-      <div class="stat-card">
-        <div class="stat-label">Available</div>
-        <div class="stat-value" data-testid="wallet-available"><%= number_with_delimiter(@wallet.available_minor) %></div>
-        <div class="muted" style="font-size:0.75rem;">ADIV</div>
+<div class="adv-grid adv-grid--auto" style="margin-bottom:20px;">
+  <section class="adv-card" data-testid="wallet-balance-panel">
+    <div class="adv-card__head"><h3 style="margin:0;">Wallet</h3></div>
+    <div class="adv-grid adv-grid--auto" style="gap:12px;margin:12px 0;">
+      <div class="adv-statcard">
+        <div class="adv-stat__k">Available</div>
+        <div class="adv-statcard__v adv-num" data-testid="wallet-available"><%= number_with_delimiter(@wallet.available_minor) %></div>
+        <div class="adv-muted adv-xs">ADIV</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Reserved</div>
-        <div class="stat-value" data-testid="wallet-reserved"><%= number_with_delimiter(@wallet.reserved_minor) %></div>
-        <div class="muted" style="font-size:0.75rem;">ADIV</div>
+      <div class="adv-statcard">
+        <div class="adv-stat__k">Reserved</div>
+        <div class="adv-statcard__v adv-num" data-testid="wallet-reserved"><%= number_with_delimiter(@wallet.reserved_minor) %></div>
+        <div class="adv-muted adv-xs">ADIV</div>
       </div>
     </div>
     <details style="font-size:0.88rem;">
-      <summary style="cursor:pointer;color:var(--accent);">Request more tokens</summary>
-      <div style="margin-top:10px;padding:12px;background:#f4f9f7;border-radius:8px;" data-testid="faucet-form-section">
+      <summary style="cursor:pointer;">Request more tokens</summary>
+      <div style="margin-top:10px;padding:12px;border-radius:8px;border:1px solid var(--adv-border);"
+           data-testid="faucet-form-section">
         <%= form_with url: web_faucet_requests_path, method: :post, data: { testid: "faucet-request-form" } do |f| %>
-          <label style="font-size:0.85rem;">Amount (ADIV)
+          <label class="adv-muted" style="font-size:0.85rem;">Amount (ADIV)
             <input type="number" name="amount_minor" value="10000" min="100" max="100000"
-                   style="margin-top:4px;" data-testid="faucet-amount">
+                   class="adv-input" style="margin-top:4px;" data-testid="faucet-amount">
           </label>
           <div style="margin-top:8px;">
-            <%= f.submit "Request tokens", data: { testid: "faucet-submit" } %>
+            <%= f.submit "Request tokens", class: "adv-btn adv-btn--primary adv-btn--sm",
+                  data: { testid: "faucet-submit" } %>
           </div>
         <% end %>
-        <p class="muted" style="margin:6px 0 0;font-size:0.78rem;">Requests are reviewed by an admin. Approved funds appear in your wallet.</p>
+        <p class="adv-muted adv-xs" style="margin:6px 0 0;">Requests are reviewed by an admin. Approved funds appear in your wallet.</p>
       </div>
     </details>
   </section>
 
-  <section class="card" data-testid="pnl-panel">
-    <h3 style="margin-top:0;">P&amp;L Summary</h3>
-    <div class="stat-grid" style="margin:0 0 10px;">
-      <div class="stat-card">
-        <div class="stat-label">Open</div>
-        <div class="stat-value" data-testid="pnl-open-count"><%= @pnl[:open_count] %></div>
+  <section class="adv-card" data-testid="pnl-panel">
+    <div class="adv-card__head"><h3 style="margin:0;">P&amp;L Summary</h3></div>
+    <div class="adv-grid adv-grid--auto" style="gap:12px;margin:12px 0;">
+      <div class="adv-statcard">
+        <div class="adv-stat__k">Open</div>
+        <div class="adv-statcard__v adv-num" data-testid="pnl-open-count"><%= @pnl[:open_count] %></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Won</div>
-        <div class="stat-value" style="color:#0e7c66;"><%= @pnl[:won_count] %></div>
+      <div class="adv-statcard">
+        <div class="adv-stat__k">Won</div>
+        <div class="adv-statcard__v adv-num adv-delta--up" data-testid="pnl-won-count"><%= @pnl[:won_count] %></div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Lost</div>
-        <div class="stat-value" style="color:#c0392b;"><%= @pnl[:lost_count] %></div>
+      <div class="adv-statcard">
+        <div class="adv-stat__k">Lost</div>
+        <div class="adv-statcard__v adv-num adv-delta--down" data-testid="pnl-lost-count"><%= @pnl[:lost_count] %></div>
       </div>
     </div>
     <p style="margin:6px 0;font-size:0.88rem;">Staked: <strong data-testid="pnl-total-staked"><%= number_with_delimiter(@pnl[:total_staked]) %> ADIV</strong></p>
     <p style="margin:6px 0;font-size:0.88rem;">Returned: <strong data-testid="pnl-total-returned"><%= number_with_delimiter(@pnl[:total_returned]) %> ADIV</strong></p>
     <p style="margin:6px 0;font-size:0.88rem;">Net P&amp;L:
-      <strong data-testid="pnl-net" style="color:<%= @pnl[:net_pnl] >= 0 ? '#0e7c66' : '#c0392b' %>;">
+      <strong data-testid="pnl-net"
+              class="adv-delta adv-delta--<%= @pnl[:net_pnl] >= 0 ? 'up' : 'down' %>">
         <%= @pnl[:net_pnl] >= 0 ? '+' : '' %><%= number_with_delimiter(@pnl[:net_pnl]) %> ADIV
       </strong>
     </p>
@@ -59,51 +62,53 @@
   </section>
 </div>
 
-<section class="card" data-testid="bets-panel">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+<section class="adv-card adv-card--flush" data-testid="bets-panel">
+  <div class="adv-card__head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
     <h3 style="margin:0;">Bet History</h3>
     <div style="display:flex;gap:6px;flex-wrap:wrap;" data-testid="bet-status-filter">
       <% [['All', nil], ['Open', 'open'], ['Won', 'settled_win'], ['Lost', 'settled_loss'], ['Voided', 'voided']].each do |label, val| %>
         <% active = @status_filter == val %>
         <%= link_to label, web_profile_path(status: val),
               data: { testid: "filter-#{label.downcase}" },
-              class: "pill #{active ? 'pill-active' : 'pill-outline'}" %>
+              class: "adv-btn adv-btn--sm #{active ? 'adv-btn--primary' : 'adv-btn--ghost'}" %>
       <% end %>
     </div>
   </div>
 
   <% if @bets.any? %>
     <div style="overflow-x:auto;">
-      <table data-testid="bets-table" style="width:100%;border-collapse:collapse;">
+      <table class="adv-table" data-testid="bets-table">
         <thead>
           <tr>
-            <th style="text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Market</th>
-            <th style="text-align:left;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Outcome</th>
-            <th style="text-align:right;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Stake</th>
-            <th style="text-align:right;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Payout</th>
-            <th style="text-align:center;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Status</th>
-            <th style="text-align:right;padding:8px 10px;border-bottom:2px solid var(--border);font-size:0.82rem;color:var(--muted);">Date</th>
+            <th>Market</th>
+            <th>Outcome</th>
+            <th style="text-align:right;">Stake</th>
+            <th style="text-align:right;">Payout</th>
+            <th style="text-align:center;">Status</th>
+            <th style="text-align:right;">Date</th>
           </tr>
         </thead>
         <tbody>
           <% @bets.each do |bet| %>
             <% cashed_out = bet.voided? && @cashout_payouts.key?(bet.id) %>
             <% display_payout = cashed_out ? @cashout_payouts[bet.id] : bet.potential_payout_minor %>
-            <% display_status = cashed_out ? 'Cashed out' : bet.status.humanize %>
-            <% row_bg = bet.settled_win? ? 'background:#f0faf5;' : (bet.settled_loss? ? 'opacity:0.65;' : '') %>
-            <tr data-testid="bet-row-<%= bet.id %>" style="border-bottom:1px solid var(--border);<%= row_bg %>">
-              <td style="padding:10px;"><%= link_to bet.market.question.truncate(50), web_market_path(bet.market), data: { testid: "bet-market-link-#{bet.id}" }, style: "color:var(--ink);" %></td>
-              <td style="padding:10px;"><span class="badge"><%= bet.market_leg.label %></span></td>
-              <td style="padding:10px;text-align:right;" data-testid="bet-stake-<%= bet.id %>"><%= number_with_delimiter(bet.net_stake_minor) %></td>
-              <td style="padding:10px;text-align:right;" data-testid="bet-payout-<%= bet.id %>"><%= number_with_delimiter(display_payout) %></td>
-              <td style="padding:10px;text-align:center;"><span class="badge" data-testid="bet-status-<%= bet.id %>"><%= display_status %></span></td>
-              <td style="padding:10px;text-align:right;" class="muted"><%= bet.created_at.strftime('%b %d, %Y') %></td>
+            <% display_status = cashed_out ? 'voided' : bet.status.sub('settled_', '') %>
+            <tr data-testid="bet-row-<%= bet.id %>">
+              <td><%= link_to bet.market.question.truncate(50), web_market_path(bet.market),
+                    data: { testid: "bet-market-link-#{bet.id}" }, class: "adv-muted" %></td>
+              <td><span class="adv-chip adv-chip--accent" data-testid="bet-leg-<%= bet.id %>"><%= bet.market_leg.label %></span></td>
+              <td class="adv-num" style="text-align:right;" data-testid="bet-stake-<%= bet.id %>"><%= number_with_delimiter(bet.net_stake_minor) %></td>
+              <td class="adv-num" style="text-align:right;" data-testid="bet-payout-<%= bet.id %>"><%= number_with_delimiter(display_payout) %></td>
+              <td style="text-align:center;"><%= render "shared/adv_badge", status: display_status, label: (cashed_out ? 'Cashed out' : bet.status.humanize) %></td>
+              <td class="adv-muted adv-xs" style="text-align:right;"><%= bet.created_at.strftime('%b %d, %Y') %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
   <% else %>
-    <p class="muted" style="text-align:center;padding:24px 0;" data-testid="bets-empty">No bets found. <%= link_to "Browse markets", web_markets_path %> to place your first bet.</p>
+    <p class="adv-muted" style="text-align:center;padding:24px 0;" data-testid="bets-empty">
+      No bets found. <%= link_to "Browse markets", web_markets_path %> to place your first bet.
+    </p>
   <% end %>
 </section>

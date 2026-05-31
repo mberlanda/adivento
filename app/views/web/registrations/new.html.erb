@@ -1,16 +1,20 @@
 <h1>Create your account</h1>
-<p class="muted">Sign up to track positions, climb the leaderboard, and trade on markets.</p>
+<p class="adv-muted">Sign up to track positions, climb the leaderboard, and trade on markets.</p>
 
-<%= form_with url: "/register", method: :post, html: { data: { testid: "register-form" } } do |f| %>
-  <p>
-    <%= f.label :email, "Email" %><br>
-    <%= f.email_field :email, required: true, data: { testid: "register-email" } %>
-  </p>
-  <p>
-    <%= f.label :password, "Password" %><br>
-    <%= f.password_field :password, required: true, minlength: 8, data: { testid: "register-password" } %>
-  </p>
-  <p><%= f.submit "Create account", data: { testid: "register-submit" } %></p>
-<% end %>
+<div class="adv-card adv-container--narrow" style="margin-top:20px;">
+  <%= form_with url: "/register", method: :post, html: { data: { testid: "register-form" } } do |f| %>
+    <p>
+      <%= f.label :email, "Email" %><br>
+      <%= f.email_field :email, required: true, class: "adv-input", data: { testid: "register-email" } %>
+    </p>
+    <p>
+      <%= f.label :password, "Password" %><br>
+      <%= f.password_field :password, required: true, minlength: 8, class: "adv-input",
+            data: { testid: "register-password" } %>
+    </p>
+    <p><%= f.submit "Create account", class: "adv-btn adv-btn--primary adv-btn--block",
+          data: { testid: "register-submit" } %></p>
+  <% end %>
+</div>
 
-<p class="muted">Already have an account? <%= link_to "Sign in", signin_path %></p>
+<p class="adv-muted" style="text-align:center;margin-top:16px;">Already have an account? <%= link_to "Sign in", signin_path %></p>

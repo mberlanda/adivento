@@ -1,73 +1,84 @@
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
   <div>
     <h1 style="margin:0 0 4px;">Explore Markets</h1>
-    <p class="muted" style="margin:0;">Prediction markets across sports, economics, politics, and more.</p>
+    <p class="adv-muted" style="margin:0;">Prediction markets across sports, economics, politics, and more.</p>
   </div>
   <form method="get" action="<%= web_markets_path %>" data-testid="market-search-form" style="display:flex;gap:8px;align-items:center;">
     <% if @selected_category %>
       <%= hidden_field_tag :category, @selected_category %>
     <% end %>
-    <input type="search" name="q" value="<%= @search_query %>"
+    <input class="adv-input" type="search" name="q" value="<%= @search_query %>"
            placeholder="Search markets…" data-testid="market-search-input"
            style="width:260px;">
-    <button type="submit" style="white-space:nowrap;">Search</button>
+    <button class="adv-btn adv-btn--primary adv-btn--sm" type="submit" style="white-space:nowrap;">Search</button>
   </form>
 </div>
 
 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;" data-testid="category-filter">
   <%= link_to "All", web_markets_path(q: @search_query),
-        class: "pill #{@selected_category.nil? ? 'pill-active' : 'pill-outline'}" %>
+        class: "adv-btn adv-btn--sm #{@selected_category.nil? ? 'adv-btn--primary' : 'adv-btn--ghost'}" %>
   <% Market::CATEGORIES.each do |cat| %>
     <%= link_to cat.capitalize, web_markets_path(category: cat, q: @search_query),
           data: { testid: "category-#{cat}" },
-          class: "pill #{@selected_category == cat ? 'pill-active' : 'pill-outline'}" %>
+          class: "adv-btn adv-btn--sm #{@selected_category == cat ? 'adv-btn--primary' : 'adv-btn--ghost'}" %>
   <% end %>
 </div>
 
 <% if @search_query.present? %>
-  <p class="muted" style="margin-bottom:12px;">
+  <p class="adv-muted" style="margin-bottom:12px;">
     Results for "<strong><%= @search_query %></strong>"
     <% if @selected_category %> in <%= @selected_category.capitalize %><% end %>
     &mdash; <%= link_to "Clear search", web_markets_path(category: @selected_category) %>
   </p>
 <% end %>
 
-<div class="cards" data-testid="markets-list">
+<div class="adv-grid adv-grid--auto" data-testid="markets-list">
   <% if @markets.empty? %>
     <div style="grid-column:1/-1;text-align:center;padding:40px 20px;">
-      <p style="font-size:1.1rem;color:var(--muted);margin-bottom:12px;">
+      <p class="adv-muted" style="font-size:1.1rem;margin-bottom:12px;">
         No markets found<% if @search_query %> for "<%= @search_query %>"<% end %>.
       </p>
-      <%= link_to "Browse all markets", web_markets_path, class: "pill pill-active" %>
+      <%= link_to "Browse all markets", web_markets_path, class: "adv-btn adv-btn--primary" %>
     </div>
   <% else %>
     <% @markets.each do |market| %>
-      <article class="card" data-testid="market-card-<%= market.id %>">
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">
-          <span class="badge badge-status" data-testid="status-badge-<%= market.id %>"><%= market.status.capitalize %></span>
-          <span class="badge" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
+      <%= link_to web_market_path(market),
+            class: "adv-card adv-market",
+            style: "text-decoration:none;color:inherit;display:block;",
+            data: { testid: "market-card-#{market.id}" } do %>
+        <div class="adv-market__top">
+          <%= render "shared/adv_badge", status: market.status, live: market.open? %>
+          <span class="adv-muted adv-xs" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
+          <%= render "shared/adv_mech_chip", mechanism: market.mechanism_type %>
           <% if market.settled_outcome.present? %>
-            <span class="badge" style="background:#fef3e2;color:#8a5c10;">Settled: <%= market.settled_outcome %></span>
+            <span class="adv-badge adv-badge--settled">Settled: <%= market.settled_outcome %></span>
           <% end %>
         </div>
-        <h3><%= link_to market.question, web_market_path(market),
-              data: { testid: "market-link-#{market.id}" }, style: "color:var(--ink);" %></h3>
-        <p class="muted" style="margin:4px 0 6px;"><%= truncate(market.description, length: 100) %></p>
-        <% if market.close_at.present? && market.open? %>
-          <p class="muted" style="font-size:0.78rem;margin:0 0 8px;">
-            Closes <%= distance_of_time_in_words(Time.current, market.close_at) %> from now
-          </p>
+
+        <div class="adv-market__q" data-testid="market-link-<%= market.id %>"><%= market.question %></div>
+
+        <% legs = market.market_legs %>
+        <% if legs.any? %>
+          <div class="adv-probar">
+            <div class="adv-probar__fill" style="width:<%= (legs.first.odds_minor / 100.0).round(0) %>%"></div>
+          </div>
+          <div class="adv-row adv-row--between" style="margin-top:6px;">
+            <% legs.each do |leg| %>
+              <span class="adv-num" style="font-size:1.1rem;font-weight:700;">
+                <span class="adv-muted" style="font-size:0.75rem;font-weight:400;"><%= leg.label %></span>
+                <%= (leg.odds_minor / 100.0).round(0) %>%
+              </span>
+            <% end %>
+            <span class="adv-muted adv-xs"><%= market.mechanism_type.upcase %></span>
+          </div>
         <% end %>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;">
-          <% market.market_legs.each do |leg| %>
-            <span style="display:inline-flex;flex-direction:column;align-items:center;background:#f4f9f7;border:1px solid #d0e8de;border-radius:8px;padding:4px 12px;min-width:48px;">
-              <span style="font-size:0.75rem;color:var(--muted);"><%= leg.label %></span>
-              <span style="font-weight:700;font-size:1rem;color:var(--accent);"><%= (leg.odds_minor / 100.0).round(0) %>%</span>
-            </span>
+
+        <div class="adv-market__foot">
+          <% if market.close_at.present? && market.open? %>
+            <span>Closes <%= distance_of_time_in_words(Time.current, market.close_at) %></span>
           <% end %>
-          <span style="margin-left:auto;font-size:0.78rem;color:var(--muted);align-self:flex-end;"><%= market.mechanism_type.upcase %></span>
         </div>
-      </article>
+      <% end %>
     <% end %>
   <% end %>
 </div>
@@ -77,12 +88,12 @@
   <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;" data-testid="pagination">
     <% if @page > 1 %>
       <%= link_to "← Previous", web_markets_path(page: @page - 1, category: @selected_category, q: @search_query),
-            class: "pill pill-outline", data: { testid: "pagination-prev" } %>
+            class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-prev" } %>
     <% end %>
-    <span style="color:var(--muted);line-height:2.2;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
+    <span class="adv-muted" style="line-height:2.2;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
     <% if @page < total_pages %>
       <%= link_to "Next →", web_markets_path(page: @page + 1, category: @selected_category, q: @search_query),
-            class: "pill pill-outline", data: { testid: "pagination-next" } %>
+            class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-next" } %>
     <% end %>
   </div>
 <% end %>

@@ -24,7 +24,7 @@ class WebBetsTest < ActionDispatch::IntegrationTest
     assert_redirected_to web_market_path(@market)
     follow_redirect!
 
-    assert_select '.notice', /Bet placed on YES/
+    assert_select '[data-testid="flash-notice"]', /Bet placed on YES/
   end
 
   test 'invalid leg redirects with alert' do
@@ -41,6 +41,6 @@ class WebBetsTest < ActionDispatch::IntegrationTest
     assert_redirected_to web_market_path(@market)
     follow_redirect!
 
-    assert_select '.alert'
+    assert_select '[data-testid="flash-alert"]'
   end
 end

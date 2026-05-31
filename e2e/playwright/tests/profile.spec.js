@@ -43,7 +43,7 @@ test.describe('User profile page', () => {
 
     await page.getByTestId('faucet-submit').click();
     await page.waitForURL(/web\/profile/);
-    await expect(page.locator('.notice')).toContainText('Token request submitted');
+    await expect(page.getByTestId('flash-notice')).toContainText('Token request submitted');
   });
 
   test('bet history table shows player bets with status tabs', async ({ page, baseURL }) => {

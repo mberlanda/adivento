@@ -1,48 +1,44 @@
 <div style="margin-bottom:20px;">
   <h1 style="margin:0 0 4px;" data-testid="leaderboard-title">Leaderboard</h1>
-  <p class="muted" style="margin:0;">Top players ranked by net profit across all mechanisms.</p>
+  <p class="adv-muted" style="margin:0;">Top players ranked by net profit across all mechanisms.</p>
 </div>
 
 <% if @entries.empty? %>
-  <div class="card" style="text-align:center;padding:40px 20px;" data-testid="leaderboard-empty">
-    <p class="muted">No settled bets yet. Be the first to play!</p>
-    <%= link_to "Browse markets", web_markets_path, class: "pill pill-active" %>
+  <div class="adv-card" style="text-align:center;padding:40px 20px;" data-testid="leaderboard-empty">
+    <p class="adv-muted">No settled bets yet. Be the first to play!</p>
+    <%= link_to "Browse markets", web_markets_path, class: "adv-btn adv-btn--primary" %>
   </div>
 <% else %>
-  <div class="card" style="padding:0;overflow:hidden;" data-testid="leaderboard-table-container">
-    <table style="width:100%;border-collapse:collapse;" data-testid="leaderboard-table">
+  <div class="adv-card adv-card--flush" data-testid="leaderboard-table-container">
+    <table class="adv-table" data-testid="leaderboard-table">
       <thead>
-        <tr style="border-bottom:1px solid var(--border);background:var(--panel);">
-          <th style="padding:10px 16px;text-align:left;font-size:0.82rem;color:var(--muted);font-weight:600;">#</th>
-          <th style="padding:10px 16px;text-align:left;font-size:0.82rem;color:var(--muted);font-weight:600;">Player</th>
-          <th style="padding:10px 16px;text-align:right;font-size:0.82rem;color:var(--muted);font-weight:600;">Staked</th>
-          <th style="padding:10px 16px;text-align:right;font-size:0.82rem;color:var(--muted);font-weight:600;">Returned</th>
-          <th style="padding:10px 16px;text-align:right;font-size:0.82rem;color:var(--muted);font-weight:600;">Net P&L</th>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th style="text-align:right;">Staked</th>
+          <th style="text-align:right;">Returned</th>
+          <th style="text-align:right;">Net P&L</th>
         </tr>
       </thead>
       <tbody>
         <% @entries.each_with_index do |entry, idx| %>
           <% net_pnl = entry.total_returned.to_i - entry.total_staked.to_i %>
-          <tr style="border-bottom:1px solid var(--border);" data-testid="leaderboard-row-<%= entry.user_id %>">
-            <td style="padding:10px 16px;font-size:0.88rem;color:var(--muted);">
-              <% if idx == 0 %>
-                <span style="font-size:1.1rem;">🥇</span>
-              <% elsif idx == 1 %>
-                <span style="font-size:1.1rem;">🥈</span>
-              <% elsif idx == 2 %>
-                <span style="font-size:1.1rem;">🥉</span>
-              <% else %>
-                <%= idx + 1 %>
+          <tr data-testid="leaderboard-row-<%= entry.user_id %>">
+            <td class="adv-muted adv-num">
+              <% if idx == 0 %>🥇
+              <% elsif idx == 1 %>🥈
+              <% elsif idx == 2 %>🥉
+              <% else %><%= idx + 1 %>
               <% end %>
             </td>
-            <td style="padding:10px 16px;font-weight:600;" data-testid="leaderboard-player-<%= entry.user_id %>">
+            <td style="font-weight:600;" data-testid="leaderboard-player-<%= entry.user_id %>">
               <%= entry.email.split('@').first %>
             </td>
-            <td style="padding:10px 16px;text-align:right;font-size:0.88rem;"><%= number_with_delimiter(entry.total_staked.to_i) %> ADIV</td>
-            <td style="padding:10px 16px;text-align:right;font-size:0.88rem;"><%= number_with_delimiter(entry.total_returned.to_i) %> ADIV</td>
-            <td style="padding:10px 16px;text-align:right;font-weight:700;font-size:0.92rem;"
+            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(entry.total_staked.to_i) %> ADIV</td>
+            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(entry.total_returned.to_i) %> ADIV</td>
+            <td class="adv-num" style="text-align:right;font-weight:700;"
                 data-testid="leaderboard-pnl-<%= entry.user_id %>">
-              <span style="color:<%= net_pnl >= 0 ? 'var(--accent)' : '#d9534f' %>;">
+              <span class="adv-delta adv-delta--<%= net_pnl >= 0 ? 'up' : 'down' %>">
                 <%= net_pnl >= 0 ? '+' : '' %><%= number_with_delimiter(net_pnl) %> ADIV
               </span>
             </td>
@@ -54,5 +50,5 @@
 <% end %>
 
 <div style="margin-top:16px;text-align:center;">
-  <%= link_to "Browse markets", web_markets_path, class: "pill pill-outline" %>
+  <%= link_to "Browse markets", web_markets_path, class: "adv-btn adv-btn--ghost adv-btn--sm" %>
 </div>

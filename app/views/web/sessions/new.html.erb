@@ -1,16 +1,19 @@
 <h1>Sign in</h1>
-<p class="muted">Use one of the seeded users or any registered account.</p>
+<p class="adv-muted">Use one of the seeded users or any registered account.</p>
 
-<%= form_with url: "/signin", method: :post, html: { data: { testid: "signin-form" } } do |f| %>
-  <p>
-    <label>Email</label><br>
-    <%= f.email_field :email, required: true, data: { testid: "signin-email" } %>
-  </p>
-  <p>
-    <label>Password</label><br>
-    <%= f.password_field :password, required: true, data: { testid: "signin-password" } %>
-  </p>
-  <p><%= f.submit "Sign in", data: { testid: "signin-submit" } %></p>
-<% end %>
+<div class="adv-card adv-container--narrow" style="margin-top:20px;">
+  <%= form_with url: "/signin", method: :post, html: { data: { testid: "signin-form" } } do |f| %>
+    <p>
+      <label>Email</label><br>
+      <%= f.email_field :email, required: true, class: "adv-input", data: { testid: "signin-email" } %>
+    </p>
+    <p>
+      <label>Password</label><br>
+      <%= f.password_field :password, required: true, class: "adv-input", data: { testid: "signin-password" } %>
+    </p>
+    <p><%= f.submit "Sign in", class: "adv-btn adv-btn--primary adv-btn--block",
+          data: { testid: "signin-submit" } %></p>
+  <% end %>
+</div>
 
-<p class="muted">New to Adivento? <%= link_to "Create an account", "/register" %></p>
+<p class="adv-muted" style="text-align:center;margin-top:16px;">New to Adivento? <%= link_to "Create an account", "/register" %></p>
