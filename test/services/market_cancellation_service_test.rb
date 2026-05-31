@@ -93,4 +93,35 @@ class MarketCancellationServiceTest < ActiveSupport::TestCase
     assert_equal 0, buyer.wallet.reload.reserved_minor
     assert_predicate market.reload.orders.where(status: %w[open partial]), :none?
   end
+
+  test 'clob cancellation refunds taker fees paid on filled orders' do
+    market = markets(:clob_market)
+    yes_leg = market.market_legs.find_by!(label: 'YES')
+    no_leg = market.market_legs.find_by!(label: 'NO')
+    buyer = users(:player)
+    seller = users(:moderator)
+    buyer.wallet.update!(available_minor: 500_000, reserved_minor: 0)
+    seller.wallet.update!(available_minor: 499_700, reserved_minor: 300)
+
+    Order.create!(
+      market: market, market_leg: no_leg, user: seller,
+      side: 'NO', price_cents: 60, quantity: 5,
+      status: :open, time_in_force: :gtc
+    )
+    Clob::OrderMatchingService.call(market: market, incoming_order_params: {
+                                      user: buyer, side: 'YES', price_cents: 40, quantity: 5,
+                                      market_leg: yes_leg, time_in_force: :gtc
+                                    })
+    fee = LedgerEntry.where(user: buyer, entry_type: 'CLOB_FEE')
+                     .where("metadata->>'market_id' = ?", market.id.to_s)
+                     .sole
+    balance_after_fill = buyer.wallet.reload.available_minor
+
+    MarketCancellationService.call(market: market, actor: @actor, reason: 'Event was abandoned.')
+
+    refund = LedgerEntry.where(user: buyer, entry_type: 'MARKET_CANCEL_REFUND').order(:created_at).last
+
+    assert_equal 200 + fee.amount_minor, refund.amount_minor
+    assert_equal balance_after_fill + refund.amount_minor, buyer.wallet.reload.available_minor
+  end
 end

@@ -120,6 +120,8 @@ module Clob
           }
         )
       end
+
+      assert_equal @market.id, LedgerEntry.where(entry_type: 'CLOB_FEE').last.metadata['market_id']
     end
 
     test 'sell YES order matches against resting buy YES order' do

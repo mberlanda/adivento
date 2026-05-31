@@ -93,6 +93,9 @@ class MarketCancellationService
     LedgerEntry.where(entry_type: 'CLOB_SELL_CREDIT')
                .where("metadata->>'market_id' = ?", market.id.to_s)
                .find_each { |e| net[e.user_id] -= e.amount_minor }
+    LedgerEntry.where(entry_type: 'CLOB_FEE')
+               .where("metadata->>'market_id' = ?", market.id.to_s)
+               .find_each { |e| net[e.user_id] += e.amount_minor }
 
     net.each do |user_id, amount|
       user = User.find(user_id)

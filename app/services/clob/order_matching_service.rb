@@ -195,7 +195,7 @@ module Clob
         LedgerEntry.create!(
           user: taker.user, actor: taker.user,
           entry_type: 'CLOB_FEE', direction: 'debit',
-          amount_minor: fee
+          amount_minor: fee, metadata: fill_meta
         )
         taker_wallet.update!(available_minor: taker_wallet.available_minor - fee)
       end

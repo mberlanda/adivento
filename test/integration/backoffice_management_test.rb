@@ -309,10 +309,14 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
     post '/signin', params: { email: users(:moderator).email, password: 'password123' }
     market = markets(:open_market)
 
-    post "/backoffice/markets/#{market.id}/cancel", params: { reason: 'Reason long enough to pass validation check.' }
+    assert_no_difference -> { AuditEvent.where(action: 'market.cancel', target_id: market.id).count } do
+      post "/backoffice/markets/#{market.id}/cancel", params: { reason: 'Reason long enough to pass validation check.' }
+    end
 
     assert_response :redirect
+    assert_redirected_to backoffice_market_path(market)
     assert_not market.reload.cancelled?
+    assert_match 'Forbidden', flash[:alert]
   end
 
   test 'backoffice cancel shows error when reason is too short' do

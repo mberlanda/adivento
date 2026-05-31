@@ -14,7 +14,6 @@ test.beforeEach(async ({ page }) => {
 test.describe('Backoffice market cancellation', () => {
   test('admin cancels open market and player bet stake is refunded', async ({ page, baseURL }) => {
     const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
-    const { token: adminJwt } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
 
     // Create a fixed-odds market
     const { payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
