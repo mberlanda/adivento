@@ -30,6 +30,6 @@ test.describe('Backoffice open-market flow', () => {
     await expect(page.getByTestId('open-market-form')).not.toBeVisible();
 
     // Status label reflects the open state
-    await expect(page.locator('strong', { hasText: /open/i }).first()).toBeVisible();
+    await expect(page.locator('.adv-badge', { hasText: /open/i }).first()).toBeVisible();
   });
 });
