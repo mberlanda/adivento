@@ -77,11 +77,11 @@ class MarketCancellationService
   def refund_clob!(market)
     # Cancel open/partial orders and release reservations
     market.orders.where(status: %w[open partial]).find_each do |order|
-      released = order.reserved_minor
+      w = order.user.wallet.lock!
+      released = [order.reserved_minor, w.reserved_minor].min
       order.update!(cancelled_quantity: order.cancelled_quantity + order.unfilled_quantity, status: :cancelled)
       next if released.zero?
 
-      w = order.user.wallet.lock!
       w.update!(reserved_minor: w.reserved_minor - released, available_minor: w.available_minor + released)
     end
 

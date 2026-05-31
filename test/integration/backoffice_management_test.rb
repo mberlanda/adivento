@@ -176,6 +176,7 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_match market.question, response.body
+    assert_match 'data-testid="cancel-market-panel"', response.body
   end
 
   test 'admin can settle an open market in backoffice' do
@@ -192,6 +193,42 @@ class BackofficeManagementTest < ActionDispatch::IntegrationTest
 
     assert_predicate market, :settled?
     assert_equal 'YES', market.settled_outcome
+  end
+
+  test 'admin can cancel an open market and refund open bets in backoffice' do
+    post '/signin', params: { email: users(:admin).email, password: 'password123' }
+    market = markets(:open_market)
+    player_balance = users(:player).wallet.available_minor
+    moderator_balance = users(:moderator).wallet.available_minor
+
+    assert_difference('LedgerEntry.count', 2) do
+      assert_difference('AuditEvent.where(action: "market.cancel").count', 1) do
+        post "/backoffice/markets/#{market.id}/cancel", params: {
+          reason: 'event abandoned'
+        }
+      end
+    end
+
+    assert_response :redirect
+    assert_predicate market.reload, :cancelled?
+    assert_predicate bets(:player_yes_open_bet).reload, :voided?
+    assert_predicate bets(:moderator_no_open_bet).reload, :voided?
+    assert_equal player_balance + bets(:player_yes_open_bet).stake_minor, users(:player).wallet.reload.available_minor
+    assert_equal moderator_balance + bets(:moderator_no_open_bet).stake_minor, users(:moderator).wallet.reload.available_minor
+  end
+
+  test 'moderator cannot cancel an open market in backoffice' do
+    post '/signin', params: { email: users(:moderator).email, password: 'password123' }
+    market = markets(:open_market)
+
+    post "/backoffice/markets/#{market.id}/cancel", params: {
+      reason: 'moderator attempt'
+    }
+
+    assert_response :redirect
+    assert_redirected_to backoffice_market_path(market)
+    assert_predicate market.reload, :open?
+    assert_match 'Forbidden', flash[:alert]
   end
 
   test 'player cannot access backoffice markets' do

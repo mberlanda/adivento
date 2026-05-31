@@ -105,8 +105,9 @@ module Backoffice
     end
 
     def cancel
-      require_permission!('market.cancel')
-      return if performed?
+      unless AuthorizationService.allowed?(user: current_user, permission_key: 'market.cancel')
+        return redirect_to backoffice_market_path(@market), alert: 'Forbidden'
+      end
 
       result = MarketCancellationService.call(market: @market, actor: current_user, reason: params[:reason].to_s)
       redirect_to backoffice_market_path(@market),
