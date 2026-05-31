@@ -143,8 +143,17 @@
   font-size: 15px;
   line-height: 1.45;
 }
-.adv-app a { color: var(--adv-accent); text-decoration: none; }
-.adv-app a:hover { text-decoration: underline; }
+/* Only bare, unclassed anchor tags get the accent link colour.
+   Component links (adv-btn, adv-nav__link, adv-sidebar__link, adv-muted…)
+   own their foreground token and must not be overridden here. */
+.adv-app a:not([class]) { color: var(--adv-accent); text-decoration: none; }
+.adv-app a:not([class]):hover { text-decoration: underline; }
+/* Belt-and-braces for the most common classed link patterns */
+.adv-app a.adv-btn         { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
+.adv-app a[class]:hover    { text-decoration: none; }
 
 /* during a theme swap, freeze transitions so var()-based backgrounds don't
    stick mid-interpolation (Chromium quirk). adivento.js toggles this class. */
@@ -468,7 +477,11 @@
   .adv-sidebar__section, .adv-sidebar__brand { display: none; }
 }
 @media (max-width: 640px) {
-  .adv-nav__links { display: none; }
+  /* Allow nav to grow to a second row on mobile so links stay visible. */
+  .adv-nav { height: auto; min-height: 52px; flex-wrap: wrap; padding: 6px 14px; gap: 6px; }
+  .adv-nav__brand { flex: 1 0 auto; }
+  .adv-nav__links { order: 10; width: 100%; flex-wrap: wrap; gap: 2px; border-top: 1px solid var(--adv-faint); padding-top: 4px; padding-bottom: 2px; }
+  .adv-nav__link { font-size: 12.5px; padding: 5px 8px; }
   .adv-prices { grid-template-columns: 1fr 1fr; }
   .adv-stats { flex-wrap: wrap; gap: 12px; }
   .adv-stat { flex: 1 1 40%; border-left: 0 !important; padding: 0; }

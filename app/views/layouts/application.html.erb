@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="light">
   <head>
     <title>Adivento Markets</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="/adivento.css">
   </head>
-  <body class="adv-app" data-theme="light">
+  <body class="adv-app">
     <header class="adv-nav">
       <%= link_to web_markets_path, class: "adv-nav__brand", style: "text-decoration:none" do %>
         <span class="adv-nav__mark"></span> Adivento
       <% end %>
 
-      <nav class="adv-nav__links adv-hide-mobile" data-testid="top-nav">
+      <nav class="adv-nav__links" data-testid="top-nav">
         <% if nav_action_available?("navigation.markets") %>
           <%= link_to "Markets", nav_action_path("navigation.markets"),
                 class: "adv-nav__link", data: { testid: "nav-markets" } %>
@@ -26,7 +26,7 @@
         <% end %>
         <% if nav_action_available?("navigation.backoffice") %>
           <%= link_to "Backoffice", nav_action_path("navigation.backoffice"),
-                class: "adv-nav__link", data: { testid: "nav-backoffice" } %>
+                class: "adv-nav__link adv-hide-mobile", data: { testid: "nav-backoffice" } %>
         <% end %>
       </nav>
 
