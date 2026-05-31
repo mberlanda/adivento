@@ -48,7 +48,7 @@
             data: { testid: "market-card-#{market.id}" } do %>
         <div class="adv-market__top">
           <% if market.settled_outcome.present? %>
-            <%= render "shared/adv_badge", status: market.status, label: "Settled: #{market.settled_outcome}" %>
+            <%= render "shared/adv_badge", status: "settled", label: "Settled: #{market.settled_outcome}" %>
           <% else %>
             <%= render "shared/adv_badge", status: market.status, live: market.open? %>
           <% end %>
