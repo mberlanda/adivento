@@ -88,6 +88,16 @@
               data: { testid: "settle-market-submit", confirm: "This will settle all bets. Proceed?" } %>
       <% end %>
     </div>
+
+    <div style="margin-top:16px;border-top:1px solid #33434c;padding-top:14px;" data-testid="cancel-market-panel">
+      <h4>Cancel market</h4>
+      <%= form_with url: cancel_backoffice_market_path(@market), method: :post,
+            html: { data: { testid: "cancel-market-form" } } do |f| %>
+        <p><label>Reason</label><br><%= text_field_tag :reason, nil, data: { testid: "cancel-market-reason" } %></p>
+        <%= f.submit "Cancel market", style: "background:#4a2222;",
+              data: { testid: "cancel-market-submit", confirm: "This will cancel the market and refund open bets. Proceed?" } %>
+      <% end %>
+    </div>
   <% end %>
 </div>
 

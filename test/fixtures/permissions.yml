@@ -53,6 +53,11 @@ market_settle:
   description: Settle markets
   active: true
 
+market_cancel:
+  key: market.cancel
+  description: Cancel markets
+  active: true
+
 wallet_faucet_review:
   key: wallet.faucet.review
   description: Review faucet requests

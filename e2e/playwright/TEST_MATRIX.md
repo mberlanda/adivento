@@ -113,6 +113,8 @@ avoid collisions. No test depends on data created by another test.
 | 16 | Betslip quote with empty items | — | POST /web/betslips/quotes with items=[] | 422 | — |
 | 17 | Cashout voided bet | void the bet first | POST /web/positions/cashout_quotes | 422 | "not open" |
 | 18 | Cashout bet on settled market | settle the market first | POST /web/positions/cashout_quotes | 422 | any error |
+| 19 | CLOB order on draft market (D3 guard) | create CLOB market, do NOT open | POST /admin/markets/:id/orders | 422 | "Market is not open" |
+| 20 | Duplicate web order cancel (D4 guard) | place CLOB order, cancel it | DELETE /web/orders/:id (second time) | 422 | `error` field truthy |
 
 ---
 
@@ -192,6 +194,36 @@ avoid collisions. No test depends on data created by another test.
 2. Player calls POST /web/betslips/execute with the `quote_id` → response has `execution_id` and `status="completed"`.
 3. Player calls GET /web/betslips/executions/:execution_id → response has same `execution_id`.
 4. Player calls GET /web/positions → response includes a bet for the created market.
+
+### 4.9 Admin cancels market via backoffice UI and player is refunded
+
+**Source file:** `tests/backoffice-cancel-market.spec.js`
+
+**Purpose:** Verify the full market cancellation flow: admin cancels via the backoffice form, the market shows as CANCELLED, and the player's original stake is returned to their wallet.
+
+**Setup (via API):** Admin creates + opens a fixed-odds market → fresh player is funded → player places a bet.
+
+**Steps:**
+1. Admin signs in via session cookie.
+2. Navigate to `/backoffice/markets/:id`.
+3. Verify `cancel-market-panel` is visible; `cancel-market-reason` is present.
+4. Fill the reason field and click `cancel-market-submit` (accept confirm dialog).
+5. Assert redirect: market status text shows "CANCELLED", `cancel-market-panel` and `settle-market-form` are gone.
+6. Assert player wallet balance is back to the pre-bet amount (refund applied).
+
+### 4.10 Moderator cancel attempt is rejected
+
+**Source file:** `tests/backoffice-cancel-market.spec.js`
+
+**Purpose:** Verify that a moderator (no `market.cancel` permission) is redirected with an alert when submitting the cancel form.
+
+**Setup (via API):** Admin creates + opens a market.
+
+**Steps:**
+1. Moderator signs in via session cookie.
+2. Navigate to `/backoffice/markets/:id`.
+3. Fill the cancel reason and submit (accept confirm dialog).
+4. Assert redirect: market status still shows "OPEN"; flash alert is visible.
 
 ### 4.8 Player cashout quote and execute API
 
@@ -336,3 +368,6 @@ locate elements by test ID can run these scenarios.
 | `settle-outcome` | Outcome select on backoffice market show | workflow 4.6 |
 | `settle-reason` | Reason input on backoffice market show | workflow 4.6 |
 | `settle-market-submit` | Submit button on settle form | workflow 4.6 |
+| `cancel-market-panel` | Cancel form container on backoffice market show (open/closed only) | workflow 4.9, 4.10 |
+| `cancel-market-reason` | Reason input on cancel form | workflow 4.9, 4.10 |
+| `cancel-market-submit` | Submit button on cancel form | workflow 4.9, 4.10 |

@@ -1,7 +1,7 @@
 module Backoffice
   class MarketsController < BaseController
     before_action -> { require_permission!('market.read') }
-    before_action :set_market, only: %i[show open settle update operator_buyback]
+    before_action :set_market, only: %i[show open settle cancel update operator_buyback]
 
     def index
       @page     = [params[:page].to_i, 1].max
@@ -118,6 +118,21 @@ module Backoffice
       SettlementService.settle!(market: @market, outcome: outcome, actor: current_user)
       redirect_to backoffice_market_path(@market), notice: "Market settled: #{outcome}"
     rescue SettlementService::InvalidSettlement => e
+      redirect_to backoffice_market_path(@market), alert: e.message
+    end
+
+    def cancel
+      unless AuthorizationService.allowed?(user: current_user, permission_key: 'market.cancel')
+        return redirect_to backoffice_market_path(@market), alert: 'Forbidden'
+      end
+
+      MarketCancellationService.cancel!(
+        market: @market,
+        actor: current_user,
+        reason: params[:reason]
+      )
+      redirect_to backoffice_market_path(@market), notice: 'Market cancelled'
+    rescue MarketCancellationService::InvalidCancellation => e
       redirect_to backoffice_market_path(@market), alert: e.message
     end
 
