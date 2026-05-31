@@ -19,6 +19,18 @@ class WebOrdersTest < ActionDispatch::IntegrationTest
     assert_equal 'open', body['status']
   end
 
+  test 'web order placement surfaces service lifecycle guard for expired CLOB market' do
+    @market.update!(close_at: 1.minute.ago)
+
+    post "/web/markets/#{@market.id}/orders",
+         headers: auth_headers_for(@player),
+         params: { side: 'YES', price_cents: 40, quantity: 5, time_in_force: 'GTC' },
+         as: :json
+
+    assert_response :unprocessable_content
+    assert_includes response.parsed_body['errors'], 'Market is closed for new bets'
+  end
+
   test 'returns 422 for non-CLOB market' do
     post "/web/markets/#{markets(:open_market).id}/orders",
          headers: auth_headers_for(@player),
@@ -28,7 +40,7 @@ class WebOrdersTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test 'player can cancel own order' do
+  test 'player can cancel own order and audit event is written' do
     leg = @market.market_legs.find_by!(label: 'YES')
     order = Order.create!(
       market: @market, market_leg: leg, user: @player,
@@ -37,12 +49,12 @@ class WebOrdersTest < ActionDispatch::IntegrationTest
     )
     @player.wallet.update!(available_minor: 99_800, reserved_minor: 200)
 
-    delete "/web/orders/#{order.id}", headers: auth_headers_for(@player), as: :json
+    assert_difference -> { AuditEvent.where(action: 'order.cancel', target_id: order.id).count }, 1 do
+      delete "/web/orders/#{order.id}", headers: auth_headers_for(@player), as: :json
+    end
 
     assert_response :ok
-    body = response.parsed_body
-
-    assert_equal 'cancelled', body['status']
+    assert_equal 'cancelled', response.parsed_body['status']
   end
 
   test 'order book endpoint returns bid/ask data with new fields' do

@@ -10,20 +10,6 @@ module Web
         end
       end
 
-      unless market.open?
-        return respond_to do |format|
-          format.html { redirect_to web_market_path(market), alert: 'Market is not open' }
-          format.json { render json: { error: 'Market is not open' }, status: :unprocessable_content }
-        end
-      end
-
-      if market.close_at.present? && market.close_at <= Time.current
-        return respond_to do |format|
-          format.html { redirect_to web_market_path(market), alert: 'Market is closed for new bets' }
-          format.json { render json: { error: 'Market is closed for new bets' }, status: :unprocessable_content }
-        end
-      end
-
       leg    = market.market_legs.find_by!(label: params.expect(:side).upcase)
       result = Clob::OrderMatchingService.call(
         market: market,
@@ -55,23 +41,14 @@ module Web
     end
 
     def destroy
-      order = Order.lock.find(params.expect(:id))
+      order = Order.find(params.expect(:id))
       return render json: { error: 'Forbidden' }, status: :forbidden unless order.user_id == current_user.id
-      unless order.open? || order.partial?
-        return render json: { error: 'Order cannot be cancelled' },
-                      status: :unprocessable_content
-      end
 
-      released = order.reserved_minor
-      ApplicationRecord.transaction do
-        order.cancelled_quantity += order.unfilled_quantity
-        order.status = :cancelled
-        order.save!
-        wallet = current_user.wallet.lock!
-        wallet.update!(reserved_minor: wallet.reserved_minor - released, available_minor: wallet.available_minor + released)
-      end
+      result = Clob::OrderCancellationService.call(order: order, actor: current_user)
 
-      render json: { order_id: order.id, status: 'cancelled' }
+      return render json: { error: result.errors.join(', ') }, status: :unprocessable_content unless result.success?
+
+      render json: { order_id: result.order.id, status: result.order.status }
     end
   end
 end

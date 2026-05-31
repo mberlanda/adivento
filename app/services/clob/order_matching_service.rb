@@ -11,6 +11,7 @@ module Clob
 
     def call
       ApplicationRecord.transaction do
+        validate_market_trading_state!
         order = build_incoming_order
         order.save!
 
@@ -43,6 +44,11 @@ module Clob
     end
 
     private
+
+    def validate_market_trading_state!
+      raise 'Market is not open' unless @market.open?
+      raise 'Market is closed for new bets' if @market.close_at.present? && @market.close_at <= Time.current
+    end
 
     def build_incoming_order
       Order.new(
@@ -189,7 +195,7 @@ module Clob
         LedgerEntry.create!(
           user: taker.user, actor: taker.user,
           entry_type: 'CLOB_FEE', direction: 'debit',
-          amount_minor: fee
+          amount_minor: fee, metadata: fill_meta
         )
         taker_wallet.update!(available_minor: taker_wallet.available_minor - fee)
       end

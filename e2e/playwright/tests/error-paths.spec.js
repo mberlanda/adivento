@@ -2,7 +2,7 @@
 // Covers: unauthenticated access, wrong-permission, invalid business operations.
 
 const { test, expect, request } = require('@playwright/test');
-const { loginApi, createMarketViaAdminApi } = require('./helpers/api');
+const { loginApi, createMarketViaAdminApi, createTestPlayer, fundPlayer } = require('./helpers/api');
 const { USERS, assertOk } = require('./helpers/common');
 
 test.describe('API error paths', () => {
@@ -132,5 +132,87 @@ test.describe('API error paths', () => {
     const body = await resp.json();
     expect(body.error).toBeTruthy();
     await ctx.dispose();
+  });
+
+  // D3 — CLOB trading-state guard: orders rejected on non-open markets
+  test('CLOB order on draft market returns 422 with "Market is not open" (admin API)', async ({ baseURL }) => {
+    const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const ctx = await request.newContext({
+      baseURL,
+      extraHTTPHeaders: { Authorization: `Bearer ${adminToken}` },
+    });
+
+    // Create a CLOB market but do NOT open it (stays draft)
+    const createResp = await ctx.post('/admin/markets', {
+      data: {
+        question: `Draft CLOB guard test ${Date.now()}`,
+        description: 'test',
+        mechanism_type: 'clob',
+        taker_fee_bps: 70,
+        liability_cap_minor: 500000,
+      },
+    });
+    await assertOk(createResp, 'create draft CLOB market');
+    const market = await createResp.json();
+
+    // Get admin user id
+    const meResp = await ctx.get('/auth/me');
+    const { id: adminUserId } = await meResp.json();
+
+    const orderResp = await ctx.post(`/admin/markets/${market.id}/orders`, {
+      data: { user_id: adminUserId, side: 'YES', price_cents: 50, quantity: 1, time_in_force: 'GTC' },
+    });
+
+    expect(orderResp.status()).toBe(422);
+    const body = await orderResp.json();
+    expect(body.errors).toContain('Market is not open');
+
+    await ctx.dispose();
+  });
+
+  // D4 — OrderCancellationService: duplicate cancel returns 422
+  test('duplicate web CLOB order cancel returns 422', async ({ baseURL }) => {
+    const { token: adminToken } = await loginApi(baseURL, USERS.admin.email, USERS.admin.password);
+    const { payload: market } = await createMarketViaAdminApi(baseURL, adminToken, {
+      question: `Dup cancel test ${Date.now()}`,
+      description: 'test',
+      mechanism_type: 'clob',
+      taker_fee_bps: 70,
+      liability_cap_minor: 500000,
+    });
+
+    // Create and fund a test player
+    const player = await createTestPlayer(baseURL, 'dupecancel');
+    await fundPlayer(baseURL, player.token, adminToken, 10000);
+
+    const yesLeg = market.legs.find((l) => l.label === 'YES');
+
+    // Player places a CLOB order (resting, no counterparty)
+    const placeCtx = await request.newContext({ baseURL });
+    const placeResp = await placeCtx.post(`/web/markets/${market.id}/orders`, {
+      form: { side: 'YES', price_cents: 40, quantity: 1, time_in_force: 'GTC' },
+      headers: { Authorization: `Bearer ${player.token}`, Accept: 'application/json' },
+    });
+    await assertOk(placeResp, 'place CLOB order');
+    const orderBody = await placeResp.json();
+    const orderId = orderBody.order_id;
+    await placeCtx.dispose();
+
+    // First cancel — succeeds
+    const cancelCtx = await request.newContext({ baseURL });
+    const firstCancel = await cancelCtx.delete(`/web/orders/${orderId}`, {
+      headers: { Authorization: `Bearer ${player.token}`, Accept: 'application/json' },
+    });
+    expect(firstCancel.status()).toBe(200);
+
+    // Second cancel — must return 422
+    const secondCancel = await cancelCtx.delete(`/web/orders/${orderId}`, {
+      headers: { Authorization: `Bearer ${player.token}`, Accept: 'application/json' },
+    });
+    expect(secondCancel.status()).toBe(422);
+    const errBody = await secondCancel.json();
+    expect(errBody.error).toBeTruthy();
+
+    await cancelCtx.dispose();
   });
 });

@@ -42,6 +42,10 @@ admin_market_settle:
   role_name: admin
   permission: market_settle
 
+admin_market_cancel:
+  role_name: admin
+  permission: market_cancel
+
 admin_wallet_faucet_review:
   role_name: admin
   permission: wallet_faucet_review

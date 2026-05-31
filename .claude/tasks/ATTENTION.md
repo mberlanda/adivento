@@ -43,13 +43,13 @@ Execute waves in order; within a wave, respect **Depends on**. `D#` and its `TD-
 
 ✅ Completed 2026-05-30 on branch `codex/wave-1-backend-quick-wins`.
 
-### Wave 2 — CLOB correctness (plans written; order matters)
-| Item | ID / D | Plan | Owner | Cx | Depends on |
-|------|--------|------|-------|----|-----------|
-| Centralize CLOB trading-state guards | TD-020 / D3 | `2026-05-30-d3-clob-trading-state-guards.md` | 🟢 Sonnet | M | — (land first) |
-| Shared `Clob::OrderCancellationService` (order + wallet locks) | TD-021 / D4 | `2026-05-30-d4-clob-order-cancellation-service.md` | 🔴 Opus | M | D3 |
-| `MarketCancellationService` + backoffice cancel (cross-mechanism refunds) | TD-017 / D2 | `2026-05-30-market-cancellation.md` | 🔴 Opus | L | D4 (reuse cancel service); ledger taxonomy note |
-| Settlement & sell-order concurrency idempotency | TD-034 | needs plan | 🔴 Opus | M | D2 |
+### Wave 2 — CLOB correctness ✅ D3/D4/D2 done; TD-034 needs plan
+| Item | ID / D | Plan | Owner | Cx | Depends on | Status |
+|------|--------|------|-------|----|-----------|--------|
+| Centralize CLOB trading-state guards | TD-020 / D3 | `2026-05-30-d3-clob-trading-state-guards.md` | 🟢 Sonnet | M | — | ✅ done (wave 2) |
+| Shared `Clob::OrderCancellationService` (order + wallet locks) | TD-021 / D4 | `2026-05-30-d4-clob-order-cancellation-service.md` | 🔴 Opus | M | D3 | ✅ done (wave 2) |
+| `MarketCancellationService` + backoffice cancel (cross-mechanism refunds) | TD-017 / D2 | `2026-05-30-market-cancellation.md` | 🔴 Opus | L | D4 | ✅ done (wave 2) |
+| Settlement & sell-order concurrency idempotency | TD-034 | needs plan | 🔴 Opus | M | D2 | ⏳ open — needs plan |
 
 ### Wave 3 — Trust & product features (plans written)
 | Item | D | Plan | Owner | Cx | Depends on |
@@ -81,6 +81,9 @@ Execute waves in order; within a wave, respect **Depends on**. `D#` and its `TD-
 | Task | Completed | PR / Commit |
 |------|-----------|-------------|
 | Wave 1 backend quick wins: TD-014/015/016/022 | 2026-05-30 | branch `codex/wave-1-backend-quick-wins` |
+| TD-020/D3 CLOB trading-state guards centralized | 2026-05-30 | wave-2 branch |
+| TD-021/D4 Clob::OrderCancellationService shared service | 2026-05-30 | wave-2 branch |
+| TD-017/D2 MarketCancellationService + backoffice cancel | 2026-05-30 | wave-2 branch |
 | UX-036/UX-023 web registration form + session login | 2026-05-30 | branch `feat/ux-036-web-registration` |
 | TD-013 lock wallet rows across all mutation paths | 2026-05-29 | branch `fix/td-013-wallet-locking` |
 | TD-019 reserve contracts for open CLOB sell orders | 2026-05-29 | branch `fix/td-019-clob-sell-reservation` |
@@ -128,15 +131,15 @@ Full details + options in `docs/wiki/tech-debt-backlog.md`.
 | TD-002 | Parimutuel per-bettor model | Low | Deferred (not urgent for POC) |
 | TD-003 | LMSR subsidy exhaustion guard | — | ✅ done (PR #30) |
 | TD-013 | BetPlacementService wallet lock (race condition) | High | ✅ done (PR #44) |
-| TD-014 | LMSR positions missing from positions page | High | ✅ done |
-| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | ✅ done |
-| TD-016 | Admin API missing category/tags params | Medium | ✅ done |
-| TD-017 | Market cancellation service + backoffice action | Medium | Open — plan written (D2) |
+| TD-014 | LMSR positions missing from positions page | High | ✅ done (wave 1) |
+| TD-015 | Leaderboard P&L missing CLOB_SELL_CREDIT + fees | Medium | ✅ done (wave 1) |
+| TD-016 | Admin API missing category/tags params | Medium | ✅ done (wave 1) |
+| TD-017 | Market cancellation service + backoffice action | Medium | ✅ done (wave 2, D2) |
 | TD-018 | CLOB settlement pays sold positions as winners | High | ✅ done (PR #42) |
 | TD-019 | CLOB sell orders do not reserve contracts | High | ✅ done (PR #46) |
-| TD-020 | Admin CLOB orders skip trading-state guards | Medium | Open — plan written (D3) |
-| TD-021 | CLOB order cancellation locking | Medium | Open — plan written (D4) |
-| TD-022 | RuboCop Rails/FilePath offense | Low | ✅ done |
+| TD-020 | Admin CLOB orders skip trading-state guards | Medium | ✅ done (wave 2, D3) |
+| TD-021 | CLOB order cancellation locking | Medium | ✅ done (wave 2, D4) |
+| TD-022 | RuboCop Rails/FilePath offense | Low | ✅ done (wave 1) |
 | TD-034 | Settlement & sell-order concurrency idempotency | Medium | Open — needs plan (relates to D2) |
 | TD-004 | CLOB cashout | Medium | ✅ done (DD-006, PR #36) |
 | TD-005 | Cross-mechanism leaderboard P&L | — | ✅ done (PR #29) |

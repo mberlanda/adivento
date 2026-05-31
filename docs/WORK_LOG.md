@@ -4,6 +4,26 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-05-30 — Wave 2: CLOB correctness (TD-020 / D3, TD-021 / D4, TD-017 / D2)
+
+**D3 — Centralize CLOB trading-state guards (TD-020)**
+- Added `validate_market_trading_state!` to `Clob::OrderMatchingService#call` as the first step in the transaction. Raises `Market is not open` or `Market is closed for new bets` before any order row is created.
+- Removed duplicate `open?` and `close_at` guards from `Web::OrdersController#create`; admin controller now inherits the same protection via the service.
+- Key files: `app/services/clob/order_matching_service.rb`, `app/controllers/web/orders_controller.rb`, `test/services/clob/order_matching_service_test.rb`, `test/integration/clob_orders_test.rb`
+
+**D4 — Shared CLOB order cancellation service (TD-021)**
+- Created `Clob::OrderCancellationService` that locks the order row + wallet inside the transaction, releases `reserved_minor`, writes an `order.cancel` AuditEvent, and returns a typed `Result`.
+- Refactored `Admin::OrdersController#destroy` and `Web::OrdersController#destroy` to delegate to the service (web previously wrote no audit row).
+- Added duplicate-cancel regression test.
+- Key files: `app/services/clob/order_cancellation_service.rb`, `app/controllers/admin/orders_controller.rb`, `app/controllers/web/orders_controller.rb`
+
+**D2 — MarketCancellationService + backoffice cancel (TD-017)**
+- Created `MarketCancellationService` with atomic cross-mechanism refund: fixed-odds bets voided + refunded, parimutuel stakes refunded + pools reset, LMSR costs refunded from `lmsr_trade.place` audit events + positions zeroed, CLOB open/partial orders cancelled + reservations released + net cash refunded/clawed-back.
+- Added `POST /backoffice/markets/:id/cancel` route, `Backoffice::MarketsController#cancel` action, `market.cancel` permission (admin-only), and cancel form on the market show page.
+- 329 tests, 0 failures. Coverage 92.63%.
+
+---
+
 ## 2026-05-30 — Wave 1 backend quick wins
 
 - TD-016: Admin JSON API now permits `category` and `tags: []` on market create/update; added regression coverage for categorized/tagged API market creation.

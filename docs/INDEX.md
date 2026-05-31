@@ -147,7 +147,7 @@ Plan approved?
 
 ### ⏳ Next
 - **The execution plan now lives in `.claude/tasks/ATTENTION.md`** (Waves 1–5, each item tagged with owner — 🔴 Opus / 🟢 Sonnet / 🔵 Codex — complexity, and dependencies). Start there.
-- TD-013/014/015/016/018/019/022 are **done**. Remaining backend correctness: TD-017/020/021 (CLOB, plans D2/D3/D4 written), TD-034 (settlement concurrency — needs plan).
+- TD-013/014/015/016/017/018/019/020/021/022 are **done**. **Wave 1 + Wave 2 complete.** Remaining: TD-034 (settlement concurrency — needs plan). D2/D3/D4 done in wave 2.
 - Decisions D2–D8 are **planned** (specs/plans written); D9–D11 are planning todos. See the dispatch tracker.
 - Product gaps now planned: **F-004 price history → D6**, **F-008 watchlists → D8**, **F-010 resolution notes → D7**. Still un-planned: F-011 activity feed, F-012 responsible-gaming controls (author after the **D5** backlog rewrite, using `PROD-###`).
 
@@ -169,9 +169,9 @@ Plan approved?
 | F-009: Automated market close | [plan](superpowers/plans/2026-05-28-f009-automated-market-close.md) | — | ✅ implemented |
 | Backend next steps (TD-014–TD-016) | [plan](superpowers/plans/2026-05-29-backend-next-steps.md) | — | ✅ Wave 1 implemented (TD-013/017 split out) |
 | Decision planning dispatch (D2–D11) | [tracker](superpowers/plans/2026-05-30-decision-planning-dispatch.md) | — | ⏳ D2–D8 planned, D9–D11 todos |
-| D2: Market cancellation | [spec](specs/2026-05-30-market-cancellation.md) · [plan](superpowers/plans/2026-05-30-market-cancellation.md) | — | ⏳ planned |
-| D3: CLOB trading-state guards | [plan](superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md) | — | ⏳ planned |
-| D4: CLOB order cancellation service | [plan](superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md) | — | ⏳ planned |
+| D2: Market cancellation | [spec](specs/2026-05-30-market-cancellation.md) · [plan](superpowers/plans/2026-05-30-market-cancellation.md) | — | ✅ done (wave 2) |
+| D3: CLOB trading-state guards | [plan](superpowers/plans/2026-05-30-d3-clob-trading-state-guards.md) | — | ✅ done (wave 2) |
+| D4: CLOB order cancellation service | [plan](superpowers/plans/2026-05-30-d4-clob-order-cancellation-service.md) | — | ✅ done (wave 2) |
 | D5: Product backlog rewrite | [plan](superpowers/plans/2026-05-30-product-backlog-rewrite.md) | — | ⏳ planned |
 | D6: Price history | [spec](specs/2026-05-30-price-history.md) · [plan](superpowers/plans/2026-05-30-price-history.md) | — | ⏳ planned |
 | D7: Resolution transparency | [spec](specs/2026-05-30-resolution-transparency.md) · [plan](superpowers/plans/2026-05-30-resolution-transparency.md) | — | ⏳ planned |
