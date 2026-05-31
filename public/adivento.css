@@ -149,7 +149,9 @@
 .adv-app a:not([class]) { color: var(--adv-accent); text-decoration: none; }
 .adv-app a:not([class]):hover { text-decoration: underline; }
 /* Belt-and-braces for the most common classed link patterns */
-.adv-app a.adv-btn         { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-btn,
+.adv-app a.adv-btn:visited { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app .adv-btn > *      { color: inherit; }
 .adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
 .adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
 .adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
@@ -490,4 +492,3 @@
   .adv-step { display: flex; align-items: center; gap: 12px; text-align: left; }
   .adv-step::before { margin-bottom: 0; }
 }
-
