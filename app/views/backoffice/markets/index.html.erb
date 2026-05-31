@@ -1,11 +1,11 @@
 <h1 data-testid="backoffice-markets-title">Markets</h1>
 
-<div class="panel">
-  <h3>Create Market</h3>
-  <%= form_with url: backoffice_markets_path, method: :post, html: { data: { testid: "create-market-form" } } do |f| %>
+<div class="adv-card" style="margin-bottom:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">Create Market</h3></div>
+  <%= form_with url: backoffice_markets_path, method: :post, html: { data: { testid: "create-market-form" }, style: "padding-top:12px;" } do |f| %>
 
-    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
-      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Basic Information</legend>
+    <fieldset class="adv-field" style="border:1px solid var(--adv-border);border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;font-size:0.88rem;font-weight:600;">Basic Information</legend>
 
       <p>
         <label>Question <span style="color:#f44336;">*</span></label><br>
@@ -25,50 +25,54 @@
       </p>
 
       <p>
-        <label>Outcome legs <small style="color:#9fb2b8;">(comma-separated; default YES,NO)</small></label><br>
-        <%= text_field_tag :legs, "YES,NO", data: { testid: "market-legs" } %>
+        <label>Outcome legs <small class="adv-muted">(comma-separated; default YES,NO)</small></label><br>
+        <%= text_field_tag :legs, "YES,NO", class: "adv-input", data: { testid: "market-legs" } %>
       </p>
     </fieldset>
 
-    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
-      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Metadata &amp; Resolution</legend>
+    <fieldset class="adv-field" style="border:1px solid var(--adv-border);border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;font-size:0.88rem;font-weight:600;">Metadata &amp; Resolution</legend>
 
       <p>
         <label>Category</label><br>
         <%= select_tag :category,
               options_for_select(Market::CATEGORIES.map { |c| [c.capitalize, c] }, "other"),
+              class: "adv-select",
               data: { testid: "market-category" } %>
       </p>
 
       <p>
-        <label>Tags <small style="color:#9fb2b8;">(comma-separated, optional)</small></label><br>
+        <label>Tags <small class="adv-muted">(comma-separated, optional)</small></label><br>
         <%= text_field_tag :tags_input, nil,
+              class: "adv-input",
               placeholder: "nba, fed, ai",
               data: { testid: "market-tags" } %>
       </p>
 
       <p>
-        <label>Close date/time <small style="color:#9fb2b8;">(optional — when betting locks)</small></label><br>
-        <%= datetime_local_field_tag :close_at, nil, data: { testid: "market-close-at" } %>
+        <label>Close date/time <small class="adv-muted">(optional — when betting locks)</small></label><br>
+        <%= datetime_local_field_tag :close_at, nil, class: "adv-input", data: { testid: "market-close-at" } %>
       </p>
 
       <p>
-        <label>Resolution criteria <small style="color:#9fb2b8;">(what makes this resolve YES?)</small></label><br>
+        <label>Resolution criteria <small class="adv-muted">(what makes this resolve YES?)</small></label><br>
         <%= text_area_tag :resolution_criteria, nil, rows: 2,
+              class: "adv-textarea",
               placeholder: "e.g. Resolves YES if the Federal Reserve announces a rate cut at this meeting.",
               data: { testid: "market-resolution-criteria" } %>
       </p>
 
       <p>
-        <label>Resolution source <small style="color:#9fb2b8;">(authoritative reference)</small></label><br>
+        <label>Resolution source <small class="adv-muted">(authoritative reference)</small></label><br>
         <%= text_field_tag :resolution_source, nil,
+              class: "adv-input",
               placeholder: "e.g. Federal Reserve official statement",
               data: { testid: "market-resolution-source" } %>
       </p>
     </fieldset>
 
-    <fieldset style="border:1px solid #2a3e4c;border-radius:6px;padding:12px 16px;margin-bottom:16px;">
-      <legend style="padding:0 6px;color:#f0bc5c;font-size:0.88rem;font-weight:600;">Trading Mechanism</legend>
+    <fieldset class="adv-field" style="border:1px solid var(--adv-border);border-radius:6px;padding:12px 16px;margin-bottom:16px;">
+      <legend style="padding:0 6px;font-size:0.88rem;font-weight:600;">Trading Mechanism</legend>
 
       <p>
         <label>Market mechanism <span style="color:#f44336;">*</span></label><br>
@@ -79,48 +83,49 @@
                 ["LMSR (automated market maker)", "lmsr"],
                 ["Parimutuel (pool-share)", "parimutuel"]
               ], "fixed_odds"),
+              class: "adv-select",
               id: "mechanism_type_select",
               data: { testid: "market-mechanism-type" } %>
       </p>
 
       <div id="fixed_odds_fields">
         <p>
-          <label>Fee <small style="color:#9fb2b8;">(basis points; 100 = 1%)</small></label><br>
-          <%= number_field_tag :fee_bps, 100, min: 0, data: { testid: "market-fee-bps" } %>
+          <label>Fee <small class="adv-muted">(basis points; 100 = 1%)</small></label><br>
+          <%= number_field_tag :fee_bps, 100, min: 0, class: "adv-input", data: { testid: "market-fee-bps" } %>
         </p>
         <p>
-          <label>Liability cap <small style="color:#9fb2b8;">(ADIV minor units; max house payout)</small></label><br>
-          <%= number_field_tag :liability_cap_minor, 100000, min: 1, data: { testid: "market-liability-cap" } %>
+          <label>Liability cap <small class="adv-muted">(ADIV minor units; max house payout)</small></label><br>
+          <%= number_field_tag :liability_cap_minor, 100000, min: 1, class: "adv-input", data: { testid: "market-liability-cap" } %>
         </p>
       </div>
 
       <div id="clob_fields" style="display:none;">
         <p>
-          <label>Taker fee <small style="color:#9fb2b8;">(basis points; charged on taker side, 0–200)</small></label><br>
-          <%= number_field_tag :taker_fee_bps, 70, min: 0, max: 200 %>
+          <label>Taker fee <small class="adv-muted">(basis points; charged on taker side, 0–200)</small></label><br>
+          <%= number_field_tag :taker_fee_bps, 70, min: 0, max: 200, class: "adv-input" %>
         </p>
       </div>
 
       <div id="lmsr_fields" style="display:none;">
         <p>
-          <label>Initial subsidy <small style="color:#9fb2b8;">(ADIV minor units; seeded into pool at open)</small></label><br>
-          <%= number_field_tag :liquidity_subsidy_minor, 100000, min: 1 %>
+          <label>Initial subsidy <small class="adv-muted">(ADIV minor units; seeded into pool at open)</small></label><br>
+          <%= number_field_tag :liquidity_subsidy_minor, 100000, min: 1, class: "adv-input" %>
         </p>
         <p>
-          <label>Spread fee <small style="color:#9fb2b8;">(basis points; 0–500)</small></label><br>
-          <%= number_field_tag :spread_fee_bps, 100, min: 0, max: 500 %>
+          <label>Spread fee <small class="adv-muted">(basis points; 0–500)</small></label><br>
+          <%= number_field_tag :spread_fee_bps, 100, min: 0, max: 500, class: "adv-input" %>
         </p>
       </div>
 
       <div id="parimutuel_fields" style="display:none;">
         <p>
-          <label>Takeout <small style="color:#9fb2b8;">(basis points; 1500 = 15% vig, 1000–3000)</small></label><br>
-          <%= number_field_tag :takeout_bps, 1500, min: 1000, max: 3000 %>
+          <label>Takeout <small class="adv-muted">(basis points; 1500 = 15% vig, 1000–3000)</small></label><br>
+          <%= number_field_tag :takeout_bps, 1500, min: 1000, max: 3000, class: "adv-input" %>
         </p>
       </div>
     </fieldset>
 
-    <p><%= submit_tag "Create market", data: { testid: "market-create-submit" } %></p>
+    <p><%= submit_tag "Create market", class: "adv-btn adv-btn--primary", data: { testid: "market-create-submit" } %></p>
 
     <script>
       (function() {
@@ -151,10 +156,10 @@
   <% end %>
 </div>
 
-<div class="panel">
-  <h3>All Markets</h3>
+<div class="adv-card adv-card--flush" style="margin-top:16px;">
+  <div class="adv-card__head"><h3 style="margin:0;">All Markets</h3></div>
   <% if @markets.any? %>
-    <table data-testid="markets-table">
+    <table class="adv-table" data-testid="markets-table">
       <thead>
         <tr>
           <th>ID</th><th>Question</th><th>Status</th><th>Category</th><th>Created by</th><th>Created</th><th></th>
@@ -163,32 +168,32 @@
       <tbody>
         <% @markets.each do |market| %>
           <tr data-testid="market-row-<%= market.id %>">
-            <td><%= market.id %></td>
+            <td class="adv-num"><%= market.id %></td>
             <td><%= market.question.truncate(60) %></td>
-            <td style="text-transform:uppercase;font-size:0.8em;"><%= market.status %></td>
-            <td style="font-size:0.8em;"><%= market.category %></td>
-            <td><%= market.created_by.email %></td>
-            <td><%= market.created_at.strftime("%Y-%m-%d") %></td>
-            <td><%= link_to "View", backoffice_market_path(market), style: "color:#f0bc5c;text-decoration:none;" %></td>
+            <td><%= render "shared/adv_badge", status: market.status %></td>
+            <td><span class="adv-chip adv-chip--accent"><%= market.mechanism_type.upcase %></span></td>
+            <td class="adv-muted"><%= market.created_by.email %></td>
+            <td class="adv-muted adv-xs"><%= market.created_at.strftime("%Y-%m-%d") %></td>
+            <td><%= render "shared/adv_button", label: "View", variant: "ghost", size: "sm", href: backoffice_market_path(market) %></td>
           </tr>
         <% end %>
       </tbody>
     </table>
   <% else %>
-    <p style="color:#9fb2b8;">No markets yet. Create one above or via a template.</p>
+    <p class="adv-muted" style="padding:16px;">No markets yet. Create one above or via a template.</p>
   <% end %>
 
   <% total_pages = (@total.to_f / @per_page).ceil %>
   <% if total_pages > 1 %>
-    <div style="display:flex;gap:12px;margin-top:16px;" data-testid="pagination">
+    <div style="display:flex;gap:12px;padding:12px 16px;" data-testid="pagination">
       <% if @page > 1 %>
         <%= link_to "← Previous", backoffice_markets_path(page: @page - 1),
-              style: "color:#f0bc5c;", data: { testid: "pagination-prev" } %>
+              class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-prev" } %>
       <% end %>
-      <span style="color:#9fb2b8;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
+      <span class="adv-muted" style="font-size:0.88rem;line-height:2.2;">Page <%= @page %> of <%= total_pages %></span>
       <% if @page < total_pages %>
         <%= link_to "Next →", backoffice_markets_path(page: @page + 1),
-              style: "color:#f0bc5c;", data: { testid: "pagination-next" } %>
+              class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-next" } %>
       <% end %>
     </div>
   <% end %>

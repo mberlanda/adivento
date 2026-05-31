@@ -1,6 +1,6 @@
 <h1>Role Permission Matrix</h1>
-<div class="panel">
-  <table>
+<div class="adv-card adv-card--flush">
+  <table class="adv-table">
     <thead>
       <tr>
         <th>Permission</th>
@@ -10,15 +10,20 @@
     <tbody>
       <% @permissions.each do |permission| %>
         <tr>
-          <td><strong><%= permission.key %></strong><br><small><%= permission.description %></small></td>
+          <td>
+            <strong><%= permission.key %></strong><br>
+            <small class="adv-muted"><%= permission.description %></small>
+          </td>
           <% @roles.each do |role| %>
             <% enabled = @role_permissions.fetch(role, []).any? { |rp| rp.permission_id == permission.id } %>
             <td>
               <%= form_with url: backoffice_permission_path(permission), method: :patch do |f| %>
                 <%= hidden_field_tag :role_name, role %>
                 <%= hidden_field_tag :enabled, (!enabled).to_s %>
-                <%= text_field_tag :reason, nil, placeholder: "reason", required: true %>
-                <%= f.submit(enabled ? "Disable" : "Enable") %>
+                <%= text_field_tag :reason, nil, placeholder: "reason", required: true,
+                      class: "adv-input", style: "margin-bottom:4px;" %>
+                <%= f.submit (enabled ? "Disable" : "Enable"),
+                      class: "adv-btn adv-btn--sm #{enabled ? 'adv-btn--danger' : 'adv-btn--primary'}" %>
               <% end %>
             </td>
           <% end %>
