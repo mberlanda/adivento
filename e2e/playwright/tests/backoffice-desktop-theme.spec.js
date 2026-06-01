@@ -26,6 +26,44 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe('Backoffice desktop presentation', () => {
+  test('sidebar remains visible at desktop and narrow desktop widths', async ({ page }) => {
+    await signInUi(page, USERS.admin.email, USERS.admin.password);
+
+    for (const width of [810, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/backoffice/markets');
+
+      await expect(page.getByTestId('nav-dashboard')).toBeVisible();
+      await expect(page.getByTestId('nav-markets')).toBeVisible();
+
+      const metrics = await page.evaluate(() => {
+        const sidebar = document.querySelector('.adv-sidebar').getBoundingClientRect();
+        const main = document.querySelector('.adv-main').getBoundingClientRect();
+        return {
+          sidebar: {
+            width: sidebar.width,
+            height: sidebar.height,
+            right: sidebar.right,
+            bottom: sidebar.bottom,
+          },
+          main: {
+            left: main.left,
+            top: main.top,
+          },
+          narrow: matchMedia('(max-width: 900px)').matches,
+        };
+      });
+
+      expect(metrics.sidebar.width).toBeGreaterThan(0);
+      expect(metrics.sidebar.height).toBeGreaterThan(40);
+      if (metrics.narrow) {
+        expect(metrics.sidebar.bottom).toBeLessThanOrEqual(metrics.main.top + 1);
+      } else {
+        expect(metrics.sidebar.right).toBeLessThanOrEqual(metrics.main.left + 1);
+      }
+    }
+  });
+
   test('market controls fill the desktop form and use design-system styling', async ({ page }) => {
     await signInUi(page, USERS.admin.email, USERS.admin.password);
     await page.goto('/backoffice/markets');
@@ -88,5 +126,42 @@ test.describe('Backoffice desktop presentation', () => {
 
     expect(colors.color).toBe(colors.expectedColor);
     expect(contrastRatio(parseRgb(colors.color), parseRgb(colors.backgroundColor))).toBeGreaterThan(4.5);
+  });
+
+  test('flush card headings keep table titles inside the card', async ({ page }) => {
+    await signInUi(page, USERS.admin.email, USERS.admin.password);
+    await page.goto('/web/positions');
+
+    await page.evaluate(() => {
+      const card = document.createElement('div');
+      card.className = 'adv-card adv-card--flush';
+      card.innerHTML = '<div class="adv-card__head"><h3>Table Title</h3></div><table class="adv-table"><tbody><tr><td>Row</td></tr></tbody></table>';
+      document.body.appendChild(card);
+    });
+
+    const metrics = await page.locator('.adv-card--flush').last().evaluate((card) => {
+      const head = card.querySelector('.adv-card__head');
+      const heading = head.querySelector('h3');
+      const cardBox = card.getBoundingClientRect();
+      const headBox = head.getBoundingClientRect();
+      const headingBox = heading.getBoundingClientRect();
+      const headStyles = getComputedStyle(head);
+      const headingStyles = getComputedStyle(heading);
+      return {
+        headPaddingTop: parseFloat(headStyles.paddingTop),
+        headPaddingLeft: parseFloat(headStyles.paddingLeft),
+        headingMargin: headingStyles.margin,
+        headingInsideTop: headingBox.top - cardBox.top,
+        headingInsideLeft: headingBox.left - cardBox.left,
+        headHeight: headBox.height,
+      };
+    });
+
+    expect(metrics.headingMargin).toBe('0px');
+    expect(metrics.headPaddingTop).toBeGreaterThanOrEqual(12);
+    expect(metrics.headPaddingLeft).toBeGreaterThanOrEqual(12);
+    expect(metrics.headingInsideTop).toBeGreaterThanOrEqual(12);
+    expect(metrics.headingInsideLeft).toBeGreaterThanOrEqual(12);
+    expect(metrics.headHeight).toBeGreaterThan(20);
   });
 });

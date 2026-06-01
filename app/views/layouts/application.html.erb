@@ -3,7 +3,7 @@
   <head>
     <title>Adivento Markets</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/adivento.css">
+    <link rel="stylesheet" href="<%= adivento_asset_path("adivento.css") %>">
   </head>
   <body class="adv-app">
     <header class="adv-nav">
@@ -67,6 +67,6 @@
       <%= yield %>
     </main>
 
-    <script src="/adivento.js" defer></script>
+    <script src="<%= adivento_asset_path("adivento.js") %>" defer></script>
   </body>
 </html>

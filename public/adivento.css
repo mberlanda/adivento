@@ -258,7 +258,9 @@
 .adv-card--flush { padding: 0; overflow: hidden; }
 .adv-card--pad-sm { padding: 12px; }
 .adv-card--quiet { box-shadow: none; background: var(--adv-surface-2); border-color: transparent; }
-.adv-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.adv-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.adv-card__head > :is(h1, h2, h3, h4, h5, h6) { margin: 0; line-height: 1.25; }
+.adv-card--flush > .adv-card__head { padding: 16px 16px 0; }
 
 /* ---- form fields --------------------------------------------------------- */
 .adv-label { display: block; font-size: 12px; font-weight: 600; color: var(--adv-muted); margin-bottom: 6px; }
@@ -476,8 +478,11 @@
 /* ---- responsive collapses ------------------------------------------------ */
 @media (max-width: 900px) {
   .adv-shell { grid-template-columns: 1fr; }
-  .adv-sidebar { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1.5px solid var(--adv-faint); }
+  .adv-sidebar { position: sticky; top: 0; z-index: 30; min-height: 60px; align-items: center; flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1.5px solid var(--adv-faint); }
   .adv-sidebar__section, .adv-sidebar__brand { display: none; }
+  .adv-sidebar__link { flex: 0 0 auto; }
+  .adv-sidebar .adv-spacer { display: none; }
+  .adv-sidebar > div:last-child { flex: 0 0 auto; margin-top: 0 !important; }
 }
 @media (max-width: 640px) {
   /* Allow nav to grow to a second row on mobile so links stay visible. */
