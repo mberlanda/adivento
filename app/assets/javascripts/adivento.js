@@ -11,6 +11,7 @@
 
   /* ---- theme ------------------------------------------------------------- */
   const THEME_KEY = "ds-theme";
+  const THEME_COLORS = { light: "#FAF7F2", dark: "#0F5136" };
   function syncThemeControls(name) {
     document.querySelectorAll("[data-ds-theme-toggle]").forEach((el) => {
       el.setAttribute("aria-pressed", String(name === "dark"));
@@ -18,6 +19,10 @@
     document.querySelectorAll("[data-ds-theme-label]").forEach((el) => {
       el.textContent = name === "dark" ? "Dark" : "Light";
     });
+  }
+  function syncThemeColor(name) {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", THEME_COLORS[name] || THEME_COLORS.light);
   }
   Adivento.theme = {
     get() { return document.documentElement.getAttribute("data-theme") || "light"; },
@@ -27,17 +32,21 @@
       root.setAttribute("data-theme", name);
       try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
       syncThemeControls(name);
+      syncThemeColor(name);
       window.dispatchEvent(new CustomEvent("ds:theme", { detail: { theme: name } }));
       requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("ds-theming")));
     },
     toggle() { this.set(this.get() === "dark" ? "light" : "dark"); },
     init() {
+      window.addEventListener("ds:theme", (event) => syncThemeColor(event.detail && event.detail.theme));
       let saved;
       try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
       if (saved) {
         this.set(saved);
       } else {
-        syncThemeControls(this.get());
+        const theme = this.get();
+        syncThemeControls(theme);
+        syncThemeColor(theme);
       }
       document.addEventListener("click", (e) => {
         const t = e.target.closest("[data-ds-theme-toggle], [data-ds-theme-label]");
