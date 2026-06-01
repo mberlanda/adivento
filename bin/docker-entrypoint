@@ -4,4 +4,12 @@ set -euo pipefail
 rm -f /app/tmp/pids/server.pid
 bundle exec rails db:prepare
 
+# Precompile design-system assets at runtime rather than during the image build,
+# so the real SECRET_KEY_BASE comes from the environment (docker-compose / Render)
+# and is never a dummy value baked into an image layer. Only production needs it;
+# development/test serve assets dynamically through Propshaft.
+if [ "${RAILS_ENV:-}" = "production" ]; then
+  bundle exec rails assets:precompile
+fi
+
 exec "$@"

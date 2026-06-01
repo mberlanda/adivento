@@ -12,6 +12,9 @@
 !/storage/.keep
 /coverage/
 /vendor/bundle
+
+# Propshaft precompile output (generated during the Docker build)
+/public/assets
 /.DS_Store
 /.claude/tasks/CHECKPOINT*.md
 
