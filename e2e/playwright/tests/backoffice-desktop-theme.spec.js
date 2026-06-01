@@ -35,8 +35,8 @@ test.describe('Backoffice desktop presentation', () => {
     const description = page.getByTestId('market-description');
 
     await expect(form).toBeVisible();
-    await expect(question).toHaveClass(/adv-input/);
-    await expect(description).toHaveClass(/adv-textarea/);
+    await expect(question).toHaveClass(/ds-input/);
+    await expect(description).toHaveClass(/ds-textarea/);
 
     const widths = await form.evaluate((formEl) => {
       const questionEl = formEl.querySelector('[data-testid="market-question"]');
@@ -57,8 +57,8 @@ test.describe('Backoffice desktop presentation', () => {
     await signInUi(page, USERS.admin.email, USERS.admin.password);
     await page.goto('/backoffice/markets');
 
-    const toggle = page.locator('[data-adv-theme-toggle]').first();
-    const label = page.locator('[data-adv-theme-label]').first();
+    const toggle = page.locator('[data-ds-theme-toggle]').first();
+    const label = page.locator('[data-ds-theme-label]').first();
 
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(toggle).toHaveAttribute('aria-pressed', 'true');
@@ -72,11 +72,11 @@ test.describe('Backoffice desktop presentation', () => {
     const colors = await page.evaluate(() => {
       const link = document.createElement('a');
       link.href = '#';
-      link.className = 'adv-btn adv-btn--sm adv-btn--primary';
+      link.className = 'ds-btn ds-btn--sm ds-btn--primary';
       link.textContent = 'Readable primary';
       document.body.appendChild(link);
       const expected = document.createElement('span');
-      expected.style.color = 'var(--adv-accent-ink)';
+      expected.style.color = 'var(--ds-accent-ink)';
       document.body.appendChild(expected);
       const styles = getComputedStyle(link);
       return {

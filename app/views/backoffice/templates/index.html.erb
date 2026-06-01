@@ -1,35 +1,35 @@
 <h1 data-testid="backoffice-templates-title">Market Templates</h1>
 
-<div class="adv-card" style="margin-bottom:16px;">
-  <div class="adv-card__head"><h3 style="margin:0;">Create Template</h3></div>
+<div class="ds-card" style="margin-bottom:16px;">
+  <div class="ds-card__head"><h3 style="margin:0;">Create Template</h3></div>
   <div style="padding-top:12px;">
     <%= form_with url: backoffice_templates_path, method: :post, html: { data: { testid: "create-template-form" } } do |f| %>
-      <p><label>Key</label><br><%= text_field_tag :key, nil, required: true, class: "adv-input", data: { testid: "template-key" } %></p>
-      <p><label>Name</label><br><%= text_field_tag :name, nil, required: true, class: "adv-input", data: { testid: "template-name" } %></p>
-      <p><label>Description</label><br><%= text_area_tag :description, nil, class: "adv-textarea", data: { testid: "template-description" } %></p>
-      <p><label>Default Legs (comma separated)</label><br><%= text_field_tag :default_legs, "YES,NO", class: "adv-input", data: { testid: "template-default-legs" } %></p>
-      <p><label>Default Duration (hours)</label><br><%= number_field_tag :default_duration_hours, 24, min: 1, class: "adv-input", data: { testid: "template-duration-hours" } %></p>
+      <p><label>Key</label><br><%= text_field_tag :key, nil, required: true, class: "ds-input", data: { testid: "template-key" } %></p>
+      <p><label>Name</label><br><%= text_field_tag :name, nil, required: true, class: "ds-input", data: { testid: "template-name" } %></p>
+      <p><label>Description</label><br><%= text_area_tag :description, nil, class: "ds-textarea", data: { testid: "template-description" } %></p>
+      <p><label>Default Legs (comma separated)</label><br><%= text_field_tag :default_legs, "YES,NO", class: "ds-input", data: { testid: "template-default-legs" } %></p>
+      <p><label>Default Duration (hours)</label><br><%= number_field_tag :default_duration_hours, 24, min: 1, class: "ds-input", data: { testid: "template-duration-hours" } %></p>
       <p><label>Active</label> <%= check_box_tag :active, true, true, data: { testid: "template-active" } %></p>
-      <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, class: "adv-input", data: { testid: "template-reason" } %></p>
-      <p><%= f.submit "Create template", class: "adv-btn adv-btn--primary", data: { testid: "template-submit" } %></p>
+      <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, class: "ds-input", data: { testid: "template-reason" } %></p>
+      <p><%= f.submit "Create template", class: "ds-btn ds-btn--primary", data: { testid: "template-submit" } %></p>
     <% end %>
   </div>
 </div>
 
-<div class="adv-card">
-  <div class="adv-card__head"><h3 style="margin:0;">Available Templates</h3></div>
+<div class="ds-card">
+  <div class="ds-card__head"><h3 style="margin:0;">Available Templates</h3></div>
   <div style="padding-top:12px;">
     <% @templates.each do |template| %>
-      <article class="adv-card adv-card--quiet" style="margin-bottom:12px;" data-testid="template-card-<%= template.id %>">
+      <article class="ds-card ds-card--quiet" style="margin-bottom:12px;" data-testid="template-card-<%= template.id %>">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
           <div>
             <strong><%= template.name %></strong>
-            <span class="adv-muted adv-xs">&nbsp;(<%= template.key %>)</span>
+            <span class="ds-muted ds-xs">&nbsp;(<%= template.key %>)</span>
             <% unless template.active? %>
               <%= render "shared/adv_badge", status: "closed", label: "Inactive" %>
             <% end %>
-            <p class="adv-muted" style="margin:4px 0;font-size:0.9rem;"><%= template.description %></p>
-            <p class="adv-muted adv-xs">Legs: <%= template.legs.join(", ") %></p>
+            <p class="ds-muted" style="margin:4px 0;font-size:0.9rem;"><%= template.description %></p>
+            <p class="ds-muted ds-xs">Legs: <%= template.legs.join(", ") %></p>
           </div>
           <div style="display:flex;gap:8px;flex-shrink:0;">
             <%= render "shared/adv_button", label: "Edit", variant: "ghost", size: "sm",
@@ -38,19 +38,19 @@
             <%= form_with url: backoffice_template_path(template), method: :delete,
                   html: { style: "display:inline;", data: { testid: "deactivate-template-form-#{template.id}" } } do |f| %>
               <%= hidden_field_tag :reason, "operator deactivation" %>
-              <%= f.submit "Deactivate", class: "adv-btn adv-btn--danger adv-btn--sm",
+              <%= f.submit "Deactivate", class: "ds-btn ds-btn--danger ds-btn--sm",
                     data: { testid: "deactivate-template-#{template.id}", confirm: "Deactivate this template?" },
                     disabled: !template.active? %>
             <% end %>
           </div>
         </div>
         <% if template.active? %>
-          <div style="margin-top:12px;border-top:1px solid var(--adv-border);padding-top:12px;">
+          <div style="margin-top:12px;border-top:1px solid var(--ds-border);padding-top:12px;">
             <%= form_with url: create_market_backoffice_template_path(template), method: :post,
                   html: { data: { testid: "create-market-from-template-form-#{template.id}" } } do |f| %>
-              <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, class: "adv-input", data: { testid: "create-market-question-#{template.id}" } %></p>
-              <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, class: "adv-textarea", rows: 2, data: { testid: "create-market-description-#{template.id}" } %></p>
-              <p><%= f.submit "Create market from template", class: "adv-btn adv-btn--primary adv-btn--sm", data: { testid: "create-market-submit-#{template.id}" } %></p>
+              <p><label>Question</label><br><%= text_field_tag :question, nil, required: true, class: "ds-input", data: { testid: "create-market-question-#{template.id}" } %></p>
+              <p><label>Description</label><br><%= text_area_tag :description, nil, required: true, class: "ds-textarea", rows: 2, data: { testid: "create-market-description-#{template.id}" } %></p>
+              <p><%= f.submit "Create market from template", class: "ds-btn ds-btn--primary ds-btn--sm", data: { testid: "create-market-submit-#{template.id}" } %></p>
             <% end %>
           </div>
         <% end %>

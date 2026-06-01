@@ -1,8 +1,8 @@
 <h1>Edit Template: <%= @template.name %></h1>
-<div class="adv-card" style="margin-bottom:16px;">
-  <div class="adv-card__head"><h3 style="margin:0;">Edit</h3></div>
+<div class="ds-card" style="margin-bottom:16px;">
+  <div class="ds-card__head"><h3 style="margin:0;">Edit</h3></div>
   <div style="padding-top:12px;">
     <%= render "form", template: @template %>
   </div>
 </div>
-<p><%= link_to "← Back to templates", backoffice_templates_path, class: "adv-muted" %></p>
+<p><%= link_to "← Back to templates", backoffice_templates_path, class: "ds-muted" %></p>

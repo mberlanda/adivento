@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="/adivento.css">
   </head>
-  <body class="adv-app">
-    <div class="adv-shell">
+  <body class="ds-app">
+    <div class="ds-shell">
       <%= render "backoffice/shared/sidebar" %>
-      <main class="adv-main">
+      <main class="ds-main">
         <% if notice.present? %>
-          <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
+          <div class="ds-callout ds-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
         <% end %>
         <% if alert.present? %>
-          <div class="adv-callout adv-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
+          <div class="ds-callout ds-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
         <% end %>
         <%= yield %>
       </main>

@@ -59,7 +59,7 @@ test.describe('Backoffice market cancellation', () => {
     await page.getByTestId('cancel-market-submit').click();
 
     // After redirect, market status shows CANCELLED and action forms are gone
-    await expect(page.locator('.adv-badge', { hasText: /cancelled/i }).first()).toBeVisible();
+    await expect(page.locator('.ds-badge', { hasText: /cancelled/i }).first()).toBeVisible();
     await expect(page.getByTestId('cancel-market-panel')).not.toBeVisible();
     await expect(page.getByTestId('settle-market-form')).not.toBeVisible();
 
@@ -88,7 +88,7 @@ test.describe('Backoffice market cancellation', () => {
     await page.getByTestId('cancel-market-submit').click();
 
     // Should redirect back with an alert — market still open
-    await expect(page.locator('.adv-badge', { hasText: /open/i }).first()).toBeVisible();
+    await expect(page.locator('.ds-badge', { hasText: /open/i }).first()).toBeVisible();
     await expect(page.getByTestId('flash-alert')).toBeVisible();
   });
 });

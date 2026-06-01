@@ -5,64 +5,64 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" href="/adivento.css">
   </head>
-  <body class="adv-app">
-    <header class="adv-nav">
-      <%= link_to web_markets_path, class: "adv-nav__brand", style: "text-decoration:none" do %>
-        <span class="adv-nav__mark"></span> Adivento
+  <body class="ds-app">
+    <header class="ds-nav">
+      <%= link_to web_markets_path, class: "ds-nav__brand", style: "text-decoration:none" do %>
+        <span class="ds-nav__mark"></span> Adivento
       <% end %>
 
-      <nav class="adv-nav__links" data-testid="top-nav">
+      <nav class="ds-nav__links" data-testid="top-nav">
         <% if nav_action_available?("navigation.markets") %>
           <%= link_to "Markets", nav_action_path("navigation.markets"),
-                class: "adv-nav__link", data: { testid: "nav-markets" } %>
+                class: "ds-nav__link", data: { testid: "nav-markets" } %>
         <% end %>
         <%= link_to "Leaderboard", web_leaderboard_path,
-              class: "adv-nav__link", data: { testid: "nav-leaderboard" } %>
+              class: "ds-nav__link", data: { testid: "nav-leaderboard" } %>
         <% if nav_action_available?("navigation.profile") %>
           <%= link_to "Positions", web_positions_path,
-                class: "adv-nav__link", data: { testid: "nav-positions" } %>
+                class: "ds-nav__link", data: { testid: "nav-positions" } %>
           <%= link_to "Profile", nav_action_path("navigation.profile"),
-                class: "adv-nav__link", data: { testid: "nav-profile" } %>
+                class: "ds-nav__link", data: { testid: "nav-profile" } %>
         <% end %>
         <% if nav_action_available?("navigation.backoffice") %>
           <%= link_to "Backoffice", nav_action_path("navigation.backoffice"),
-                class: "adv-nav__link adv-hide-mobile", data: { testid: "nav-backoffice" } %>
+                class: "ds-nav__link ds-hide-mobile", data: { testid: "nav-backoffice" } %>
         <% end %>
       </nav>
 
-      <span class="adv-spacer"></span>
+      <span class="ds-spacer"></span>
 
       <% nav_user = current_nav_user %>
       <% if nav_user&.wallet %>
-        <span class="adv-balance adv-hide-mobile" data-testid="nav-balance">
+        <span class="ds-balance ds-hide-mobile" data-testid="nav-balance">
           <%= number_with_delimiter(nav_user.wallet.available_minor) %> <small>ADIV</small>
         </span>
       <% end %>
 
-      <button class="adv-btn adv-btn--ghost adv-btn--sm" data-adv-theme-toggle
+      <button class="ds-btn ds-btn--ghost ds-btn--sm" data-ds-theme-toggle
               aria-pressed="false" aria-label="Toggle theme">
-        ◑ <span data-adv-theme-label>Light</span>
+        ◑ <span data-ds-theme-label>Light</span>
       </button>
 
       <% if nav_action_available?("navigation.sign_out") %>
         <%= button_to "Sign out", nav_action_path("navigation.sign_out"),
               method: :delete,
               form_class: "inline",
-              class: "adv-btn adv-btn--ghost adv-btn--sm",
+              class: "ds-btn ds-btn--ghost ds-btn--sm",
               form: { data: { testid: "signout-form" } },
               data: { testid: "nav-signout" } %>
       <% elsif nav_action_available?("navigation.sign_in") %>
         <%= link_to "Sign in", nav_action_path("navigation.sign_in"),
-              class: "adv-btn adv-btn--primary adv-btn--sm", data: { testid: "nav-signin" } %>
+              class: "ds-btn ds-btn--primary ds-btn--sm", data: { testid: "nav-signin" } %>
       <% end %>
     </header>
 
-    <main class="adv-container" style="padding-top:28px;padding-bottom:28px;">
+    <main class="ds-container" style="padding-top:28px;padding-bottom:28px;">
       <% if notice.present? %>
-        <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
+        <div class="ds-callout ds-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
       <% end %>
       <% if alert.present? %>
-        <div class="adv-callout adv-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
+        <div class="ds-callout ds-callout--warn" style="margin-bottom:16px;" data-testid="flash-alert"><%= alert %></div>
       <% end %>
       <%= yield %>
     </main>

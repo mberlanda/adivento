@@ -72,7 +72,7 @@ class WebCustomerPagesTest < ActionDispatch::IntegrationTest
     get '/web/markets', params: { q: 'rain tomorrow', category: 'economics' }
 
     assert_response :success
-    assert_select '[data-testid="bets-empty"], .adv-grid', true
+    assert_select '[data-testid="bets-empty"], .ds-grid', true
     assert_no_match markets(:open_market).question, response.body
   end
 

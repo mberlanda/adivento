@@ -19,7 +19,7 @@ In `app/views/layouts/application.html.erb` (and `backoffice.html.erb`):
 ```erb
 <%= stylesheet_link_tag "adivento", "data-turbo-track": "reload" %>
 ...
-<body class="adv-app" data-theme="light">
+<body class="ds-app" data-theme="light">
   <%= yield %>
   <%= javascript_include_tag "adivento", defer: true %>
 </body>
@@ -98,8 +98,8 @@ end
 ---
 
 ## Theme switching
-- Default theme: `data-theme="light"` on `<html>` or `<body class="adv-app">`.
-- Any element with `data-adv-theme-toggle` toggles + persists to `localStorage`.
+- Default theme: `data-theme="light"` on `<html>` or `<body class="ds-app">`.
+- Any element with `data-ds-theme-toggle` toggles + persists to `localStorage`.
 - Programmatic: `Adivento.theme.set("dark")` / `Adivento.theme.toggle()`.
 
 ## Real-time (SSE) wiring

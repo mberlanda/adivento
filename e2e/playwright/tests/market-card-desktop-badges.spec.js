@@ -32,11 +32,11 @@ test.describe('Market card desktop badges', () => {
     await expect(page.getByText(question)).toBeVisible();
 
     const issues = await page.evaluate(() => {
-      return Array.from(document.querySelectorAll('.adv-market')).flatMap((card) => {
-        const settledBadges = Array.from(card.querySelectorAll('.adv-badge--settled'));
+      return Array.from(document.querySelectorAll('.ds-market')).flatMap((card) => {
+        const settledBadges = Array.from(card.querySelectorAll('.ds-badge--settled'));
         if (settledBadges.length === 0) return [];
 
-        const top = card.querySelector('.adv-market__top');
+        const top = card.querySelector('.ds-market__top');
         const cardBox = card.getBoundingClientRect();
         const topBox = top.getBoundingClientRect();
         const rowOverflow = top.scrollWidth > top.clientWidth + 1;

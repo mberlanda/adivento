@@ -1,13 +1,13 @@
 <%= form_with url: template.persisted? ? backoffice_template_path(template) : backoffice_templates_path,
               method: template.persisted? ? :patch : :post,
               html: { data: { testid: "template-form" } } do |f| %>
-  <p><label>Key</label><br><%= f.text_field :key, required: true, class: "adv-input", data: { testid: "template-key" } %></p>
-  <p><label>Name</label><br><%= f.text_field :name, required: true, class: "adv-input", data: { testid: "template-name" } %></p>
-  <p><label>Description</label><br><%= f.text_area :description, class: "adv-textarea", data: { testid: "template-description" } %></p>
+  <p><label>Key</label><br><%= f.text_field :key, required: true, class: "ds-input", data: { testid: "template-key" } %></p>
+  <p><label>Name</label><br><%= f.text_field :name, required: true, class: "ds-input", data: { testid: "template-name" } %></p>
+  <p><label>Description</label><br><%= f.text_area :description, class: "ds-textarea", data: { testid: "template-description" } %></p>
   <p><label>Default Legs (comma separated)</label><br>
-     <%= text_field_tag :default_legs, template.legs.join(", "), class: "adv-input", data: { testid: "template-default-legs" } %></p>
-  <p><label>Default Duration (hours)</label><br><%= f.number_field :default_duration_hours, min: 1, class: "adv-input", data: { testid: "template-duration-hours" } %></p>
+     <%= text_field_tag :default_legs, template.legs.join(", "), class: "ds-input", data: { testid: "template-default-legs" } %></p>
+  <p><label>Default Duration (hours)</label><br><%= f.number_field :default_duration_hours, min: 1, class: "ds-input", data: { testid: "template-duration-hours" } %></p>
   <p><label>Active</label> <%= f.check_box :active, data: { testid: "template-active" } %></p>
-  <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, class: "adv-input", data: { testid: "template-reason" } %></p>
-  <p><%= f.submit class: "adv-btn adv-btn--primary", data: { testid: "template-submit" } %></p>
+  <p><label>Reason</label><br><%= text_field_tag :reason, nil, required: true, class: "ds-input", data: { testid: "template-reason" } %></p>
+  <p><%= f.submit class: "ds-btn ds-btn--primary", data: { testid: "template-submit" } %></p>
 <% end %>

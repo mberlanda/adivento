@@ -19,10 +19,10 @@
   href    ||= nil
   type    ||= "button"
   html    ||= {}
-  classes = ["adv-btn"]
-  classes << "adv-btn--#{variant}" if variant
-  classes << "adv-btn--#{size}"    if size
-  classes << "adv-btn--block"      if block
+  classes = ["ds-btn"]
+  classes << "ds-btn--#{variant}" if variant
+  classes << "ds-btn--#{size}"    if size
+  classes << "ds-btn--block"      if block
   classes << html.delete(:class)   if html[:class]
 %>
 <% if href %>

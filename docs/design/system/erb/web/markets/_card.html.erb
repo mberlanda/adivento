@@ -1,7 +1,7 @@
 <%#
   Adivento DS — market card (discovery grid)
   Usage:
-    <div class="adv-grid adv-grid--auto">
+    <div class="ds-grid ds-grid--auto">
       <% @markets.each do |market| %>
         <%= render "web/markets/card", market: market %>
       <% end %>
@@ -21,28 +21,28 @@
   delta = market.respond_to?(:delta) ? market.delta : nil
   live  = market.respond_to?(:live?) ? market.live? : (market.status.to_s == "open")
 %>
-<%= link_to web_market_path(market), class: "adv-card adv-market", style: "text-decoration:none;color:inherit" do %>
-  <div class="adv-market__top">
+<%= link_to web_market_path(market), class: "ds-card ds-market", style: "text-decoration:none;color:inherit" do %>
+  <div class="ds-market__top">
     <%= render "shared/adv_badge", status: market.status, live: live %>
     <%= render "shared/adv_mech_chip", mechanism: market.mechanism %>
   </div>
 
-  <div class="adv-market__q"><%= market.question %></div>
+  <div class="ds-market__q"><%= market.question %></div>
 
-  <div class="adv-probar">
-    <div class="adv-probar__fill" style="width: <%= market.yes_pct %>%"></div>
+  <div class="ds-probar">
+    <div class="ds-probar__fill" style="width: <%= market.yes_pct %>%"></div>
   </div>
 
-  <div class="adv-row adv-row--between">
-    <span class="adv-market__pct adv-num"><%= market.yes_pct %><%= pct_suffix %></span>
+  <div class="ds-row ds-row--between">
+    <span class="ds-market__pct ds-num"><%= market.yes_pct %><%= pct_suffix %></span>
     <% if spark %>
-      <svg data-adv-spark="<%= spark.join(',') %>" aria-hidden="true"></svg>
+      <svg data-ds-spark="<%= spark.join(',') %>" aria-hidden="true"></svg>
     <% elsif delta %>
-      <span class="adv-delta adv-delta--<%= delta >= 0 ? 'up' : 'down' %>"><%= delta.abs %></span>
+      <span class="ds-delta ds-delta--<%= delta >= 0 ? 'up' : 'down' %>"><%= delta.abs %></span>
     <% end %>
   </div>
 
-  <div class="adv-market__foot">
+  <div class="ds-market__foot">
     <span><%= market.volume_label %></span>
     <span><%= market.closes_label %></span>
   </div>

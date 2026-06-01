@@ -16,15 +16,15 @@
   yes_payout = defined?(yes_payout) ? yes_payout : nil
   no_payout  = defined?(no_payout)  ? no_payout  : nil
 %>
-<div class="adv-prices">
-  <div class="adv-pricebox adv-pricebox--yes <%= 'is-selected' if selected == :yes %>" data-price="<%= yes_pct %>">
-    <div class="adv-pricebox__label">Yes</div>
-    <div class="adv-pricebox__val adv-num"><%= yes_pct %><%= suffix %></div>
-    <% if yes_payout %><div class="adv-pricebox__sub">pays <%= yes_payout %></div><% end %>
+<div class="ds-prices">
+  <div class="ds-pricebox ds-pricebox--yes <%= 'is-selected' if selected == :yes %>" data-price="<%= yes_pct %>">
+    <div class="ds-pricebox__label">Yes</div>
+    <div class="ds-pricebox__val ds-num"><%= yes_pct %><%= suffix %></div>
+    <% if yes_payout %><div class="ds-pricebox__sub">pays <%= yes_payout %></div><% end %>
   </div>
-  <div class="adv-pricebox adv-pricebox--no <%= 'is-selected' if selected == :no %>" data-price="<%= no_pct %>">
-    <div class="adv-pricebox__label">No</div>
-    <div class="adv-pricebox__val adv-num"><%= no_pct %><%= suffix %></div>
-    <% if no_payout %><div class="adv-pricebox__sub">pays <%= no_payout %></div><% end %>
+  <div class="ds-pricebox ds-pricebox--no <%= 'is-selected' if selected == :no %>" data-price="<%= no_pct %>">
+    <div class="ds-pricebox__label">No</div>
+    <div class="ds-pricebox__val ds-num"><%= no_pct %><%= suffix %></div>
+    <% if no_payout %><div class="ds-pricebox__sub">pays <%= no_payout %></div><% end %>
   </div>
 </div>

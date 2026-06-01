@@ -1,6 +1,6 @@
 <h1>Role Permission Matrix</h1>
-<div class="adv-card adv-card--flush">
-  <table class="adv-table">
+<div class="ds-card ds-card--flush">
+  <table class="ds-table">
     <thead>
       <tr>
         <th>Permission</th>
@@ -12,7 +12,7 @@
         <tr>
           <td>
             <strong><%= permission.key %></strong><br>
-            <small class="adv-muted"><%= permission.description %></small>
+            <small class="ds-muted"><%= permission.description %></small>
           </td>
           <% @roles.each do |role| %>
             <% enabled = @role_permissions.fetch(role, []).any? { |rp| rp.permission_id == permission.id } %>
@@ -21,9 +21,9 @@
                 <%= hidden_field_tag :role_name, role %>
                 <%= hidden_field_tag :enabled, (!enabled).to_s %>
                 <%= text_field_tag :reason, nil, placeholder: "reason", required: true,
-                      class: "adv-input", style: "margin-bottom:4px;" %>
+                      class: "ds-input", style: "margin-bottom:4px;" %>
                 <%= f.submit (enabled ? "Disable" : "Enable"),
-                      class: "adv-btn adv-btn--sm #{enabled ? 'adv-btn--danger' : 'adv-btn--primary'}" %>
+                      class: "ds-btn ds-btn--sm #{enabled ? 'ds-btn--danger' : 'ds-btn--primary'}" %>
               <% end %>
             </td>
           <% end %>

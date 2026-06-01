@@ -13,22 +13,22 @@
     [:permissions, "Access",          "🛡", backoffice_permissions_path],
   ]
 %>
-<aside class="adv-sidebar">
-  <div class="adv-sidebar__brand">
-    <span class="adv-nav__mark"></span> Console
+<aside class="ds-sidebar">
+  <div class="ds-sidebar__brand">
+    <span class="ds-nav__mark"></span> Console
   </div>
-  <div class="adv-sidebar__section">Operate</div>
+  <div class="ds-sidebar__section">Operate</div>
   <% nav.each do |key, label, icon, path| %>
-    <%= link_to path, class: "adv-sidebar__link #{'is-active' if current == key}",
+    <%= link_to path, class: "ds-sidebar__link #{'is-active' if current == key}",
           data: { testid: "nav-#{key}" } do %>
-      <span class="adv-sidebar__icon"><%= icon %></span> <%= label %>
+      <span class="ds-sidebar__icon"><%= icon %></span> <%= label %>
     <% end %>
   <% end %>
-  <span class="adv-spacer"></span>
-  <button class="adv-btn adv-btn--ghost adv-btn--sm adv-btn--block" data-adv-theme-toggle>
-    ◑ <span data-adv-theme-label>Dark</span>
+  <span class="ds-spacer"></span>
+  <button class="ds-btn ds-btn--ghost ds-btn--sm ds-btn--block" data-ds-theme-toggle>
+    ◑ <span data-ds-theme-label>Dark</span>
   </button>
   <div style="margin-top:12px;">
-    <%= link_to "← Customer site", root_path, class: "adv-muted adv-xs" %>
+    <%= link_to "← Customer site", root_path, class: "ds-muted ds-xs" %>
   </div>
 </aside>
