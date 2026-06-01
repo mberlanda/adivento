@@ -149,7 +149,9 @@
 .adv-app a:not([class]) { color: var(--adv-accent); text-decoration: none; }
 .adv-app a:not([class]):hover { text-decoration: underline; }
 /* Belt-and-braces for the most common classed link patterns */
-.adv-app a.adv-btn         { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-btn,
+.adv-app a.adv-btn:visited { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-btn > *     { color: inherit; }
 .adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
 .adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
 .adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
@@ -235,8 +237,9 @@
   font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
   padding: 4px 10px 4px 8px; border-radius: var(--adv-r-pill);
   background: var(--adv-surface-2); color: var(--adv-muted);
+  white-space: nowrap; flex: 0 0 auto;
 }
-.adv-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.adv-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
 .adv-badge--open    { color: var(--adv-open); }
 .adv-badge--draft   { color: var(--adv-draft); }
 .adv-badge--closed  { color: var(--adv-closed); }
@@ -360,7 +363,7 @@
 /* ---- market card --------------------------------------------------------- */
 .adv-market { display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease; }
 .adv-market:hover { transform: translateY(-2px); box-shadow: var(--adv-shadow-md); border-color: var(--adv-line); }
-.adv-market__top { display: flex; align-items: center; gap: 6px; }
+.adv-market__top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .adv-market__q { font-size: 15px; font-weight: 600; line-height: 1.35; min-height: 2.7em; }
 .adv-market__pct { font-size: 26px; font-weight: 800; color: var(--adv-accent); }
 .adv-market__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--adv-muted); font-size: 11.5px; }
@@ -490,4 +493,3 @@
   .adv-step { display: flex; align-items: center; gap: 12px; text-align: left; }
   .adv-step::before { margin-bottom: 0; }
 }
-

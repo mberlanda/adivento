@@ -19,8 +19,19 @@
   font-size: 15px;
   line-height: 1.45;
 }
-.adv-app a { color: var(--adv-accent); text-decoration: none; }
-.adv-app a:hover { text-decoration: underline; }
+/* Only bare, unclassed anchor tags get the accent link colour.
+   Component links (adv-btn, adv-nav__link, adv-sidebar__link, adv-muted...)
+   own their foreground token and must not be overridden here. */
+.adv-app a:not([class]) { color: var(--adv-accent); text-decoration: none; }
+.adv-app a:not([class]):hover { text-decoration: underline; }
+/* Belt-and-braces for the most common classed link patterns */
+.adv-app a.adv-btn,
+.adv-app a.adv-btn:visited { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
+.adv-app a.adv-btn > *     { color: inherit; }
+.adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
+.adv-app a[class]:hover    { text-decoration: none; }
 
 /* during a theme swap, freeze transitions so var()-based backgrounds don't
    stick mid-interpolation (Chromium quirk). adivento.js toggles this class. */
@@ -99,11 +110,12 @@
 /* status badge with a leading dot */
 .adv-badge {
   display: inline-flex; align-items: center; gap: 6px;
+  white-space: nowrap; flex: 0 0 auto;
   font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
   padding: 4px 10px 4px 8px; border-radius: var(--adv-r-pill);
   background: var(--adv-surface-2); color: var(--adv-muted);
 }
-.adv-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.adv-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
 .adv-badge--open    { color: var(--adv-open); }
 .adv-badge--draft   { color: var(--adv-draft); }
 .adv-badge--closed  { color: var(--adv-closed); }

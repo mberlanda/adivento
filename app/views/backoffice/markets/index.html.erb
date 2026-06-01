@@ -10,6 +10,7 @@
       <p>
         <label>Question <span style="color:#f44336;">*</span></label><br>
         <%= text_field_tag :question, nil, required: true,
+              class: "adv-input",
               placeholder: "Will X happen before Y?",
               data: { testid: "market-question", preview_target: "question" } %>
       </p>
@@ -20,6 +21,7 @@
       <p>
         <label>Description <span style="color:#f44336;">*</span></label><br>
         <%= text_area_tag :description, nil, required: true, rows: 2,
+              class: "adv-textarea",
               placeholder: "Context for the market question.",
               data: { testid: "market-description" } %>
       </p>

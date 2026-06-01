@@ -47,12 +47,13 @@
             style: "text-decoration:none;color:inherit;display:block;",
             data: { testid: "market-card-#{market.id}" } do %>
         <div class="adv-market__top">
-          <%= render "shared/adv_badge", status: market.status, live: market.open? %>
+          <% if market.settled_outcome.present? %>
+            <%= render "shared/adv_badge", status: "settled", label: "Settled: #{market.settled_outcome}" %>
+          <% else %>
+            <%= render "shared/adv_badge", status: market.status, live: market.open? %>
+          <% end %>
           <span class="adv-muted adv-xs" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
           <%= render "shared/adv_mech_chip", mechanism: market.mechanism_type %>
-          <% if market.settled_outcome.present? %>
-            <span class="adv-badge adv-badge--settled">Settled: <%= market.settled_outcome %></span>
-          <% end %>
         </div>
 
         <div class="adv-market__q" data-testid="market-link-<%= market.id %>"><%= market.question %></div>

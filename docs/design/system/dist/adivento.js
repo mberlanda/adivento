@@ -11,6 +11,14 @@
 
   /* ---- theme ------------------------------------------------------------- */
   const THEME_KEY = "adv-theme";
+  function syncThemeControls(name) {
+    document.querySelectorAll("[data-adv-theme-toggle]").forEach((el) => {
+      el.setAttribute("aria-pressed", String(name === "dark"));
+    });
+    document.querySelectorAll("[data-adv-theme-label]").forEach((el) => {
+      el.textContent = name === "dark" ? "Dark" : "Light";
+    });
+  }
   Adivento.theme = {
     get() { return document.documentElement.getAttribute("data-theme") || "light"; },
     set(name) {
@@ -18,11 +26,7 @@
       root.classList.add("adv-theming");
       root.setAttribute("data-theme", name);
       try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
-      document.querySelectorAll("[data-adv-theme-toggle]").forEach((el) => {
-        el.setAttribute("aria-pressed", String(name === "dark"));
-        const lbl = el.querySelector("[data-adv-theme-label]");
-        if (lbl) lbl.textContent = name === "dark" ? "Dark" : "Light";
-      });
+      syncThemeControls(name);
       window.dispatchEvent(new CustomEvent("adv:theme", { detail: { theme: name } }));
       requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("adv-theming")));
     },
@@ -30,9 +34,13 @@
     init() {
       let saved;
       try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-      if (saved) this.set(saved);
+      if (saved) {
+        this.set(saved);
+      } else {
+        syncThemeControls(this.get());
+      }
       document.addEventListener("click", (e) => {
-        const t = e.target.closest("[data-adv-theme-toggle]");
+        const t = e.target.closest("[data-adv-theme-toggle], [data-adv-theme-label]");
         if (t) { e.preventDefault(); this.toggle(); }
       });
     },
