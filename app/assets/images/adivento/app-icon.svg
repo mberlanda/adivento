@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-labelledby="title">
+  <title id="title">Adivento app icon</title>
+  <defs>
+    <linearGradient id="iconBg" x1="18" y1="162" x2="162" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F5136"/>
+      <stop offset="1" stop-color="#1E7C6B"/>
+    </linearGradient>
+    <linearGradient id="barSand" x1="138" y1="61" x2="158" y2="140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E9DFCF"/>
+      <stop offset="1" stop-color="#BDAE94"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="url(#iconBg)"/>
+  <path fill="#FAF7F2" d="M34 140 80.7 53.2c3.1-5.6 11-5.6 14.1 0L141 140h-24.4L90.5 88.9 67.5 140H34Z"/>
+  <path fill="#7FAE9D" d="M73 119c17.9-16.3 39.5-24.1 64.8-23.4l3.5 6.9c-25.3.1-46.1 6.9-62.5 20.4L73 119Z"/>
+  <rect x="103" y="104" width="14" height="36" rx="2" fill="#1E7C6B"/>
+  <rect x="124" y="87" width="14" height="53" rx="2" fill="#7FAE9D"/>
+  <rect x="145" y="67" width="14" height="73" rx="2" fill="url(#barSand)"/>
+</svg>

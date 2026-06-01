@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Adivento</title>
+  <defs>
+    <linearGradient id="iconBg" x1="6" y1="58" x2="58" y2="6" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F5136"/>
+      <stop offset="1" stop-color="#1E7C6B"/>
+    </linearGradient>
+    <linearGradient id="barSand" x1="49" y1="22" x2="56" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E9DFCF"/>
+      <stop offset="1" stop-color="#BDAE94"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="url(#iconBg)"/>
+  <path fill="#FAF7F2" d="M11 50 28.9 16.8c1.1-2.2 4.2-2.2 5.4 0L52 50h-9.1L32.2 29.1 22.8 50H11Z"/>
+  <path fill="#7FAE9D" d="M25.6 42.3c6.6-6 14.6-8.9 24-8.6l1.2 2.5c-9.3.1-17.1 2.6-23.2 7.6l-2-1.5Z"/>
+  <rect x="36" y="38" width="5" height="12" rx="1" fill="#1E7C6B"/>
+  <rect x="44" y="32" width="5" height="18" rx="1" fill="#7FAE9D"/>
+  <rect x="52" y="25" width="5" height="25" rx="1" fill="url(#barSand)"/>
+</svg>
