@@ -1,17 +1,17 @@
 <div data-testid="execution-confirmation">
   <h1>Betslip Confirmed</h1>
 
-  <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;">
+  <div class="ds-callout ds-callout--accent" style="margin-bottom:16px;">
     <p style="font-weight:600;margin:0;">&#10003; Your bets were placed successfully.</p>
-    <p class="adv-muted" style="font-size:0.88em;margin:4px 0 0;">
+    <p class="ds-muted" style="font-size:0.88em;margin:4px 0 0;">
       Execution #<%= @execution.id %> &nbsp;·&nbsp; Status: <strong><%= @execution.status %></strong>
     </p>
   </div>
 
   <% if @bets.any? %>
-    <div class="adv-card adv-card--flush" style="margin-bottom:16px;">
-      <div class="adv-card__head"><h3 style="margin:0;">Bets Placed</h3></div>
-      <table class="adv-table">
+    <div class="ds-card ds-card--flush" style="margin-bottom:16px;">
+      <div class="ds-card__head"><h3 style="margin:0;">Bets Placed</h3></div>
+      <table class="ds-table">
         <thead>
           <tr>
             <th>Market</th>
@@ -24,24 +24,24 @@
         <tbody data-testid="execution-bets-list">
           <% @bets.each do |bet| %>
             <tr data-testid="execution-bet-row-<%= bet.id %>">
-              <td><%= link_to bet.market.question, web_market_path(bet.market), class: "adv-muted" %></td>
+              <td><%= link_to bet.market.question, web_market_path(bet.market), class: "ds-muted" %></td>
               <td><strong><%= bet.market_leg.label %></strong></td>
-              <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(bet.stake_minor) %> ADIV</td>
-              <td class="adv-num" style="text-align:right;"><%= (bet.odds_minor / 100.0).round(0) %>%</td>
-              <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(bet.potential_payout_minor) %> ADIV</td>
+              <td class="ds-num" style="text-align:right;"><%= number_with_delimiter(bet.stake_minor) %> ADIV</td>
+              <td class="ds-num" style="text-align:right;"><%= (bet.odds_minor / 100.0).round(0) %>%</td>
+              <td class="ds-num" style="text-align:right;"><%= number_with_delimiter(bet.potential_payout_minor) %> ADIV</td>
             </tr>
           <% end %>
         </tbody>
       </table>
-      <p class="adv-muted" style="font-size:0.9em;padding:12px 16px;">
+      <p class="ds-muted" style="font-size:0.9em;padding:12px 16px;">
         Total stake: <strong><%= number_with_delimiter(@bets.sum(&:stake_minor)) %> ADIV</strong>
       </p>
     </div>
   <% end %>
 
   <p>
-    <%= link_to "← Back to markets", web_markets_path, class: "adv-btn adv-btn--ghost adv-btn--sm" %>
+    <%= link_to "← Back to markets", web_markets_path, class: "ds-btn ds-btn--ghost ds-btn--sm" %>
     &nbsp;·&nbsp;
-    <%= link_to "My positions", web_positions_path, class: "adv-btn adv-btn--ghost adv-btn--sm" %>
+    <%= link_to "My positions", web_positions_path, class: "ds-btn ds-btn--ghost ds-btn--sm" %>
   </p>
 </div>

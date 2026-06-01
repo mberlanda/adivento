@@ -1,16 +1,16 @@
 <div style="margin-bottom:20px;">
   <h1 style="margin:0 0 4px;" data-testid="leaderboard-title">Leaderboard</h1>
-  <p class="adv-muted" style="margin:0;">Top players ranked by net profit across all mechanisms.</p>
+  <p class="ds-muted" style="margin:0;">Top players ranked by net profit across all mechanisms.</p>
 </div>
 
 <% if @entries.empty? %>
-  <div class="adv-card" style="text-align:center;padding:40px 20px;" data-testid="leaderboard-empty">
-    <p class="adv-muted">No settled bets yet. Be the first to play!</p>
-    <%= link_to "Browse markets", web_markets_path, class: "adv-btn adv-btn--primary" %>
+  <div class="ds-card" style="text-align:center;padding:40px 20px;" data-testid="leaderboard-empty">
+    <p class="ds-muted">No settled bets yet. Be the first to play!</p>
+    <%= link_to "Browse markets", web_markets_path, class: "ds-btn ds-btn--primary" %>
   </div>
 <% else %>
-  <div class="adv-card adv-card--flush" data-testid="leaderboard-table-container">
-    <table class="adv-table" data-testid="leaderboard-table">
+  <div class="ds-card ds-card--flush" data-testid="leaderboard-table-container">
+    <table class="ds-table" data-testid="leaderboard-table">
       <thead>
         <tr>
           <th>#</th>
@@ -24,7 +24,7 @@
         <% @entries.each_with_index do |entry, idx| %>
           <% net_pnl = entry.total_returned.to_i - entry.total_staked.to_i %>
           <tr data-testid="leaderboard-row-<%= entry.user_id %>">
-            <td class="adv-muted adv-num">
+            <td class="ds-muted ds-num">
               <% if idx == 0 %>🥇
               <% elsif idx == 1 %>🥈
               <% elsif idx == 2 %>🥉
@@ -34,11 +34,11 @@
             <td style="font-weight:600;" data-testid="leaderboard-player-<%= entry.user_id %>">
               <%= entry.email.split('@').first %>
             </td>
-            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(entry.total_staked.to_i) %> ADIV</td>
-            <td class="adv-num" style="text-align:right;"><%= number_with_delimiter(entry.total_returned.to_i) %> ADIV</td>
-            <td class="adv-num" style="text-align:right;font-weight:700;"
+            <td class="ds-num" style="text-align:right;"><%= number_with_delimiter(entry.total_staked.to_i) %> ADIV</td>
+            <td class="ds-num" style="text-align:right;"><%= number_with_delimiter(entry.total_returned.to_i) %> ADIV</td>
+            <td class="ds-num" style="text-align:right;font-weight:700;"
                 data-testid="leaderboard-pnl-<%= entry.user_id %>">
-              <span class="adv-delta adv-delta--<%= net_pnl >= 0 ? 'up' : 'down' %>">
+              <span class="ds-delta ds-delta--<%= net_pnl >= 0 ? 'up' : 'down' %>">
                 <%= net_pnl >= 0 ? '+' : '' %><%= number_with_delimiter(net_pnl) %> ADIV
               </span>
             </td>
@@ -50,5 +50,5 @@
 <% end %>
 
 <div style="margin-top:16px;text-align:center;">
-  <%= link_to "Browse markets", web_markets_path, class: "adv-btn adv-btn--ghost adv-btn--sm" %>
+  <%= link_to "Browse markets", web_markets_path, class: "ds-btn ds-btn--ghost ds-btn--sm" %>
 </div>

@@ -1,6 +1,6 @@
 <%#
   Adivento DS — customer top nav
-  Usage (in layouts/application.html.erb, inside <body class="adv-app">):
+  Usage (in layouts/application.html.erb, inside <body class="ds-app">):
     <%= render "web/shared/nav", current: :markets, balance: current_user&.balance %>
   Locals:
     current: :markets | :communities | :leaderboard | nil
@@ -13,29 +13,29 @@
            [:communities, "Communities", "#"],
            [:leaderboard, "Leaderboard", web_leaderboard_path]]
 %>
-<header class="adv-nav">
-  <%= link_to web_markets_path, class: "adv-nav__brand", style: "text-decoration:none" do %>
-    <span class="adv-nav__mark"></span> Adivento
+<header class="ds-nav">
+  <%= link_to web_markets_path, class: "ds-nav__brand", style: "text-decoration:none" do %>
+    <span class="ds-nav__mark"></span> Adivento
   <% end %>
 
-  <nav class="adv-nav__links adv-hide-mobile">
+  <nav class="ds-nav__links ds-hide-mobile">
     <% links.each do |key, label, path| %>
-      <%= link_to label, path, class: "adv-nav__link #{'is-active' if current == key}" %>
+      <%= link_to label, path, class: "ds-nav__link #{'is-active' if current == key}" %>
     <% end %>
   </nav>
 
-  <span class="adv-spacer"></span>
+  <span class="ds-spacer"></span>
 
   <% if balance %>
-    <span class="adv-balance adv-hide-mobile"><%= number_with_delimiter(balance) %> <small>ADIV</small></span>
+    <span class="ds-balance ds-hide-mobile"><%= number_with_delimiter(balance) %> <small>ADIV</small></span>
   <% end %>
 
-  <button class="adv-btn adv-btn--ghost adv-btn--sm" data-adv-theme-toggle aria-pressed="false" aria-label="Toggle theme">
-    ◑ <span data-adv-theme-label>Light</span>
+  <button class="ds-btn ds-btn--ghost ds-btn--sm" data-ds-theme-toggle aria-pressed="false" aria-label="Toggle theme">
+    ◑ <span data-ds-theme-label>Light</span>
   </button>
 
   <% if balance %>
-    <%= link_to "#", class: "adv-avatar adv-avatar--sm", "aria-label": "Profile" do %><% end %>
+    <%= link_to "#", class: "ds-avatar ds-avatar--sm", "aria-label": "Profile" do %><% end %>
   <% else %>
     <%= render "shared/adv_button", label: "Sign in", variant: "primary", size: "sm", href: "#" %>
   <% end %>

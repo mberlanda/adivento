@@ -8,10 +8,10 @@
   href       ||= nil
   type       ||= "button"
   html       ||= {}
-  classes = ["adv-btn"]
-  classes << "adv-btn--#{variant}" if variant
-  classes << "adv-btn--#{size}"    if size
-  classes << "adv-btn--block"      if full_width
+  classes = ["ds-btn"]
+  classes << "ds-btn--#{variant}" if variant
+  classes << "ds-btn--#{size}"    if size
+  classes << "ds-btn--block"      if full_width
   classes << html.delete(:class)   if html[:class]
 %>
 <% if href %>

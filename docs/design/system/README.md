@@ -36,30 +36,30 @@ transitions during the swap so var-driven backgrounds don't stick):
 ```js
 Adivento.theme.toggle();          // or .set('dark')
 ```
-Any element with `data-adv-theme-toggle` becomes a toggle automatically.
+Any element with `data-ds-theme-toggle` becomes a toggle automatically.
 
 > **Theme-switch gotcha (already handled):** transitioning the `background`
 > shorthand across a theme change sticks mid-interpolation in Chromium. We
-> suppress transitions for one frame via the `.adv-theming` class during the
+> suppress transitions for one frame via the `.ds-theming` class during the
 > swap — keep that mechanism if you refactor the toggle.
 
 ## 2. Using the CSS (Rails / any app)
 Load in order — tokens → application → components — then the JS at the end of body:
 ```erb
 <%= stylesheet_link_tag "adivento/tokens", "adivento/application", "adivento/components" %>
-<body class="adv-app" data-theme="light">
+<body class="ds-app" data-theme="light">
   ...
   <%= javascript_include_tag "adivento/adivento" %>
 ```
-Put `class="adv-app"` on `<body>` (or the app root). All classes are prefixed
-`.adv-` so they won't collide with anything already in the app.
+Put `class="ds-app"` on `<body>` (or the app root). All classes are prefixed
+`.ds-` so they won't collide with anything already in the app.
 
 ## 3. ERB partials
 Composable and local-driven — they map straight onto this repo's `/web` and
 `/backoffice` controllers. Examples:
 ```erb
 <%# discovery grid %>
-<div class="adv-grid adv-grid--auto">
+<div class="ds-grid ds-grid--auto">
   <% @markets.each do |market| %>
     <%= render "web/markets/card", market: market %>
   <% end %>
@@ -72,9 +72,9 @@ Composable and local-driven — they map straight onto this repo's `/web` and
 <%= render "web/betslip_executions/ticket", market: market, yes_pct: 62, no_pct: 38, balance: current_user.balance %>
 
 <%# backoffice %>
-<div class="adv-shell adv-app">
+<div class="ds-shell ds-app">
   <%= render "backoffice/shared/sidebar", current: :markets %>
-  <main class="adv-main">
+  <main class="ds-main">
     <%= render "backoffice/shared/stat_cards", stats: @stats %>
     <%= render "backoffice/markets/table", markets: @markets %>
   </main>
@@ -86,11 +86,11 @@ helpers or a decorator; see comments. Nothing here changes your schema.
 
 ## 4. Interactions (`adivento.js`)
 Auto-inits on `DOMContentLoaded`. Declarative hooks:
-- `data-adv-theme-toggle` — theme switch button
-- `data-adv-segment` / `data-adv-tabs` — segmented controls & tab panels
-- `data-adv-sheet-open="id"` / `data-adv-sheet-close` — mobile bottom sheet + scrim
-- `svg[data-adv-chart="44,47,…"]` / `svg[data-adv-spark="…"]` — draws the line/sparkline
-- `[data-adv-ticket]` with `[data-ticket-stake]`, `.adv-pricebox[data-price]`,
+- `data-ds-theme-toggle` — theme switch button
+- `data-ds-segment` / `data-ds-tabs` — segmented controls & tab panels
+- `data-ds-sheet-open="id"` / `data-ds-sheet-close` — mobile bottom sheet + scrim
+- `svg[data-ds-chart="44,47,…"]` / `svg[data-ds-spark="…"]` — draws the line/sparkline
+- `[data-ds-ticket]` with `[data-ticket-stake]`, `.ds-pricebox[data-price]`,
   `[data-ticket-payout]`, `[data-ticket-profit]` — live payout math
 - `Adivento.orderbook.render(el, {asks,bids,spread,last})` — order book
 - `Adivento.live.start()` — **demo** random-walk price tick
@@ -109,10 +109,10 @@ props; ask if you want it generated.)
 
 ## 6. Responsive
 Mobile-first breakpoints baked in: grids collapse at 900/640px, the customer nav
-hides its links on mobile (pair with the `.adv-tabbar`), the backoffice sidebar
+hides its links on mobile (pair with the `.ds-tabbar`), the backoffice sidebar
 becomes a horizontal scroller, the settlement stepper stacks vertically, and the
-bet ticket is `position: fixed` as a sheet on small screens. `.adv-hide-mobile` /
-`.adv-only-mobile` utilities for one-offs.
+bet ticket is `position: fixed` as a sheet on small screens. `.ds-hide-mobile` /
+`.ds-only-mobile` utilities for one-offs.
 
 ## Component checklist
 Buttons · chips · mechanism tags · status/live badges · cards · inputs (+ suffix) ·

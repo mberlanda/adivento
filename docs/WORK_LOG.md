@@ -4,6 +4,17 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-06-01 — Rename `adv-` css namespace to `ds-` (ad-blocker fix)
+
+**Root cause (closed PR #60).** The backoffice sidebar "disappearing in production" was not a stale static-asset cache — prod `adivento.css`/`adivento.js` were byte-identical to `main`, and the served CSS set `.adv-sidebar { display:flex }`. The sidebar was hidden **client-side** by a content/ad blocker matching the `adv-` (advertisement) class prefix. Confirmed reproducing only with a blocker enabled.
+
+**Fix (pr1).** Repo-wide namespace rename `adv- → ds-`: class names, `--adv-*` custom properties, `data-adv-*` JS hooks, and `adv:`/`adv-theme` JS identifiers. Pure rename, no behavioural change; saved-theme localStorage key resets once. Also carried forward the only useful change from #60 — flush-card `__head` heading spacing.
+- Key files: `public/adivento.css`, `public/adivento.js`, `app/views/**`, `docs/design/system/**`, `e2e/playwright/tests/*.spec.js`, `test/integration/web_customer_pages_test.rb`
+- 339 runs, 0 failures, 92.93% line coverage. Commits `f1bdb30` (rename), `8820c67` (card head fix).
+- **Follow-up (pr2):** proper asset pipeline (Propshaft) — this app currently has none (raw `public/` statics, no precompile in the Dockerfile).
+
+---
+
 ## 2026-05-30 — Wave 2: CLOB correctness (TD-020 / D3, TD-021 / D4, TD-017 / D2)
 
 **D3 — Centralize CLOB trading-state guards (TD-020)**

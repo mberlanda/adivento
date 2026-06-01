@@ -1,80 +1,80 @@
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
   <div>
     <h1 style="margin:0 0 4px;">Explore Markets</h1>
-    <p class="adv-muted" style="margin:0;">Prediction markets across sports, economics, politics, and more.</p>
+    <p class="ds-muted" style="margin:0;">Prediction markets across sports, economics, politics, and more.</p>
   </div>
   <form method="get" action="<%= web_markets_path %>" data-testid="market-search-form" style="display:flex;gap:8px;align-items:center;">
     <% if @selected_category %>
       <%= hidden_field_tag :category, @selected_category %>
     <% end %>
-    <input class="adv-input" type="search" name="q" value="<%= @search_query %>"
+    <input class="ds-input" type="search" name="q" value="<%= @search_query %>"
            placeholder="Search markets…" data-testid="market-search-input"
            style="width:260px;">
-    <button class="adv-btn adv-btn--primary adv-btn--sm" type="submit" style="white-space:nowrap;">Search</button>
+    <button class="ds-btn ds-btn--primary ds-btn--sm" type="submit" style="white-space:nowrap;">Search</button>
   </form>
 </div>
 
 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;" data-testid="category-filter">
   <%= link_to "All", web_markets_path(q: @search_query),
-        class: "adv-btn adv-btn--sm #{@selected_category.nil? ? 'adv-btn--primary' : 'adv-btn--ghost'}" %>
+        class: "ds-btn ds-btn--sm #{@selected_category.nil? ? 'ds-btn--primary' : 'ds-btn--ghost'}" %>
   <% Market::CATEGORIES.each do |cat| %>
     <%= link_to cat.capitalize, web_markets_path(category: cat, q: @search_query),
           data: { testid: "category-#{cat}" },
-          class: "adv-btn adv-btn--sm #{@selected_category == cat ? 'adv-btn--primary' : 'adv-btn--ghost'}" %>
+          class: "ds-btn ds-btn--sm #{@selected_category == cat ? 'ds-btn--primary' : 'ds-btn--ghost'}" %>
   <% end %>
 </div>
 
 <% if @search_query.present? %>
-  <p class="adv-muted" style="margin-bottom:12px;">
+  <p class="ds-muted" style="margin-bottom:12px;">
     Results for "<strong><%= @search_query %></strong>"
     <% if @selected_category %> in <%= @selected_category.capitalize %><% end %>
     &mdash; <%= link_to "Clear search", web_markets_path(category: @selected_category) %>
   </p>
 <% end %>
 
-<div class="adv-grid adv-grid--auto" data-testid="markets-list">
+<div class="ds-grid ds-grid--auto" data-testid="markets-list">
   <% if @markets.empty? %>
     <div style="grid-column:1/-1;text-align:center;padding:40px 20px;">
-      <p class="adv-muted" style="font-size:1.1rem;margin-bottom:12px;">
+      <p class="ds-muted" style="font-size:1.1rem;margin-bottom:12px;">
         No markets found<% if @search_query %> for "<%= @search_query %>"<% end %>.
       </p>
-      <%= link_to "Browse all markets", web_markets_path, class: "adv-btn adv-btn--primary" %>
+      <%= link_to "Browse all markets", web_markets_path, class: "ds-btn ds-btn--primary" %>
     </div>
   <% else %>
     <% @markets.each do |market| %>
       <%= link_to web_market_path(market),
-            class: "adv-card adv-market",
+            class: "ds-card ds-market",
             style: "text-decoration:none;color:inherit;display:block;",
             data: { testid: "market-card-#{market.id}" } do %>
-        <div class="adv-market__top">
+        <div class="ds-market__top">
           <% if market.settled_outcome.present? %>
             <%= render "shared/adv_badge", status: "settled", label: "Settled: #{market.settled_outcome}" %>
           <% else %>
             <%= render "shared/adv_badge", status: market.status, live: market.open? %>
           <% end %>
-          <span class="adv-muted adv-xs" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
+          <span class="ds-muted ds-xs" data-testid="category-badge-<%= market.id %>"><%= market.category.capitalize %></span>
           <%= render "shared/adv_mech_chip", mechanism: market.mechanism_type %>
         </div>
 
-        <div class="adv-market__q" data-testid="market-link-<%= market.id %>"><%= market.question %></div>
+        <div class="ds-market__q" data-testid="market-link-<%= market.id %>"><%= market.question %></div>
 
         <% legs = market.market_legs %>
         <% if legs.any? %>
-          <div class="adv-probar">
-            <div class="adv-probar__fill" style="width:<%= (legs.first.odds_minor / 100.0).round(0) %>%"></div>
+          <div class="ds-probar">
+            <div class="ds-probar__fill" style="width:<%= (legs.first.odds_minor / 100.0).round(0) %>%"></div>
           </div>
-          <div class="adv-row adv-row--between" style="margin-top:6px;">
+          <div class="ds-row ds-row--between" style="margin-top:6px;">
             <% legs.each do |leg| %>
-              <span class="adv-num" style="font-size:1.1rem;font-weight:700;">
-                <span class="adv-muted" style="font-size:0.75rem;font-weight:400;"><%= leg.label %></span>
+              <span class="ds-num" style="font-size:1.1rem;font-weight:700;">
+                <span class="ds-muted" style="font-size:0.75rem;font-weight:400;"><%= leg.label %></span>
                 <%= (leg.odds_minor / 100.0).round(0) %>%
               </span>
             <% end %>
-            <span class="adv-muted adv-xs"><%= market.mechanism_type.upcase %></span>
+            <span class="ds-muted ds-xs"><%= market.mechanism_type.upcase %></span>
           </div>
         <% end %>
 
-        <div class="adv-market__foot">
+        <div class="ds-market__foot">
           <% if market.close_at.present? && market.open? %>
             <span>Closes <%= distance_of_time_in_words(Time.current, market.close_at) %></span>
           <% end %>
@@ -89,12 +89,12 @@
   <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;" data-testid="pagination">
     <% if @page > 1 %>
       <%= link_to "← Previous", web_markets_path(page: @page - 1, category: @selected_category, q: @search_query),
-            class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-prev" } %>
+            class: "ds-btn ds-btn--ghost ds-btn--sm", data: { testid: "pagination-prev" } %>
     <% end %>
-    <span class="adv-muted" style="line-height:2.2;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
+    <span class="ds-muted" style="line-height:2.2;font-size:0.88rem;">Page <%= @page %> of <%= total_pages %></span>
     <% if @page < total_pages %>
       <%= link_to "Next →", web_markets_path(page: @page + 1, category: @selected_category, q: @search_query),
-            class: "adv-btn adv-btn--ghost adv-btn--sm", data: { testid: "pagination-next" } %>
+            class: "ds-btn ds-btn--ghost ds-btn--sm", data: { testid: "pagination-next" } %>
     <% end %>
   </div>
 <% end %>

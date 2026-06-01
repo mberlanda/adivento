@@ -1,9 +1,9 @@
 <%#
   Adivento DS — backoffice sidebar
-  Usage (in layouts/backoffice.html.erb, inside a .adv-shell wrapper):
-    <div class="adv-shell adv-app">
+  Usage (in layouts/backoffice.html.erb, inside a .ds-shell wrapper):
+    <div class="ds-shell ds-app">
       <%= render "backoffice/shared/sidebar", current: :markets %>
-      <main class="adv-main"><%= yield %></main>
+      <main class="ds-main"><%= yield %></main>
     </div>
   Locals:
     current: :markets | :create | :settle | :faucet | :rbac | nil
@@ -19,16 +19,16 @@
     [:rbac,     "Access",   "🛡", "#"],
   ]
 %>
-<aside class="adv-sidebar">
-  <div class="adv-sidebar__brand"><span class="adv-nav__mark"></span> Console</div>
-  <div class="adv-sidebar__section">Operate</div>
+<aside class="ds-sidebar">
+  <div class="ds-sidebar__brand"><span class="ds-nav__mark"></span> Console</div>
+  <div class="ds-sidebar__section">Operate</div>
   <% nav.each do |key, label, icon, path| %>
-    <%= link_to path, class: "adv-sidebar__link #{'is-active' if current == key}" do %>
-      <span class="adv-sidebar__icon"><%= icon %></span> <%= label %>
+    <%= link_to path, class: "ds-sidebar__link #{'is-active' if current == key}" do %>
+      <span class="ds-sidebar__icon"><%= icon %></span> <%= label %>
     <% end %>
   <% end %>
-  <span class="adv-spacer"></span>
-  <button class="adv-btn adv-btn--ghost adv-btn--sm adv-btn--block" data-adv-theme-toggle>
-    ◑ <span data-adv-theme-label>Light</span>
+  <span class="ds-spacer"></span>
+  <button class="ds-btn ds-btn--ghost ds-btn--sm ds-btn--block" data-ds-theme-toggle>
+    ◑ <span data-ds-theme-label>Light</span>
   </button>
 </aside>

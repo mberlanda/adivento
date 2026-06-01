@@ -1,47 +1,47 @@
 <h1>User Ad Hoc Grants</h1>
 
-<div class="adv-card" style="margin-bottom:16px;">
-  <div class="adv-card__head"><h3 style="margin:0;">Create Grant</h3></div>
+<div class="ds-card" style="margin-bottom:16px;">
+  <div class="ds-card__head"><h3 style="margin:0;">Create Grant</h3></div>
   <div style="padding-top:12px;">
     <%= form_with url: backoffice_grants_path, method: :post do |f| %>
       <p>
         <label>User</label><br>
         <%= select_tag :user_id, options_from_collection_for_select(@users, :id, :email),
-              class: "adv-select" %>
+              class: "ds-select" %>
       </p>
       <p>
         <label>Permission</label><br>
         <%= select_tag :permission_id, options_from_collection_for_select(@permissions, :id, :key),
-              class: "adv-select" %>
+              class: "ds-select" %>
       </p>
       <p>
         <label>Effect</label><br>
         <%= select_tag :allow, options_for_select([["Allow", true], ["Deny", false]]),
-              class: "adv-select" %>
+              class: "ds-select" %>
       </p>
       <p>
         <label>Reason</label><br>
-        <%= text_field_tag :reason, nil, required: true, class: "adv-input" %>
+        <%= text_field_tag :reason, nil, required: true, class: "ds-input" %>
       </p>
-      <p><%= f.submit "Create grant", class: "adv-btn adv-btn--primary" %></p>
+      <p><%= f.submit "Create grant", class: "ds-btn ds-btn--primary" %></p>
     <% end %>
   </div>
 </div>
 
-<div class="adv-card adv-card--flush">
-  <div class="adv-card__head"><h3 style="margin:0;">Recent Grants</h3></div>
-  <table class="adv-table">
+<div class="ds-card ds-card--flush">
+  <div class="ds-card__head"><h3 style="margin:0;">Recent Grants</h3></div>
+  <table class="ds-table">
     <thead>
       <tr><th>User</th><th>Permission</th><th>Effect</th><th>Reason</th><th>By</th></tr>
     </thead>
     <tbody>
       <% @grants.each do |grant| %>
         <tr>
-          <td class="adv-muted"><%= grant.user.email %></td>
+          <td class="ds-muted"><%= grant.user.email %></td>
           <td><code><%= grant.permission.key %></code></td>
           <td><%= render "shared/adv_badge", status: grant.allow ? "open" : "closed", label: grant.allow ? "ALLOW" : "DENY" %></td>
-          <td class="adv-muted"><%= grant.reason %></td>
-          <td class="adv-muted adv-xs"><%= grant.granted_by.email %></td>
+          <td class="ds-muted"><%= grant.reason %></td>
+          <td class="ds-muted ds-xs"><%= grant.granted_by.email %></td>
         </tr>
       <% end %>
     </tbody>

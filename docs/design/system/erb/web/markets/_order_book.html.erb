@@ -2,7 +2,7 @@
   Adivento DS — order book (CLOB)
   Usage: <%= render "web/markets/order_book", book: market.order_book %>
   `book` is rendered server-side here for SEO/no-JS; the live SSE stream should
-  re-render the .adv-orderbook inner HTML via Adivento.orderbook.render(el, data).
+  re-render the .ds-orderbook inner HTML via Adivento.orderbook.render(el, data).
   Locals:
     book: { asks: [[px_cents, size], ...], bids: [[px_cents, size], ...],
             spread: Numeric, last: Numeric }
@@ -13,25 +13,25 @@
   max  = (asks + bids).map { |r| r[1] }.max.to_f
   max  = 1.0 if max.zero?
 %>
-<div class="adv-card">
-  <div class="adv-card__head">
-    <span class="adv-h3">Order book</span>
+<div class="ds-card">
+  <div class="ds-card__head">
+    <span class="ds-h3">Order book</span>
     <%= render "shared/adv_mech_chip", mechanism: "clob" %>
   </div>
-  <div class="adv-orderbook" id="order-book" data-adv-orderbook>
+  <div class="ds-orderbook" id="order-book" data-ds-orderbook>
     <% asks.reverse_each do |px, sz| %>
-      <div class="adv-orderbook__row adv-orderbook__row--ask">
-        <div class="adv-orderbook__bar" style="width: <%= (sz / max * 100).round %>%"></div>
-        <span class="adv-orderbook__px adv-num"><%= px %>¢</span>
-        <span class="adv-orderbook__sz adv-num"><%= sz %></span>
+      <div class="ds-orderbook__row ds-orderbook__row--ask">
+        <div class="ds-orderbook__bar" style="width: <%= (sz / max * 100).round %>%"></div>
+        <span class="ds-orderbook__px ds-num"><%= px %>¢</span>
+        <span class="ds-orderbook__sz ds-num"><%= sz %></span>
       </div>
     <% end %>
-    <div class="adv-orderbook__spread">spread <%= book[:spread] %>¢ · last <%= book[:last] %>¢</div>
+    <div class="ds-orderbook__spread">spread <%= book[:spread] %>¢ · last <%= book[:last] %>¢</div>
     <% bids.each do |px, sz| %>
-      <div class="adv-orderbook__row adv-orderbook__row--bid">
-        <div class="adv-orderbook__bar" style="width: <%= (sz / max * 100).round %>%"></div>
-        <span class="adv-orderbook__px adv-num"><%= px %>¢</span>
-        <span class="adv-orderbook__sz adv-num"><%= sz %></span>
+      <div class="ds-orderbook__row ds-orderbook__row--bid">
+        <div class="ds-orderbook__bar" style="width: <%= (sz / max * 100).round %>%"></div>
+        <span class="ds-orderbook__px ds-num"><%= px %>¢</span>
+        <span class="ds-orderbook__sz ds-num"><%= sz %></span>
       </div>
     <% end %>
   </div>

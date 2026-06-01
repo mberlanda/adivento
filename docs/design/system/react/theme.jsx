@@ -3,7 +3,7 @@
    Pair with assets/tokens.css + application.css + components.css (import once). */
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
-const THEME_KEY = "adv-theme";
+const THEME_KEY = "ds-theme";
 const ThemeCtx = createContext({ theme: "light", setTheme: () => {}, toggle: () => {} });
 
 export function ThemeProvider({ defaultTheme = "light", children }) {
@@ -17,10 +17,10 @@ export function ThemeProvider({ defaultTheme = "light", children }) {
 
   const apply = useCallback((name) => {
     const root = document.documentElement;
-    root.classList.add("adv-theming");
+    root.classList.add("ds-theming");
     root.setAttribute("data-theme", name);
     try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
-    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("adv-theming")));
+    requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("ds-theming")));
   }, []);
 
   useEffect(() => { apply(theme); }, [theme, apply]);
@@ -33,7 +33,7 @@ export function ThemeProvider({ defaultTheme = "light", children }) {
 
 export const useTheme = () => useContext(ThemeCtx);
 
-export function ThemeToggle({ className = "adv-btn adv-btn--ghost adv-btn--sm" }) {
+export function ThemeToggle({ className = "ds-btn ds-btn--ghost ds-btn--sm" }) {
   const { theme, toggle } = useTheme();
   return (
     <button className={className} onClick={toggle} aria-pressed={theme === "dark"} aria-label="Toggle theme">

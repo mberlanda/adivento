@@ -2,7 +2,7 @@
   Adivento DS — bet ticket (fixed-odds / generic stake form)
   Usage: <%= render "web/betslip_executions/ticket", market: market,
                      yes_pct: 62, no_pct: 38, balance: 4250 %>
-  The wrapping [data-adv-ticket] is what Adivento.ticket binds to: selecting a
+  The wrapping [data-ds-ticket] is what Adivento.ticket binds to: selecting a
   price box + typing a stake live-updates the payout. Wire the <form> to your
   betslip_executions#create action.
 %>
@@ -10,35 +10,35 @@
   balance ||= nil
   quick   ||= [50, 100, 250]
 %>
-<div class="adv-card adv-ticket" data-adv-ticket>
-  <div class="adv-card__head">
-    <span class="adv-h3">Your bet</span>
-    <% if balance %><span class="adv-muted adv-xs">Balance <%= number_with_delimiter(balance) %> ADIV</span><% end %>
+<div class="ds-card ds-ticket" data-ds-ticket>
+  <div class="ds-card__head">
+    <span class="ds-h3">Your bet</span>
+    <% if balance %><span class="ds-muted ds-xs">Balance <%= number_with_delimiter(balance) %> ADIV</span><% end %>
   </div>
 
   <%= render "web/markets/price_boxes", yes_pct: yes_pct, no_pct: no_pct, selected: :yes, suffix: "¢" %>
 
-  <%= form_with url: web_market_betslip_executions_path(market), method: :post, local: true, class: "adv-stack", data: { turbo: true } do |f| %>
+  <%= form_with url: web_market_betslip_executions_path(market), method: :post, local: true, class: "ds-stack", data: { turbo: true } do |f| %>
     <input type="hidden" name="side" value="yes" data-ticket-side />
     <div style="margin-top:14px">
-      <label class="adv-label">Stake</label>
-      <div class="adv-input-group">
-        <%= f.number_field :stake, value: 100, class: "adv-input adv-num", data: { ticket_stake: true } %>
-        <span class="adv-input-group__suffix">ADIV</span>
+      <label class="ds-label">Stake</label>
+      <div class="ds-input-group">
+        <%= f.number_field :stake, value: 100, class: "ds-input ds-num", data: { ticket_stake: true } %>
+        <span class="ds-input-group__suffix">ADIV</span>
       </div>
     </div>
 
-    <div class="adv-chipset" style="margin:12px 0">
+    <div class="ds-chipset" style="margin:12px 0">
       <% quick.each do |q| %>
-        <button type="button" class="adv-chip" data-ticket-add="<%= q %>"><%= q %></button>
+        <button type="button" class="ds-chip" data-ticket-add="<%= q %>"><%= q %></button>
       <% end %>
-      <% if balance %><button type="button" class="adv-chip" data-ticket-add="<%= balance %>">Max</button><% end %>
+      <% if balance %><button type="button" class="ds-chip" data-ticket-add="<%= balance %>">Max</button><% end %>
     </div>
 
-    <div class="adv-ticket__summary"><span class="adv-muted">Potential profit</span><span class="adv-num" data-ticket-profit>+0</span></div>
-    <div class="adv-ticket__summary adv-ticket__summary--total">
+    <div class="ds-ticket__summary"><span class="ds-muted">Potential profit</span><span class="ds-num" data-ticket-profit>+0</span></div>
+    <div class="ds-ticket__summary ds-ticket__summary--total">
       <span>Payout if win</span>
-      <span class="adv-ticket__payout adv-num" data-ticket-payout>0</span>
+      <span class="ds-ticket__payout ds-num" data-ticket-payout>0</span>
     </div>
 
     <%= render "shared/adv_button", label: "Place bet", variant: "yes", block: true, size: "lg", type: "submit", html: { style: "margin-top:12px" } %>
