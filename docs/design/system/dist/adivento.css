@@ -341,7 +341,7 @@
 .adv-balance small { font-size: 10.5px; font-weight: 700; letter-spacing: .05em; opacity: .8; }
 
 /* ---- backoffice sidebar -------------------------------------------------- */
-.adv-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); grid-template-areas: "sidebar main"; min-height: 100vh; }
+.adv-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); grid-template-areas: "sidebar main"; position: relative; isolation: isolate; min-height: 100vh; }
 .adv-sidebar { grid-area: sidebar; position: sticky; top: 0; z-index: 40; align-self: start; min-height: 100vh; background: var(--adv-surface); border-right: 1.5px solid var(--adv-faint); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
 .adv-sidebar__brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 15px; padding: 4px 8px 16px; }
 .adv-sidebar__section { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--adv-faint-ink); padding: 14px 8px 6px; }
