@@ -39,6 +39,11 @@ test.describe('Backoffice desktop presentation', () => {
       const metrics = await page.evaluate(() => {
         const sidebar = document.querySelector('.adv-sidebar').getBoundingClientRect();
         const main = document.querySelector('.adv-main').getBoundingClientRect();
+        const point = {
+          x: sidebar.left + Math.min(sidebar.width / 2, 32),
+          y: sidebar.top + Math.min(sidebar.height / 2, 32),
+        };
+        const topElement = document.elementFromPoint(point.x, point.y);
         return {
           sidebar: {
             width: sidebar.width,
@@ -46,6 +51,7 @@ test.describe('Backoffice desktop presentation', () => {
             right: sidebar.right,
             bottom: sidebar.bottom,
           },
+          topElementIsSidebar: Boolean(topElement?.closest('.adv-sidebar')),
           main: {
             left: main.left,
             top: main.top,
@@ -56,6 +62,7 @@ test.describe('Backoffice desktop presentation', () => {
 
       expect(metrics.sidebar.width).toBeGreaterThan(0);
       expect(metrics.sidebar.height).toBeGreaterThan(40);
+      expect(metrics.topElementIsSidebar).toBe(true);
       if (metrics.narrow) {
         expect(metrics.sidebar.bottom).toBeLessThanOrEqual(metrics.main.top + 1);
       } else {
