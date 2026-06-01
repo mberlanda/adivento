@@ -349,6 +349,7 @@
 .adv-sidebar__link:hover { color: var(--adv-ink); background: var(--adv-surface-2); text-decoration: none; }
 .adv-sidebar__link.is-active { color: var(--adv-accent); font-weight: 700; background: var(--adv-accent-soft); }
 .adv-sidebar__icon { width: 18px; text-align: center; opacity: .85; }
+.adv-sidebar__footer { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .adv-main { padding: 24px 28px; min-width: 0; }
 
 /* ---- mobile tab bar ------------------------------------------------------ */
@@ -482,7 +483,8 @@
   .adv-sidebar__section, .adv-sidebar__brand { display: none; }
   .adv-sidebar__link { flex: 0 0 auto; }
   .adv-sidebar .adv-spacer { display: none; }
-  .adv-sidebar > div:last-child { flex: 0 0 auto; margin-top: 0 !important; }
+  .adv-sidebar__footer { flex: 0 0 auto; flex-direction: row; align-items: center; margin-top: 0; }
+  .adv-sidebar__footer .adv-btn--block { width: auto; }
 }
 @media (max-width: 640px) {
   .adv-nav__links { display: none; }

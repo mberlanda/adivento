@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'digest'
 
 class AdiventoStaticAssetsTest < ActionDispatch::IntegrationTest
   test 'layouts include content-hash query strings for static design assets' do
