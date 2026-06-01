@@ -4,6 +4,17 @@ Chronological audit of implemented features. Each entry: what was built, key fil
 
 ---
 
+## 2026-06-01 — Propshaft asset pipeline (pr2)
+
+The app had no asset pipeline; `adivento.css`/`adivento.js` were raw `public/` statics on fixed URLs, so a CSS change could be served stale from browser/CDN cache. Introduced **Propshaft** for content-digest fingerprinting (replaces the custom `?v=<sha>` helper idea from closed #60).
+- Added `propshaft` gem; moved `public/adivento.{css,js}` → `app/assets/{stylesheets,javascripts}/`; layouts now use `stylesheet_link_tag`/`javascript_include_tag` → `/assets/adivento-<digest>.{css,js}`.
+- `assets:precompile` runs at **runtime in `bin/docker-entrypoint`** (gated on `RAILS_ENV=production`), not in the image build — so the real `SECRET_KEY_BASE` is read from the environment (docker-compose / Render) instead of a dummy baked into an image layer. `/public/assets` is gitignored and regenerated on boot.
+- Added `.dockerignore` (excludes `.git`, `node_modules`, `e2e/`, `public/assets`, logs) so the image isn't bloated by `COPY . .`.
+- Key files: `Gemfile`, `bin/docker-entrypoint`, `.dockerignore`, `app/assets/**`, `app/views/layouts/*.html.erb`, `test/integration/asset_pipeline_test.rb`
+- 341 unit runs, 0 failures, 92.93% line coverage; full Playwright e2e suite green (production-mode containers serve `/assets/adivento-<digest>.css`, no 404s). Deploy note: Render auto-deploys on merge; the entrypoint precompiles with the real `SECRET_KEY_BASE` and prod serves `/assets` because `RAILS_SERVE_STATIC_FILES` is set.
+
+---
+
 ## 2026-06-01 — Rename `adv-` css namespace to `ds-` (ad-blocker fix)
 
 **Root cause (closed PR #60).** The backoffice sidebar "disappearing in production" was not a stale static-asset cache — prod `adivento.css`/`adivento.js` were byte-identical to `main`, and the served CSS set `.adv-sidebar { display:flex }`. The sidebar was hidden **client-side** by a content/ad blocker matching the `adv-` (advertisement) class prefix. Confirmed reproducing only with a blocker enabled.

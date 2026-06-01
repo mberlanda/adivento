@@ -4,6 +4,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.3.6'
 
 gem 'rails', '~> 8.1.3'
+# Asset pipeline: content-digest fingerprinting for the static design-system files
+gem 'propshaft', '~> 1.1'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.5'
 # Use Puma as the app server

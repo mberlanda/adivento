@@ -3,7 +3,7 @@
   <head>
     <title>Adivento Backoffice</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/adivento.css">
+    <%= stylesheet_link_tag "adivento" %>
   </head>
   <body class="ds-app">
     <div class="ds-shell">
@@ -18,6 +18,6 @@
         <%= yield %>
       </main>
     </div>
-    <script src="/adivento.js" defer></script>
+    <%= javascript_include_tag "adivento", defer: true %>
   </body>
 </html>

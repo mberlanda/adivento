@@ -1,7 +1,20 @@
 .git
+.gitignore
+.dockerignore
 log/*
 tmp/*
 storage/*
 coverage/*
 vendor/bundle
 .bundle
+
+# Dependencies / test harness not needed in the web image
+# (Playwright runs in its own image and mounts e2e/playwright as a volume).
+node_modules
+e2e
+
+# Generated at runtime by the entrypoint (assets:precompile)
+public/assets
+
+.DS_Store
+*.log

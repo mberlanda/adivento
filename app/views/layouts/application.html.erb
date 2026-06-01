@@ -3,7 +3,7 @@
   <head>
     <title>Adivento Markets</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="/adivento.css">
+    <%= stylesheet_link_tag "adivento" %>
   </head>
   <body class="ds-app">
     <header class="ds-nav">
@@ -67,6 +67,6 @@
       <%= yield %>
     </main>
 
-    <script src="/adivento.js" defer></script>
+    <%= javascript_include_tag "adivento", defer: true %>
   </body>
 </html>
