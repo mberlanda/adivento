@@ -134,7 +134,9 @@
 .ds-card--flush { padding: 0; overflow: hidden; }
 .ds-card--pad-sm { padding: 12px; }
 .ds-card--quiet { box-shadow: none; background: var(--ds-surface-2); border-color: transparent; }
-.ds-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.ds-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.ds-card__head > :is(h1, h2, h3, h4, h5, h6) { margin: 0; line-height: 1.25; }
+.ds-card--flush > .ds-card__head { padding: 16px 16px 0; }
 
 /* ---- form fields --------------------------------------------------------- */
 .ds-label { display: block; font-size: 12px; font-weight: 600; color: var(--ds-muted); margin-bottom: 6px; }
