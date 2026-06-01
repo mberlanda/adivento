@@ -29,7 +29,8 @@
 .adv-app a.adv-btn:visited { color: var(--_fg, var(--adv-ink)); text-decoration: none; }
 .adv-app a.adv-btn > *     { color: inherit; }
 .adv-app a.adv-nav__link   { color: var(--adv-muted); text-decoration: none; }
-.adv-app a.adv-sidebar__link { color: var(--adv-muted); text-decoration: none; }
+.adv-app a.adv-sidebar__link,
+.adv-app a.ops-rail__link { color: var(--adv-muted); text-decoration: none; }
 .adv-app a.adv-muted       { color: var(--adv-muted); text-decoration: none; }
 .adv-app a[class]:hover    { text-decoration: none; }
 

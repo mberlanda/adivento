@@ -35,10 +35,13 @@ test.describe('Backoffice desktop presentation', () => {
 
       await expect(page.getByTestId('nav-dashboard')).toBeVisible();
       await expect(page.getByTestId('nav-markets')).toBeVisible();
+      await expect(page.locator('.adv-sidebar')).toHaveCount(0);
+      await page.addStyleTag({ content: '.adv-sidebar { display: none !important; }' });
+      await expect(page.getByTestId('nav-dashboard')).toBeVisible();
 
       const metrics = await page.evaluate(() => {
-        const sidebar = document.querySelector('.adv-sidebar').getBoundingClientRect();
-        const main = document.querySelector('.adv-main').getBoundingClientRect();
+        const sidebar = document.querySelector('.ops-rail').getBoundingClientRect();
+        const main = document.querySelector('.ops-main').getBoundingClientRect();
         const point = {
           x: sidebar.left + Math.min(sidebar.width / 2, 32),
           y: sidebar.top + Math.min(sidebar.height / 2, 32),
@@ -51,7 +54,7 @@ test.describe('Backoffice desktop presentation', () => {
             right: sidebar.right,
             bottom: sidebar.bottom,
           },
-          topElementIsSidebar: Boolean(topElement?.closest('.adv-sidebar')),
+          topElementIsSidebar: Boolean(topElement?.closest('.ops-rail')),
           main: {
             left: main.left,
             top: main.top,

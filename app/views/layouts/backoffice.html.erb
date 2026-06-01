@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="<%= adivento_asset_path("adivento.css") %>">
   </head>
   <body class="adv-app">
-    <div class="adv-shell">
+    <div class="ops-shell">
       <%= render "backoffice/shared/sidebar" %>
-      <main class="adv-main">
+      <main class="ops-main">
         <% if notice.present? %>
           <div class="adv-callout adv-callout--accent" style="margin-bottom:16px;" data-testid="flash-notice"><%= notice %></div>
         <% end %>

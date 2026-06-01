@@ -13,19 +13,19 @@
     [:permissions, "Access",          "🛡", backoffice_permissions_path],
   ]
 %>
-<aside class="adv-sidebar">
-  <div class="adv-sidebar__brand">
+<aside class="ops-rail">
+  <div class="ops-rail__brand">
     <span class="adv-nav__mark"></span> Console
   </div>
-  <div class="adv-sidebar__section">Operate</div>
+  <div class="ops-rail__section">Operate</div>
   <% nav.each do |key, label, icon, path| %>
-    <%= link_to path, class: "adv-sidebar__link #{'is-active' if current == key}",
+    <%= link_to path, class: "ops-rail__link #{'is-active' if current == key}",
           data: { testid: "nav-#{key}" } do %>
-      <span class="adv-sidebar__icon"><%= icon %></span> <%= label %>
+      <span class="ops-rail__icon"><%= icon %></span> <%= label %>
     <% end %>
   <% end %>
   <span class="adv-spacer"></span>
-  <div class="adv-sidebar__footer">
+  <div class="ops-rail__footer">
     <button class="adv-btn adv-btn--ghost adv-btn--sm adv-btn--block" data-adv-theme-toggle>
       ◑ <span data-adv-theme-label>Dark</span>
     </button>
