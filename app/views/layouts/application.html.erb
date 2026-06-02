@@ -3,12 +3,15 @@
   <head>
     <title>Adivento Markets</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#FAF7F2">
+    <%= favicon_link_tag "adivento/favicon.svg", type: "image/svg+xml" %>
+    <%= tag.link rel: "apple-touch-icon", href: asset_path("adivento/app-icon.svg") %>
     <%= stylesheet_link_tag "adivento" %>
   </head>
   <body class="ds-app">
     <header class="ds-nav">
       <%= link_to web_markets_path, class: "ds-nav__brand", style: "text-decoration:none" do %>
-        <span class="ds-nav__mark"></span> Adivento
+        <%= image_tag "adivento/logo-horizontal.svg", alt: "Adivento", class: "ds-brand-logo", width: 160, height: 43 %>
       <% end %>
 
       <nav class="ds-nav__links" data-testid="top-nav">

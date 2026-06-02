@@ -15,7 +15,8 @@
 %>
 <aside class="ds-sidebar">
   <div class="ds-sidebar__brand">
-    <span class="ds-nav__mark"></span> Console
+    <%= image_tag "adivento/logo-horizontal.svg", alt: "Adivento", class: "ds-brand-logo", width: 150, height: 40 %>
+    <span class="ds-sidebar__brand-label">Console</span>
   </div>
   <div class="ds-sidebar__section">Operate</div>
   <% nav.each do |key, label, icon, path| %>

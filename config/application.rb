@@ -37,5 +37,8 @@ module Adivento
 
     # Use SQL structure dump to capture PostgreSQL-specific objects (triggers, functions).
     config.active_record.schema_format = :sql
+
+    # Brand images are static assets; do not initialize Active Storage variants without image_processing.
+    config.active_storage.variant_processor = :disabled
   end
 end
