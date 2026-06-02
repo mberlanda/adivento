@@ -56,4 +56,8 @@ class AssetPipelineTest < ActionDispatch::IntegrationTest
     assert_equal 'image/vnd.microsoft.icon', response.media_type
     assert_operator response.body.bytesize, :>, 0
   end
+
+  test 'active storage image variants are disabled for static brand assets' do
+    assert_equal :disabled, Rails.application.config.active_storage.variant_processor
+  end
 end
