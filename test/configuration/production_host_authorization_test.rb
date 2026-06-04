@@ -16,6 +16,6 @@ class ProductionHostAuthorizationTest < Minitest::Test
       chdir: APP_ROOT
     )
 
-    assert status.success?, stderr
+    assert_predicate status, :success?, stderr
   end
 end
